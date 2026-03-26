@@ -152,3 +152,148 @@ export interface UpdateNetworkDto {
   readinessStatus: 'ready' | 'partly_ready' | 'damaged';
   notes?: string;
 }
+
+export interface AllocationData {
+  id: number;
+  operationOrderId: number;
+  parentAllocationId: number | null;
+  orderNumber: number;
+  subOrderNumber: number | null;
+  terminalId: number;
+  terminal?: {
+    id: number;
+    name: string;
+    stationId: number;
+    station?: { id: number; name: string };
+  };
+  transmissionSatelliteId: number;
+  transmissionSatellite?: { id: number; name: string };
+  transmissionAntennaId: number;
+  transmissionAntenna?: {
+    id: number;
+    size: number;
+    frequencyBand: string;
+    stationId: number;
+    station?: { id: number; name: string };
+  };
+  transmissionFrequency: number;
+  receptionSatelliteId: number;
+  receptionSatellite?: { id: number; name: string };
+  receptionAntennaId: number;
+  receptionAntenna?: {
+    id: number;
+    size: number;
+    frequencyBand: string;
+    stationId: number;
+    station?: { id: number; name: string };
+  };
+  receptionFrequency: number;
+  transmissionConnectivityId: number | null;
+  transmissionConnectivity?: StationConnectivity | null;
+  receptionConnectivityId: number | null;
+  receptionConnectivity?: StationConnectivity | null;
+  transmissionChannelNumber: number | null;
+  receptionChannelNumber: number | null;
+  tailNumber: number | null;
+  notes: string | null;
+  hasConflict: boolean;
+  conflictIgnored: boolean;
+  subAllocations?: AllocationData[];
+  isDeleted: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface OperationOrder {
+  id: number;
+  name: string;
+  date: string;
+  time: string;
+  allocations?: AllocationData[];
+  isDeleted: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface OperationOrderSummary {
+  id: number;
+  name: string;
+  date: string;
+  time: string;
+}
+
+export interface CreateOperationOrderDto {
+  name: string;
+  date: string;
+  time: string;
+}
+
+export interface UpdateOperationOrderDto {
+  name?: string;
+  date?: string;
+  time?: string;
+}
+
+export interface CreateAllocationDto {
+  parentAllocationId?: number | null;
+  terminalId: number;
+  transmissionSatelliteId: number;
+  transmissionAntennaId: number;
+  transmissionFrequency: number;
+  receptionSatelliteId: number;
+  receptionAntennaId: number;
+  receptionFrequency: number;
+  transmissionConnectivityId?: number | null;
+  receptionConnectivityId?: number | null;
+  transmissionChannelNumber?: number | null;
+  receptionChannelNumber?: number | null;
+  tailNumber?: number | null;
+  notes?: string | null;
+  hasConflict?: boolean;
+  conflictIgnored?: boolean;
+}
+
+export interface SubAllocationPayload extends CreateAllocationDto {
+  existingId?: number;
+}
+
+export interface UpdateAllocationDto {
+  terminalId?: number;
+  transmissionSatelliteId?: number;
+  transmissionAntennaId?: number;
+  transmissionFrequency?: number;
+  receptionSatelliteId?: number;
+  receptionAntennaId?: number;
+  receptionFrequency?: number;
+  transmissionConnectivityId?: number | null;
+  receptionConnectivityId?: number | null;
+  transmissionChannelNumber?: number | null;
+  receptionChannelNumber?: number | null;
+  tailNumber?: number | null;
+  notes?: string | null;
+  hasConflict?: boolean;
+  conflictIgnored?: boolean;
+}
+
+export interface AntennaWithStation {
+  id: number;
+  size: number;
+  frequencyBand: string;
+  stationId: number;
+  stationName: string;
+  displayName: string;
+}
+
+export interface ConnectivityValidationResult {
+  connectivityRequired: boolean;
+  availableConnectivities: Array<{
+    id: number;
+    stationId: number;
+    connectedStationId: number;
+    communicationType: string;
+    channelCount: number;
+  }>;
+  availableChannels: Record<number, number[]>;
+  error?: string;
+  message?: string;
+}

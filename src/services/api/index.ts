@@ -5,6 +5,7 @@ export { stationsApi } from './stations';
 export { networksApi } from './networks';
 export { terminalTypesApi, type TerminalType } from './terminalTypes';
 export { connectivityTypesApi, type ConnectivityType } from './connectivityTypes';
+export { operationOrdersApi } from './operationOrders';
 export type { 
   Satellite, 
   SatelliteSummary, 
@@ -24,4 +25,13 @@ export type {
   NetworkSummary,
   CreateNetworkDto,
   UpdateNetworkDto,
+  OperationOrder,
+  OperationOrderSummary,
+  CreateOperationOrderDto,
+  UpdateOperationOrderDto,
+  AllocationData,
+  CreateAllocationDto,
+  UpdateAllocationDto,
+  AntennaWithStation,
+  ConnectivityValidationResult,
 } from './types';

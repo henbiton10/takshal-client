@@ -101,7 +101,7 @@ export const ConfirmDialog = ({
         <ConfirmButton onClick={onConfirm}>
           {confirmText}
         </ConfirmButton>
-      </StyledDialogActions>
+        </StyledDialogActions>
     </StyledDialog>
   );
 };
