@@ -1,41 +1,60 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import SatelliteAltIcon from '@mui/icons-material/SatelliteAlt';
-import { SatelliteFormProps, SatelliteFormData } from './types';
+import PublicIcon from '@mui/icons-material/Public';
+import { NetworkFormProps, NetworkFormData } from './types';
+import { READINESS_STATUS_OPTIONS, INITIAL_FORM_DATA } from './constants';
 import {
-  AFFILIATION_OPTIONS,
-  FREQUENCY_CONVERTER_OPTIONS,
-  READINESS_STATUS_OPTIONS,
-  INITIAL_FORM_DATA,
-} from './constants';
-import { 
-  FormContainer, 
-  FormTitle, 
-  FormGrid, 
-  FullWidthField, 
-  CombinedFieldWrapper, 
-  CombinedFieldSection, 
-  ButtonContainer, 
+  FormContainer,
+  FormTitle,
+  FormGrid,
+  FullWidthField,
+  CombinedFieldWrapper,
+  CombinedFieldSection,
+  ButtonContainer,
   StyledButton,
   FormSelect,
   FormTextField,
 } from '../../shared/components/ui';
 import { EditableNameField } from '../../shared/components/EditableNameField';
+import { terminalTypesApi, connectivityTypesApi } from '../../services/api';
+import { mapConnectivityTypeToLabel } from './utils';
 
-export const SatelliteForm = ({ onSave, editingSatelliteId, initialData }: SatelliteFormProps) => {
+export const NetworkForm = ({ onSave, editingNetworkId, initialData }: NetworkFormProps) => {
+  const [terminalTypes, setTerminalTypes] = useState<Array<{ value: string; label: string }>>([]);
+  const [connectivityTypes, setConnectivityTypes] = useState<Array<{ value: string; label: string }>>([]);
+
   const {
     control,
     handleSubmit,
     watch,
     reset,
     formState: { errors, isSubmitting, isValid, isDirty },
-  } = useForm<SatelliteFormData>({
+  } = useForm<NetworkFormData>({
     defaultValues: initialData || INITIAL_FORM_DATA,
     mode: 'onChange',
   });
 
-  // Update form when initialData changes
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [terminalTypesData, connectivityTypesData] = await Promise.all([
+          terminalTypesApi.getAllSummary(),
+          connectivityTypesApi.getAllSummary(),
+        ]);
+        
+        setTerminalTypes(terminalTypesData.map(t => ({ value: t.id.toString(), label: t.name })));
+        setConnectivityTypes(connectivityTypesData.map(c => ({ 
+          value: c.id.toString(), 
+          label: mapConnectivityTypeToLabel(c.name) 
+        })));
+      } catch (error) {
+        console.error('Failed to fetch dropdown data:', error);
+      }
+    };
+    fetchData();
+  }, []);
+
   useEffect(() => {
     if (initialData) {
       reset(initialData);
@@ -47,14 +66,14 @@ export const SatelliteForm = ({ onSave, editingSatelliteId, initialData }: Satel
   const readinessStatus = watch('readinessStatus');
 
   const onSubmit = useCallback(
-    async (data: SatelliteFormData) => {
+    async (data: NetworkFormData) => {
       try {
         if (onSave) {
           await onSave(data);
         }
         reset(INITIAL_FORM_DATA);
       } catch (error) {
-        console.error('Error saving satellite:', error);
+        console.error('Error saving network:', error);
       }
     },
     [onSave, reset],
@@ -66,43 +85,47 @@ export const SatelliteForm = ({ onSave, editingSatelliteId, initialData }: Satel
 
   return (
     <FormContainer>
-      <FormTitle>{editingSatelliteId ? 'עריכת לווין' : 'הוספת לווין חדש'}</FormTitle>
+      <FormTitle>{editingNetworkId ? 'עריכת רשת' : 'הוספת רשת חדשה'}</FormTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
         <EditableNameField
           name="name"
           control={control}
-          icon={SatelliteAltIcon}
-          placeholder="לווין 1"
+          icon={PublicIcon}
+          placeholder="רשת 1"
         />
 
         <FormGrid>
           <CombinedFieldWrapper>
             <CombinedFieldSection hasBorder flexBasis="50%">
               <FormSelect
-                name="affiliation"
+                name="terminalTypeId"
                 control={control}
-                label="שייכות"
-                options={AFFILIATION_OPTIONS}
-                placeholder="בחר שייכות"
-                error={errors.affiliation}
-                rules={{ required: 'שייכות הינה שדה חובה' }}
+                label="סוג טרמינל"
+                options={terminalTypes}
+                placeholder="בחר סוג טרמינל"
+                error={errors.terminalTypeId}
+                rules={{ required: 'סוג טרמינל הינו שדה חובה' }}
                 required
+                transformValue={{
+                  toField: (value) => (value === '' || value === null ? '' : value.toString()),
+                  toForm: (value) => value === '' ? '' : Number(value),
+                }}
               />
             </CombinedFieldSection>
 
             <CombinedFieldSection flexBasis="50%">
               <FormSelect
-                name="hasFrequencyConverter"
+                name="connectivityTypeId"
                 control={control}
-                label="ממיר תדר"
-                options={FREQUENCY_CONVERTER_OPTIONS}
-                placeholder="בחר"
-                error={errors.hasFrequencyConverter}
-                rules={{ required: 'ממיר תדר הינו שדה חובה' }}
+                label="סוג קישוריות"
+                options={connectivityTypes}
+                placeholder="בחר סוג קישוריות"
+                error={errors.connectivityTypeId}
+                rules={{ required: 'סוג קישוריות הינו שדה חובה' }}
                 required
                 transformValue={{
-                  toField: (value) => (value === null ? '' : value.toString()),
-                  toForm: (value) => value === 'true',
+                  toField: (value) => (value === '' || value === null ? '' : value.toString()),
+                  toForm: (value) => value === '' ? '' : Number(value),
                 }}
               />
             </CombinedFieldSection>
@@ -146,7 +169,7 @@ export const SatelliteForm = ({ onSave, editingSatelliteId, initialData }: Satel
         </FormGrid>
 
         <ButtonContainer>
-          {!editingSatelliteId && (
+          {!editingNetworkId && (
             <StyledButton
               variant="outlined"
               onClick={handleReset}
@@ -156,9 +179,9 @@ export const SatelliteForm = ({ onSave, editingSatelliteId, initialData }: Satel
               נקה שדות
             </StyledButton>
           )}
-          <StyledButton 
-            variant="contained" 
-            type="submit" 
+          <StyledButton
+            variant="contained"
+            type="submit"
             disabled={!isValid || isSubmitting || !isDirty}
           >
             {isSubmitting ? 'שומר...' : 'שמירה'}

@@ -16,6 +16,7 @@ interface FormSelectProps<T extends FieldValues> {
   placeholder?: string;
   error?: FieldError;
   rules?: object;
+  required?: boolean;
   transformValue?: {
     toForm: (value: string) => any;
     toField: (value: any) => string;
@@ -51,11 +52,12 @@ export const FormSelect = <T extends FieldValues>({
   placeholder,
   error,
   rules,
+  required,
   transformValue,
 }: FormSelectProps<T>) => {
   return (
     <div>
-      <FieldLabel>{label}</FieldLabel>
+      <FieldLabel $required={required}>{label}</FieldLabel>
       <Controller
         name={name}
         control={control}

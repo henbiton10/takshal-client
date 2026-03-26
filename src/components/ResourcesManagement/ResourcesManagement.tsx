@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import {
   Accordion,
   AccordionSummary,
@@ -11,17 +11,12 @@ import {
 import SearchIcon from '@mui/icons-material/Search';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AddIcon from '@mui/icons-material/Add';
-import SatelliteAltIcon from '@mui/icons-material/SatelliteAlt';
-import PublicIcon from '@mui/icons-material/Public';
-import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import styled from 'styled-components';
 import { ResourcesManagementProps } from './types';
-import { SatelliteForm } from '../SatelliteForm';
-import { SatelliteFormData } from '../SatelliteForm/types';
-import { SatelliteCard } from '../SatelliteCard';
-import { TerminalIcon } from './icons/TerminalIcon';
-import { StationIcon } from './icons/StationIcon';
-import { satellitesApi, SatelliteSummary } from '../../services/api';
+import { ENTITY_CONFIGS, ENTITY_CONFIGS_ARRAY } from './entityConfig';
+import { useEntityManager } from './hooks';
+import { EntitySection } from './components';
+import { ConfirmDialog } from '../../shared/components/ConfirmDialog';
 import { theme } from '../../theme';
 
 const Container = styled.div`
@@ -32,15 +27,15 @@ const Container = styled.div`
 
 const Header = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: end;
   align-items: center;
   margin-bottom: 16px;
 `;
 
 const Title = styled.h1`
-  color: #e1eaff;
-  font-size: 20px;
-  font-weight: 500;
+  color: white;
+  font-size: 26px;
+  font-weight: ${theme.typography.fontWeight.bold};
   margin: 0;
 `;
 
@@ -117,6 +112,7 @@ const SectionTitle = styled.h3`
   color: rgba(225, 234, 255, 0.9);
   font-size: 14px;
   margin: 0;
+  font-weight: 500;
 `;
 
 const SummaryActions = styled.div`
@@ -142,8 +138,7 @@ const AddHeaderButton = styled(Button)`
     .MuiButton-startIcon {
       margin-left: 4px;
       font-size: 16px;
-    font-weight: 500;
-
+      font-weight: 500;
     }
   }
 `;
@@ -156,135 +151,108 @@ const StyledAccordionDetails = styled(AccordionDetails)`
   }
 `;
 
-const EmptyState = styled.div`
-  text-align: center;
-  padding: 32px 16px;
-  color: rgba(225, 234, 255, 0.5);
-`;
-
-const EmptyStateTitle = styled.div`
-  font-size: 13px;
-  font-weight: 500;
-  margin-bottom: 4px;
-  color: rgba(225, 234, 255, 0.6);
-`;
-
-const EmptyStateSubtitle = styled.div`
-  font-size: 11px;
-  color: rgba(225, 234, 255, 0.4);
-`;
-
-const SatellitesGrid = styled.div<{ hasForm: boolean }>`
-  display: flex;
-  flex-wrap: wrap;
-  gap: ${theme.spacing.md};
-  direction: rtl;
-`;
-
-const FormWithCardsContainer = styled.div`
-  display: flex;
-  gap: ${theme.spacing.xl};
-  direction: rtl;
-`;
-
-const CardsColumn = styled.div`
-  flex: 0 0 35%;
-  display: flex;
-  flex-direction: column;
-  gap: ${theme.spacing.md};
-`;
-
-const CardsScrollContainer = styled.div`
-  background: ${theme.colors.background.medium};
-  border-radius: ${theme.borderRadius.xl};
-  padding: ${theme.spacing.lg};
-  border-right: 2px solid ${theme.colors.border.subtle};
-  max-height: 600px;
-  overflow-y: auto;
-  
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-  
-  &::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 3px;
-  }
-  
-  &::-webkit-scrollbar-thumb {
-    background: ${theme.colors.border.accent};
-    border-radius: 3px;
-  }
-  
-  &::-webkit-scrollbar-thumb:hover {
-    background: ${theme.colors.border.accentHover};
-  }
-`;
-
-const FormContainer = styled.div`
-  flex: 0 0 65%;
-`;
-
-const RESOURCE_SECTIONS = [
-  {
-    id: 'stations',
-    title: 'תחנות',
-    icon: <StationIcon />,
-    emptyMessage: 'לא נמצאו תחנות זמינות',
-    emptySubMessage: 'תחנות חדשות יופיעו כאן ברגע שתוספנה',
-  },
-  {
-    id: 'satellites',
-    title: 'לווין',
-    icon: <SatelliteAltIcon />,
-    emptyMessage: 'לא נמצאו לווינים זמינים',
-    emptySubMessage: 'לווינים חדשים יופיעו כאן ברגע שיוספו',
-  },
-  {
-    id: 'terminals',
-    title: 'טרמינלים',
-    icon: <TerminalIcon />,
-    emptyMessage: 'לא נמצאו טרמינלים זמינים',
-    emptySubMessage: 'טרמינלים חדשים יופיעו כאן ברגע שיוספו',
-  },
-  {
-    id: 'networks',
-    title: 'רשת',
-    icon: <PublicIcon />,
-    emptyMessage: 'לא נמצאו רשתות זמינות',
-    emptySubMessage: 'רשתות חדשות יופיעו כאן ברגע שתוספנה',
-  },
-  {
-    id: 'connectivity',
-    title: 'קישוריות בקרקע',
-    icon: <RemoveCircleOutlineIcon />,
-    emptyMessage: 'לא נמצאו קישוריות זמינות',
-    emptySubMessage: 'קישוריות חדשות יופיעו כאן ברגע שתוספנה',
-  },
-];
+interface DeleteDialogState {
+  open: boolean;
+  entityId: string | null;
+  itemId: number | null;
+  itemName: string;
+}
 
 export const ResourcesManagement = ({
+  onSaveStation,
   onSaveSatellite,
+  onSaveTerminal,
+  onSaveNetwork,
 }: ResourcesManagementProps) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['stations']));
-  const [showAddForm, setShowAddForm] = useState<Record<string, boolean>>({});
-  const [satellites, setSatellites] = useState<SatelliteSummary[]>([]);
-  const [loadingSatellites, setLoadingSatellites] = useState(false);
-  const [editingSatelliteId, setEditingSatelliteId] = useState<number | null>(null);
-  const [editingSatelliteData, setEditingSatelliteData] = useState<any>(null);
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
+  const prevSearchQuery = useRef('');
+  const [deleteDialog, setDeleteDialog] = useState<DeleteDialogState>({
+    open: false,
+    entityId: null,
+    itemId: null,
+    itemName: '',
+  });
 
-  const fetchSatellites = useCallback(async () => {
-    setLoadingSatellites(true);
-    try {
-      const data = await satellitesApi.getAllSummary();
-      setSatellites(data);
-    } catch (error) {
-      console.error('Failed to fetch satellites:', error);
-    } finally {
-      setLoadingSatellites(false);
+  // Create entity managers for each entity type
+  const stationsManager = useEntityManager(ENTITY_CONFIGS.stations);
+  const satellitesManager = useEntityManager(ENTITY_CONFIGS.satellites);
+  const terminalsManager = useEntityManager(ENTITY_CONFIGS.terminals);
+  const networksManager = useEntityManager(ENTITY_CONFIGS.networks);
+
+  const entityManagers = {
+    stations: stationsManager,
+    satellites: satellitesManager,
+    terminals: terminalsManager,
+    networks: networksManager,
+  };
+
+  // Keep a ref to access latest managers in callbacks
+  const managersRef = useRef(entityManagers);
+  managersRef.current = entityManagers;
+
+  // Filter items based on search query
+  const filteredItems = useMemo(() => {
+    const result: Record<string, any[]> = {};
+    const query = searchQuery.trim().toLowerCase();
+    
+    Object.entries(entityManagers).forEach(([key, manager]) => {
+      if (!query) {
+        result[key] = manager.items;
+      } else {
+        result[key] = manager.items.filter((item: any) => 
+          item.name?.toLowerCase().includes(query)
+        );
+      }
+    });
+    
+    return result;
+  }, [searchQuery, entityManagers.stations.items, entityManagers.satellites.items, entityManagers.terminals.items, entityManagers.networks.items]);
+
+  // Fetch all items when search starts and auto-expand/collapse sections
+  useEffect(() => {
+    const query = searchQuery.trim();
+    const prevQuery = prevSearchQuery.current.trim();
+    
+    if (query) {
+      // Fetch items for all sections if not already loaded
+      Object.values(entityManagers).forEach((manager) => {
+        if (manager.items.length === 0 && !manager.loading) {
+          manager.fetchItems();
+        }
+      });
+
+      // Auto-expand sections with results, collapse those without
+      const sectionsWithResults = new Set<string>();
+      Object.entries(filteredItems).forEach(([sectionId, items]) => {
+        if (items.length > 0) {
+          sectionsWithResults.add(sectionId);
+        }
+      });
+      
+      setExpandedSections(sectionsWithResults);
+    } else if (prevQuery && !query) {
+      // Collapse all sections only when search is cleared (was searching, now not)
+      setExpandedSections(new Set());
     }
-  }, []);
+    
+    prevSearchQuery.current = searchQuery;
+  }, [searchQuery, filteredItems]);
+
+  // Auto-refresh expanded sections every 10 seconds (only when in list mode)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      expandedSections.forEach((sectionId) => {
+        const manager = managersRef.current[sectionId as keyof typeof entityManagers];
+        // Only refresh if in list mode (not editing or viewing)
+        if (manager && !manager.loading && manager.viewMode === 'list') {
+          manager.fetchItems(true); // silent refresh - no loading state
+        }
+      });
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, [expandedSections]);
 
   const handleAccordionChange = useCallback(
     (panel: string) => (_event: React.SyntheticEvent, isExpanded: boolean) => {
@@ -298,100 +266,74 @@ export const ResourcesManagement = ({
         return newSet;
       });
       
-      if (isExpanded && panel === 'satellites') {
-        // Fetch satellites when expanding the satellites section
-        fetchSatellites();
-      } else if (!isExpanded && panel === 'satellites') {
-        // Reset state when closing satellites section
-        setShowAddForm((prev) => ({ ...prev, satellites: false }));
-        setEditingSatelliteId(null);
-        setEditingSatelliteData(null);
+      const manager = managersRef.current[panel as keyof typeof entityManagers];
+      if (manager) {
+        if (isExpanded) {
+          manager.fetchItems();
+        } else {
+          manager.resetAll();
+        }
       }
     },
-    [fetchSatellites],
+    [],
   );
 
-  const handleToggleAddForm = useCallback((sectionId: string) => {
-    setShowAddForm((prev) => {
-      const isCurrentlyShowing = prev[sectionId];
-      
-      // If form is already showing and we're in edit mode, switch to create mode
-      if (isCurrentlyShowing && editingSatelliteId && sectionId === 'satellites') {
-        setEditingSatelliteId(null);
-        setEditingSatelliteData(null);
-        return prev; // Keep form open
-      }
-      
-      // Reset to create mode when opening form
-      if (!isCurrentlyShowing) {
-        setEditingSatelliteId(null);
-        setEditingSatelliteData(null);
-      }
-      
-      return {
-        ...prev,
-        [sectionId]: !isCurrentlyShowing,
-      };
-    });
-  }, [editingSatelliteId]);
-
-  const handleSatelliteCardClick = useCallback(async (satelliteId: number) => {
-    try {
-      const satellite = await satellitesApi.getOne(satelliteId);
-      setEditingSatelliteId(satelliteId);
-      setEditingSatelliteData({
-        name: satellite.name,
-        affiliation: satellite.affiliation,
-        hasFrequencyConverter: satellite.hasFrequencyConverter,
-        readinessStatus: satellite.readinessStatus,
-        notes: satellite.notes || '',
-      });
-      setShowAddForm((prev) => ({ ...prev, satellites: true }));
-    } catch (error) {
-      console.error('Failed to fetch satellite:', error);
+  const handleAddClick = useCallback((sectionId: string) => {
+    const manager = managersRef.current[sectionId as keyof typeof entityManagers];
+    if (manager) {
+      manager.switchToAddMode();
     }
   }, []);
 
-  const handleSaveSatellite = useCallback(
-    async (data: SatelliteFormData) => {
-      try {
-        const payload = {
-          name: data.name,
-          affiliation: data.affiliation as 'israeli' | 'international',
-          hasFrequencyConverter: data.hasFrequencyConverter!,
-          readinessStatus: data.readinessStatus as 'ready' | 'partly_ready' | 'damaged',
-          notes: data.notes,
-        };
-
-        if (editingSatelliteId) {
-          // Update existing satellite
-          await satellitesApi.update(editingSatelliteId, payload);
-        } else {
-          // Create new satellite
-          await satellitesApi.create(payload);
-        }
-        
-        // Call parent callback if provided
-        if (onSaveSatellite) {
-          await onSaveSatellite(data);
-        }
-        
-        // Refresh satellites list
-        await fetchSatellites();
-        
-        // Reset edit mode
-        setEditingSatelliteId(null);
-        setEditingSatelliteData(null);
-        
-        // Close the form
-        setShowAddForm((prev) => ({ ...prev, satellites: false }));
-      } catch (error) {
-        console.error('Failed to save satellite:', error);
-        throw error;
+  const createSaveHandler = useCallback((entityId: string, onSaveCallback?: (data: any) => Promise<void>) => {
+    return async (formData: any) => {
+      const manager = managersRef.current[entityId as keyof typeof entityManagers];
+      if (manager) {
+        await manager.handleSave(formData, onSaveCallback);
       }
-    },
-    [onSaveSatellite, fetchSatellites, editingSatelliteId],
-  );
+    };
+  }, []);
+
+  const handleCardClick = useCallback((entityId: string, itemId: number) => {
+    const manager = managersRef.current[entityId as keyof typeof entityManagers];
+    if (manager) {
+      manager.handleCardClick(itemId);
+    }
+  }, []);
+
+  const handleEditClick = useCallback((entityId: string) => {
+    const manager = managersRef.current[entityId as keyof typeof entityManagers];
+    if (manager) {
+      manager.switchToEditMode();
+    }
+  }, []);
+
+  const handleDeleteClick = useCallback((entityId: string, itemId: number, itemName: string) => {
+    setDeleteDialog({
+      open: true,
+      entityId,
+      itemId,
+      itemName,
+    });
+  }, []);
+
+  const handleDeleteConfirm = useCallback(async () => {
+    if (deleteDialog.entityId && deleteDialog.itemId) {
+      const manager = managersRef.current[deleteDialog.entityId as keyof typeof entityManagers];
+      if (manager) {
+        try {
+          await manager.handleDelete(deleteDialog.itemId);
+        } catch (error) {
+          console.error('Failed to delete:', error);
+        }
+      }
+    }
+    setDeleteDialog({ open: false, entityId: null, itemId: null, itemName: '' });
+  }, [deleteDialog.entityId, deleteDialog.itemId]);
+
+  const handleDeleteCancel = useCallback(() => {
+    setDeleteDialog({ open: false, entityId: null, itemId: null, itemName: '' });
+  }, []);
 
   return (
     <Container>
@@ -401,7 +343,6 @@ export const ResourcesManagement = ({
 
       <SearchContainer>
         <TextField
-          fullWidth
           placeholder="חיפוש"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
@@ -417,7 +358,7 @@ export const ResourcesManagement = ({
           sx={{
             '& .MuiOutlinedInput-root': {
               background: 'rgba(20, 35, 65, 0.5)',
-              borderRadius: '6px',
+              borderRadius: '20px',
               paddingRight: '12px',
               '& fieldset': {
                 borderColor: 'rgba(174, 199, 255, 0.12)',
@@ -433,111 +374,87 @@ export const ResourcesManagement = ({
               padding: '10px 0',
               fontSize: '13px',
               color: '#e1eaff',
+              direction: 'rtl',
             },
             '& input::placeholder': {
+              direction: 'rtl',
               color: 'rgba(225, 234, 255, 0.4)',
               opacity: 1,
+              textAlign: 'right',
             },
           }}
         />
       </SearchContainer>
 
       <AccordionsContainer>
-        {RESOURCE_SECTIONS.map((section) => (
-          <StyledAccordion
-            key={section.id}
-            expanded={expandedSections.has(section.id)}
-            onChange={handleAccordionChange(section.id)}
-          >
-            <StyledAccordionSummary expandIcon={<ExpandMoreIcon />}>
-              {expandedSections.has(section.id) && (
-                <SummaryActions onClick={(e) => e.stopPropagation()}>
-                  <AddHeaderButton
-                    startIcon={<AddIcon />}
-                    onClick={() => handleToggleAddForm(section.id)}
-                  >
-                    הוסף {section.title}
-                  </AddHeaderButton>
-                </SummaryActions>
-              )}
-              <SummaryContent>
-                <SectionIcon>{section.icon}</SectionIcon>
-                <SectionTitle>{section.title}</SectionTitle>
-              </SummaryContent>
-            </StyledAccordionSummary>
+        {ENTITY_CONFIGS_ARRAY.map((config) => {
+          const manager = entityManagers[config.id as keyof typeof entityManagers];
+          const hasImplementation = !!manager;
 
-            {expandedSections.has(section.id) && (
-              <StyledAccordionDetails>
-              {section.id === 'satellites' ? (
-                <>
-                  {loadingSatellites ? (
-                    <Box sx={{ padding: '20px', textAlign: 'center', color: '#aec7ff' }}>
-                      טוען לווינים...
-                    </Box>
-                  ) : satellites.length === 0 && !showAddForm[section.id] ? (
-                    <EmptyState>
-                      <EmptyStateTitle>{section.emptyMessage}</EmptyStateTitle>
-                      <EmptyStateSubtitle>{section.emptySubMessage}</EmptyStateSubtitle>
-                    </EmptyState>
-                  ) : showAddForm[section.id] ? (
-                    <FormWithCardsContainer>
-                      <FormContainer>
-                        <SatelliteForm 
-                          onSave={handleSaveSatellite}
-                          editingSatelliteId={editingSatelliteId}
-                          initialData={editingSatelliteData}
-                        />
-                      </FormContainer>
-                      
-                      <CardsColumn>
-                        <CardsScrollContainer>
-                          <SatellitesGrid hasForm={true}>
-                            {satellites.map((satellite) => (
-                              <SatelliteCard 
-                                key={satellite.id} 
-                                satellite={satellite}
-                                onClick={handleSatelliteCardClick}
-                              />
-                            ))}
-                          </SatellitesGrid>
-                        </CardsScrollContainer>
-                      </CardsColumn>
-                    </FormWithCardsContainer>
+          return (
+            <StyledAccordion
+              key={config.id}
+              expanded={expandedSections.has(config.id)}
+              onChange={handleAccordionChange(config.id)}
+            >
+              <StyledAccordionSummary expandIcon={<ExpandMoreIcon />}>
+                {expandedSections.has(config.id) && (
+                  <SummaryActions onClick={(e) => e.stopPropagation()}>
+                    <AddHeaderButton
+                      startIcon={<AddIcon />}
+                      onClick={() => handleAddClick(config.id)}
+                    >
+                      הוסף {config.title}
+                    </AddHeaderButton>
+                  </SummaryActions>
+                )}
+                <SummaryContent>
+                  <SectionIcon>{config.icon}</SectionIcon>
+                  <SectionTitle>{config.title}</SectionTitle>
+                </SummaryContent>
+              </StyledAccordionSummary>
+
+              {expandedSections.has(config.id) && (
+                <StyledAccordionDetails>
+                  {hasImplementation && manager ? (
+                    <EntitySection
+                      config={config}
+                      items={filteredItems[config.id] || manager.items}
+                      loading={manager.loading}
+                      viewMode={manager.viewMode}
+                      selectedId={manager.selectedId}
+                      selectedData={manager.selectedData}
+                      editingData={manager.editingData}
+                      onCardClick={(id) => handleCardClick(config.id, id)}
+                      onEdit={() => handleEditClick(config.id)}
+                      onDelete={(id, name) => handleDeleteClick(config.id, id, name)}
+                      onSave={createSaveHandler(
+                        config.id, 
+                        config.id === 'stations' ? onSaveStation :
+                        config.id === 'satellites' ? onSaveSatellite : 
+                        config.id === 'terminals' ? onSaveTerminal :
+                        config.id === 'networks' ? onSaveNetwork : 
+                        undefined
+                      )}
+                    />
                   ) : (
-                    satellites.length > 0 && (
-                      <SatellitesGrid hasForm={false}>
-                        {satellites.map((satellite) => (
-                          <SatelliteCard 
-                            key={satellite.id} 
-                            satellite={satellite}
-                            onClick={handleSatelliteCardClick}
-                          />
-                        ))}
-                      </SatellitesGrid>
-                    )
-                  )}
-                </>
-              ) : (
-                <>
-                  {!showAddForm[section.id] && (
-                    <EmptyState>
-                      <EmptyStateTitle>{section.emptyMessage}</EmptyStateTitle>
-                      <EmptyStateSubtitle>{section.emptySubMessage}</EmptyStateSubtitle>
-                    </EmptyState>
-                  )}
-
-                  {showAddForm[section.id] && (
                     <Box sx={{ padding: '20px', textAlign: 'center', color: '#aec7ff' }}>
-                      טופס {section.title} בפיתוח
+                      טופס {config.title} בפיתוח
                     </Box>
                   )}
-                </>
+                </StyledAccordionDetails>
               )}
-              </StyledAccordionDetails>
-            )}
-          </StyledAccordion>
-        ))}
+            </StyledAccordion>
+          );
+        })}
       </AccordionsContainer>
+
+      <ConfirmDialog
+        open={deleteDialog.open}
+        message={`האם אתה בטוח שברצונך למחוק את ${deleteDialog.itemName}?`}
+        onConfirm={handleDeleteConfirm}
+        onCancel={handleDeleteCancel}
+      />
     </Container>
   );
 };

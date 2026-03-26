@@ -26,7 +26,11 @@ class ApiClient {
       throw new Error(error.message || `HTTP ${response.status}: ${response.statusText}`);
     }
 
-    return response.json();
+    const text = await response.text();
+    if (!text) {
+      return undefined as T;
+    }
+    return JSON.parse(text);
   }
 
   async get<T>(endpoint: string): Promise<T> {

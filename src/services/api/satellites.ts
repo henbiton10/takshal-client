@@ -21,4 +21,8 @@ export const satellitesApi = {
   update: async (id: number, data: UpdateSatelliteDto): Promise<Satellite> => {
     return apiClient.put<Satellite>(`/satellites/${id}`, data);
   },
+
+  delete: async (id: number): Promise<void> => {
+    return apiClient.delete(`/satellites/${id}`);
+  },
 };

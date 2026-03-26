@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Sidebar from './components/Sidebar';
@@ -8,8 +8,16 @@ import { theme } from './theme/theme';
 import { ResourcesManagement } from './components/ResourcesManagement';
 import { SatelliteFormData } from './components/SatelliteForm';
 
+const STORAGE_KEY = 'takshal_selected_menu';
+
 function App() {
-  const [selectedMenuItem, setSelectedMenuItem] = useState('operations');
+  const [selectedMenuItem, setSelectedMenuItem] = useState(() => {
+    return localStorage.getItem(STORAGE_KEY) || 'operations';
+  });
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, selectedMenuItem);
+  }, [selectedMenuItem]);
 
   const handleMenuItemSelect = (itemId: string) => {
     setSelectedMenuItem(itemId);

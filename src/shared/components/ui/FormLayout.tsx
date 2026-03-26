@@ -59,13 +59,18 @@ interface CombinedFieldSectionProps {
 
 export const CombinedFieldSection = styled.div<CombinedFieldSectionProps>`
   padding: 14px;
-  flex: ${props => props.flexBasis ? `0 0 ${props.flexBasis}` : '1'};
+  flex: ${props => props.flexBasis ? `1 1 ${props.flexBasis}` : '1'};
+  min-width: 0;
   ${props => props.hasBorder && `
     border-left: 1px solid ${theme.colors.border.divider};
   `}
 `;
 
-export const FieldLabel = styled.label`
+interface FieldLabelProps {
+  $required?: boolean;
+}
+
+export const FieldLabel = styled.label<FieldLabelProps>`
   display: block;
   color: ${theme.colors.text.white};
   font-size: ${theme.typography.fontSize.sm};
@@ -75,7 +80,7 @@ export const FieldLabel = styled.label`
   direction: rtl;
   
   &::after {
-    content: ' *';
+    content: '${props => props.$required ? ' *' : ''}';
     color: ${theme.colors.error.main};
   }
 `;

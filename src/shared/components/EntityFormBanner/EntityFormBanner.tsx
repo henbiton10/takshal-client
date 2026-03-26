@@ -9,7 +9,7 @@ interface EntityFormBannerProps {
 }
 
 const BannerContainer = styled(Box)`
-  flex: 0 0 35%;
+  width: 30%;
   background: ${theme.colors.background.medium};
   border-radius: ${theme.borderRadius.xl};
   padding: ${theme.spacing.xxxl} ${theme.spacing.xxl};

@@ -11,7 +11,7 @@ export const FREQUENCY_CONVERTER_OPTIONS = [
 export const READINESS_STATUS_OPTIONS = [
   { value: 'ready', label: 'כשיר' },
   { value: 'partly_ready', label: 'כשיר חלקית' },
-  { value: 'damaged', label: 'לא כשיר' },
+  { value: 'damaged', label: 'תקול' },
 ];
 
 export const INITIAL_FORM_DATA = {

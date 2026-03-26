@@ -10,8 +10,10 @@ interface FormTextFieldProps<T extends FieldValues> {
   placeholder?: string;
   error?: FieldError;
   rules?: object;
+  required?: boolean;
   multiline?: boolean;
   rows?: number;
+  type?: 'text' | 'number' | 'email' | 'password';
 }
 
 const textFieldStyles: SxProps = {
@@ -41,12 +43,14 @@ export const FormTextField = <T extends FieldValues>({
   placeholder,
   error,
   rules,
+  required,
   multiline = false,
   rows,
+  type = 'text',
 }: FormTextFieldProps<T>) => {
   return (
     <div>
-      <FieldLabel>{label}</FieldLabel>
+      <FieldLabel $required={required}>{label}</FieldLabel>
       <Controller
         name={name}
         control={control}
@@ -54,6 +58,7 @@ export const FormTextField = <T extends FieldValues>({
         render={({ field }) => (
           <TextField
             {...field}
+            type={type}
             error={!!error}
             helperText={error?.message}
             fullWidth
