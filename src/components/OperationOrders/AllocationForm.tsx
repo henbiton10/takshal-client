@@ -404,9 +404,11 @@ const SubAllocationCardComponent = ({
   const filteredAntennas = useMemo(() => {
     if (!selectedTerminal) return antennas;
     return antennas.filter(
-      (a) => a.frequencyBand.toLowerCase() === selectedTerminal.frequencyBand.toLowerCase()
+      (a) =>
+        a.frequencyBand.toLowerCase() === selectedTerminal.frequencyBand.toLowerCase() &&
+        (!a.isDeleted || a.id === sub.transmissionAntennaId || a.id === sub.receptionAntennaId)
     );
-  }, [antennas, selectedTerminal]);
+  }, [antennas, selectedTerminal, sub.transmissionAntennaId, sub.receptionAntennaId]);
 
   const { transmissionValidation, receptionValidation, loading: validationLoading } =
     useAllocationValidation({
@@ -454,11 +456,13 @@ const SubAllocationCardComponent = ({
               <MenuItem value="" disabled>
                 בחר טרמינל
               </MenuItem>
-              {terminals.map((t) => (
-                <MenuItem key={t.id} value={t.id}>
-                  {t.name}
-                </MenuItem>
-              ))}
+              {terminals
+                .filter((t) => !t.isDeleted || t.id === sub.terminalId)
+                .map((t) => (
+                  <MenuItem key={t.id} value={t.id} disabled={t.isDeleted}>
+                    {t.name}{t.isDeleted ? ' (לא פעיל)' : ''}
+                  </MenuItem>
+                ))}
             </StyledSelect>
             {errors?.terminalId && <FormHelperText>{errors.terminalId}</FormHelperText>}
           </FormControl>
@@ -497,11 +501,13 @@ const SubAllocationCardComponent = ({
               <MenuItem value="" disabled>
                 בחר לוויין
               </MenuItem>
-              {satellites.map((sat) => (
-                <MenuItem key={sat.id} value={sat.id}>
-                  {sat.name}
-                </MenuItem>
-              ))}
+              {satellites
+                .filter((sat) => !sat.isDeleted || sat.id === sub.transmissionSatelliteId)
+                .map((sat) => (
+                  <MenuItem key={sat.id} value={sat.id} disabled={sat.isDeleted}>
+                    {sat.name}{sat.isDeleted ? ' (לא פעיל)' : ''}
+                  </MenuItem>
+                ))}
             </StyledSelect>
             {errors?.transmissionSatelliteId && (
               <FormHelperText>{errors.transmissionSatelliteId}</FormHelperText>
@@ -527,8 +533,8 @@ const SubAllocationCardComponent = ({
                 בחר אנטנה
               </MenuItem>
               {filteredAntennas.map((ant) => (
-                <MenuItem key={ant.id} value={ant.id}>
-                  {ant.displayName} ({ant.stationName})
+                <MenuItem key={ant.id} value={ant.id} disabled={ant.isDeleted}>
+                  {ant.displayName} ({ant.stationName}){ant.isDeleted ? ' (לא פעיל)' : ''}
                 </MenuItem>
               ))}
             </StyledSelect>
@@ -601,11 +607,13 @@ const SubAllocationCardComponent = ({
               <MenuItem value="" disabled>
                 בחר לוויין
               </MenuItem>
-              {satellites.map((sat) => (
-                <MenuItem key={sat.id} value={sat.id}>
-                  {sat.name}
-                </MenuItem>
-              ))}
+              {satellites
+                .filter((sat) => !sat.isDeleted || sat.id === sub.receptionSatelliteId)
+                .map((sat) => (
+                  <MenuItem key={sat.id} value={sat.id} disabled={sat.isDeleted}>
+                    {sat.name}{sat.isDeleted ? ' (לא פעיל)' : ''}
+                  </MenuItem>
+                ))}
             </StyledSelect>
             {errors?.receptionSatelliteId && (
               <FormHelperText>{errors.receptionSatelliteId}</FormHelperText>
@@ -631,8 +639,8 @@ const SubAllocationCardComponent = ({
                 בחר אנטנה
               </MenuItem>
               {filteredAntennas.map((ant) => (
-                <MenuItem key={ant.id} value={ant.id}>
-                  {ant.displayName} ({ant.stationName})
+                <MenuItem key={ant.id} value={ant.id} disabled={ant.isDeleted}>
+                  {ant.displayName} ({ant.stationName}){ant.isDeleted ? ' (לא פעיל)' : ''}
                 </MenuItem>
               ))}
             </StyledSelect>
@@ -814,7 +822,7 @@ export const AllocationForm = ({
           satellitesApi.getAllSummary(),
           operationOrdersApi.getAntennasWithStationInfo(),
         ]);
-        setTerminals(terminalsData.filter((t) => !t.isDeleted));
+        setTerminals(terminalsData);
         setSatellites(satellitesData);
         setAntennas(antennasData);
       } catch (error) {
@@ -859,16 +867,20 @@ export const AllocationForm = ({
   const filteredTransmissionAntennas = useMemo(() => {
     if (!selectedTerminal) return antennas;
     return antennas.filter(
-      (a) => a.frequencyBand.toLowerCase() === selectedTerminal.frequencyBand.toLowerCase()
+      (a) =>
+        a.frequencyBand.toLowerCase() === selectedTerminal.frequencyBand.toLowerCase() &&
+        (!a.isDeleted || a.id === watchedValues.transmissionAntennaId)
     );
-  }, [antennas, selectedTerminal]);
+  }, [antennas, selectedTerminal, watchedValues.transmissionAntennaId]);
 
   const filteredReceptionAntennas = useMemo(() => {
     if (!selectedTerminal) return antennas;
     return antennas.filter(
-      (a) => a.frequencyBand.toLowerCase() === selectedTerminal.frequencyBand.toLowerCase()
+      (a) =>
+        a.frequencyBand.toLowerCase() === selectedTerminal.frequencyBand.toLowerCase() &&
+        (!a.isDeleted || a.id === watchedValues.receptionAntennaId)
     );
-  }, [antennas, selectedTerminal]);
+  }, [antennas, selectedTerminal, watchedValues.receptionAntennaId]);
 
   const handleAddSubAllocation = useCallback(() => {
     const newSub: SubAllocationFormData = {
@@ -1102,11 +1114,13 @@ export const AllocationForm = ({
                       <MenuItem value="" disabled>
                         בחר טרמינל
                       </MenuItem>
-                      {terminals.map((terminal) => (
-                        <MenuItem key={terminal.id} value={terminal.id}>
-                          {terminal.name}
-                        </MenuItem>
-                      ))}
+                      {terminals
+                        .filter((t) => !t.isDeleted || t.id === field.value)
+                        .map((terminal) => (
+                          <MenuItem key={terminal.id} value={terminal.id} disabled={terminal.isDeleted}>
+                            {terminal.name}{terminal.isDeleted ? ' (לא פעיל)' : ''}
+                          </MenuItem>
+                        ))}
                     </StyledSelect>
                     {errors.terminalId && (
                       <FormHelperText>{errors.terminalId.message}</FormHelperText>
@@ -1146,11 +1160,13 @@ export const AllocationForm = ({
                       <MenuItem value="" disabled>
                         בחר לוויין
                       </MenuItem>
-                      {satellites.map((sat) => (
-                        <MenuItem key={sat.id} value={sat.id}>
-                          {sat.name}
-                        </MenuItem>
-                      ))}
+                      {satellites
+                        .filter((sat) => !sat.isDeleted || sat.id === field.value)
+                        .map((sat) => (
+                          <MenuItem key={sat.id} value={sat.id} disabled={sat.isDeleted}>
+                            {sat.name}{sat.isDeleted ? ' (לא פעיל)' : ''}
+                          </MenuItem>
+                        ))}
                     </StyledSelect>
                     {errors.transmissionSatelliteId && (
                       <FormHelperText>{errors.transmissionSatelliteId.message}</FormHelperText>
@@ -1258,11 +1274,13 @@ export const AllocationForm = ({
                       <MenuItem value="" disabled>
                         בחר לוויין
                       </MenuItem>
-                      {satellites.map((sat) => (
-                        <MenuItem key={sat.id} value={sat.id}>
-                          {sat.name}
-                        </MenuItem>
-                      ))}
+                      {satellites
+                        .filter((sat) => !sat.isDeleted || sat.id === field.value)
+                        .map((sat) => (
+                          <MenuItem key={sat.id} value={sat.id} disabled={sat.isDeleted}>
+                            {sat.name}{sat.isDeleted ? ' (לא פעיל)' : ''}
+                          </MenuItem>
+                        ))}
                     </StyledSelect>
                     {errors.receptionSatelliteId && (
                       <FormHelperText>{errors.receptionSatelliteId.message}</FormHelperText>

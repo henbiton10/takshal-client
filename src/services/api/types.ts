@@ -14,6 +14,7 @@ export interface Satellite {
 export interface SatelliteSummary {
   id: number;
   name: string;
+  isDeleted: boolean;
 }
 
 export interface CreateSatelliteDto {
@@ -282,6 +283,7 @@ export interface AntennaWithStation {
   stationId: number;
   stationName: string;
   displayName: string;
+  isDeleted: boolean;
 }
 
 export interface ConnectivityValidationResult {

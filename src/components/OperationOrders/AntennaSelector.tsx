@@ -89,16 +89,17 @@ const OptionsList = styled.div`
   padding: 8px 0;
 `;
 
-const OptionItem = styled.div<{ $selected?: boolean }>`
+const OptionItem = styled.div<{ $selected?: boolean; $disabled?: boolean }>`
   padding: 10px 16px;
-  cursor: pointer;
+  cursor: ${(props) => (props.$disabled ? 'not-allowed' : 'pointer')};
   display: flex;
   flex-direction: column;
   gap: 2px;
   background: ${(props) => (props.$selected ? 'rgba(59, 130, 246, 0.2)' : 'transparent')};
+  opacity: ${(props) => (props.$disabled ? 0.5 : 1)};
 
   &:hover {
-    background: rgba(59, 130, 246, 0.1);
+    background: ${(props) => (props.$disabled ? 'transparent' : 'rgba(59, 130, 246, 0.1)')};
   }
 `;
 
@@ -158,15 +159,16 @@ export const AntennaSelector = ({
   }, [antennas, value]);
 
   const filteredAntennas = useMemo(() => {
-    if (!searchQuery.trim()) return antennas;
+    const activeAntennas = antennas.filter((a) => !a.isDeleted || a.id === value);
+    if (!searchQuery.trim()) return activeAntennas;
     const query = searchQuery.toLowerCase();
-    return antennas.filter(
+    return activeAntennas.filter(
       (a) =>
         a.displayName.toLowerCase().includes(query) ||
         a.stationName.toLowerCase().includes(query) ||
         a.frequencyBand.toLowerCase().includes(query)
     );
-  }, [antennas, searchQuery]);
+  }, [antennas, searchQuery, value]);
 
   const handleOpen = useCallback((event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -249,9 +251,13 @@ export const AntennaSelector = ({
                 <OptionItem
                   key={antenna.id}
                   $selected={antenna.id === value}
-                  onClick={() => handleSelect(antenna.id)}
+                  $disabled={antenna.isDeleted}
+                  onClick={() => !antenna.isDeleted && handleSelect(antenna.id)}
                 >
-                  <OptionName>{antenna.displayName}</OptionName>
+                  <OptionName>
+                    {antenna.displayName}
+                    {antenna.isDeleted ? ' (לא פעיל)' : ''}
+                  </OptionName>
                   <OptionDetails>
                     תחנה: {antenna.stationName} | פס: {antenna.frequencyBand.toUpperCase()} | גודל:{' '}
                     {antenna.size}m
