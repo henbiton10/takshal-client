@@ -197,10 +197,11 @@ export const ResourcesManagement = ({
     const query = searchQuery.trim().toLowerCase();
     
     Object.entries(entityManagers).forEach(([key, manager]) => {
+      const activeItems = manager.items.filter((item: any) => !item.isDeleted);
       if (!query) {
-        result[key] = manager.items;
+        result[key] = activeItems;
       } else {
-        result[key] = manager.items.filter((item: any) => 
+        result[key] = activeItems.filter((item: any) => 
           item.name?.toLowerCase().includes(query)
         );
       }
