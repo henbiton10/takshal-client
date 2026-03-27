@@ -680,6 +680,10 @@ export const AllocationsGrid = ({
 
   const getRowHeight = useCallback(() => 48, []);
 
+  const gridKey = useMemo(() => {
+    return Array.from(collapsedIds).sort().join(',');
+  }, [collapsedIds]);
+
   if (flattenedData.length === 0) {
     return (
       <GridContainer style={{ height: 200 }}>
@@ -700,10 +704,6 @@ export const AllocationsGrid = ({
       </GridContainer>
     );
   }
-
-  const gridKey = useMemo(() => {
-    return Array.from(collapsedIds).sort().join(',');
-  }, [collapsedIds]);
 
   return (
     <GridContainer style={{ height: Math.min(500, 56 + flattenedData.length * 48) }}>
