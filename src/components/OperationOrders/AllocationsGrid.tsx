@@ -449,12 +449,14 @@ export const AllocationsGrid = ({
     const data = params.data;
     if (!data) return null;
 
+    const terminalName = data.terminal?.name || '-';
+
     return (
       <CellWithIcon>
         <IconWrapper>
           <LinkIcon sx={{ fontSize: 16 }} />
         </IconWrapper>
-        <span>{data.terminal?.name || '-'}</span>
+        <span>{terminalName}</span>
       </CellWithIcon>
     );
   }, []);

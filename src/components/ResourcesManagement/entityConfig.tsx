@@ -128,7 +128,7 @@ export const ENTITY_CONFIGS: Record<string, EntityConfig> = {
       name: terminal.name,
       stationId: terminal.stationId,
       frequencyBand: terminal.frequencyBand,
-      terminalType: 'Standard',
+      terminalType: terminal.terminalType?.name || '',
       readinessStatus: terminal.readinessStatus,
       notes: terminal.notes || '',
     }),

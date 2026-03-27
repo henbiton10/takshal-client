@@ -463,10 +463,6 @@ export const OperationOrderPage = () => {
             <EmptyState>
               <EmptyIcon />
               <span>אין פקודות מבצע</span>
-              <ActionButton $variant="primary" onClick={handleCreateNew}>
-                <AddIcon sx={{ fontSize: 20 }} />
-                יצירת פקודה ראשונה
-              </ActionButton>
             </EmptyState>
           ) : (
             <OrdersList>

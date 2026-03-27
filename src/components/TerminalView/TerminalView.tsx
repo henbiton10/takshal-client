@@ -23,7 +23,7 @@ export const TerminalView = ({ terminal, onEdit, onDelete }: TerminalViewProps) 
         },
         {
           label: 'סוג טרמינל',
-          value: terminal.terminalType || 'לא מוגדר',
+          value: terminal.terminalType?.name || 'לא מוגדר',
         },
         {
           label: 'תחום תדר',

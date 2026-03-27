@@ -256,7 +256,7 @@ export const AntennaSelector = ({
                 >
                   <OptionName>
                     {antenna.displayName}
-                    {antenna.isDeleted ? ' (לא פעיל)' : ''}
+                    {antenna.isDeleted ? ' (נמחק)' : ''}
                   </OptionName>
                   <OptionDetails>
                     תחנה: {antenna.stationName} | פס: {antenna.frequencyBand.toUpperCase()} | גודל:{' '}

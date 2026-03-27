@@ -460,7 +460,7 @@ const SubAllocationCardComponent = ({
                 .filter((t) => !t.isDeleted || t.id === sub.terminalId)
                 .map((t) => (
                   <MenuItem key={t.id} value={t.id} disabled={t.isDeleted}>
-                    {t.name}{t.isDeleted ? ' (לא פעיל)' : ''}
+                    {t.name}{t.isDeleted ? ' (נמחק)' : ''}
                   </MenuItem>
                 ))}
             </StyledSelect>
@@ -505,7 +505,7 @@ const SubAllocationCardComponent = ({
                 .filter((sat) => !sat.isDeleted || sat.id === sub.transmissionSatelliteId)
                 .map((sat) => (
                   <MenuItem key={sat.id} value={sat.id} disabled={sat.isDeleted}>
-                    {sat.name}{sat.isDeleted ? ' (לא פעיל)' : ''}
+                    {sat.name}{sat.isDeleted ? ' (נמחק)' : ''}
                   </MenuItem>
                 ))}
             </StyledSelect>
@@ -534,7 +534,7 @@ const SubAllocationCardComponent = ({
               </MenuItem>
               {filteredAntennas.map((ant) => (
                 <MenuItem key={ant.id} value={ant.id} disabled={ant.isDeleted}>
-                  {ant.displayName} ({ant.stationName}){ant.isDeleted ? ' (לא פעיל)' : ''}
+                  {ant.displayName} ({ant.stationName}){ant.isDeleted ? ' (נמחק)' : ''}
                 </MenuItem>
               ))}
             </StyledSelect>
@@ -611,7 +611,7 @@ const SubAllocationCardComponent = ({
                 .filter((sat) => !sat.isDeleted || sat.id === sub.receptionSatelliteId)
                 .map((sat) => (
                   <MenuItem key={sat.id} value={sat.id} disabled={sat.isDeleted}>
-                    {sat.name}{sat.isDeleted ? ' (לא פעיל)' : ''}
+                    {sat.name}{sat.isDeleted ? ' (נמחק)' : ''}
                   </MenuItem>
                 ))}
             </StyledSelect>
@@ -640,7 +640,7 @@ const SubAllocationCardComponent = ({
               </MenuItem>
               {filteredAntennas.map((ant) => (
                 <MenuItem key={ant.id} value={ant.id} disabled={ant.isDeleted}>
-                  {ant.displayName} ({ant.stationName}){ant.isDeleted ? ' (לא פעיל)' : ''}
+                  {ant.displayName} ({ant.stationName}){ant.isDeleted ? ' (נמחק)' : ''}
                 </MenuItem>
               ))}
             </StyledSelect>
@@ -1118,7 +1118,7 @@ export const AllocationForm = ({
                         .filter((t) => !t.isDeleted || t.id === field.value)
                         .map((terminal) => (
                           <MenuItem key={terminal.id} value={terminal.id} disabled={terminal.isDeleted}>
-                            {terminal.name}{terminal.isDeleted ? ' (לא פעיל)' : ''}
+                            {terminal.name}{terminal.isDeleted ? ' (נמחק)' : ''}
                           </MenuItem>
                         ))}
                     </StyledSelect>
@@ -1164,7 +1164,7 @@ export const AllocationForm = ({
                         .filter((sat) => !sat.isDeleted || sat.id === field.value)
                         .map((sat) => (
                           <MenuItem key={sat.id} value={sat.id} disabled={sat.isDeleted}>
-                            {sat.name}{sat.isDeleted ? ' (לא פעיל)' : ''}
+                            {sat.name}{sat.isDeleted ? ' (נמחק)' : ''}
                           </MenuItem>
                         ))}
                     </StyledSelect>
@@ -1278,7 +1278,7 @@ export const AllocationForm = ({
                         .filter((sat) => !sat.isDeleted || sat.id === field.value)
                         .map((sat) => (
                           <MenuItem key={sat.id} value={sat.id} disabled={sat.isDeleted}>
-                            {sat.name}{sat.isDeleted ? ' (לא פעיל)' : ''}
+                            {sat.name}{sat.isDeleted ? ' (נמחק)' : ''}
                           </MenuItem>
                         ))}
                     </StyledSelect>
