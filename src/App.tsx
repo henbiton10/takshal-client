@@ -8,6 +8,7 @@ import { theme } from './theme/theme';
 import { ResourcesManagement } from './components/ResourcesManagement';
 import { SatelliteFormData } from './components/SatelliteForm';
 import { OperationOrderPage } from './components/OperationOrders';
+import { DashboardPage } from './components/Dashboard';
 
 const STORAGE_KEY = 'takshal_selected_menu';
 
@@ -31,6 +32,8 @@ function App() {
 
   const renderContent = () => {
     switch (selectedMenuItem) {
+      case 'dashboard':
+        return <DashboardPage />;
       case 'operations':
         return <OperationOrderPage />;
       case 'resources':

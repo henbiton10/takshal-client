@@ -9,6 +9,8 @@ import {
   UpdateAllocationDto,
   AntennaWithStation,
   ConnectivityValidationResult,
+  AntennaSatelliteValidationResult,
+  ChannelValidationResult,
 } from './types';
 
 export const operationOrdersApi = {
@@ -74,5 +76,41 @@ export const operationOrdersApi = {
     allocations: Array<{ id: number; orderNumber: number; subOrderNumber: number | null }>
   ): Promise<void> {
     return apiClient.post('/operation-orders/reorder-allocations', { allocations });
+  },
+
+  async validateAntennaSatellite(
+    operationOrderId: number,
+    transmissionAntennaId: number | null,
+    transmissionSatelliteId: number | null,
+    receptionAntennaId: number | null,
+    receptionSatelliteId: number | null,
+    excludeAllocationId?: number,
+  ): Promise<AntennaSatelliteValidationResult> {
+    return apiClient.post<AntennaSatelliteValidationResult>('/operation-orders/validate-antenna-satellite', {
+      operationOrderId,
+      transmissionAntennaId,
+      transmissionSatelliteId,
+      receptionAntennaId,
+      receptionSatelliteId,
+      excludeAllocationId,
+    });
+  },
+
+  async validateChannel(
+    operationOrderId: number,
+    transmissionConnectivityId: number | null,
+    transmissionChannelNumber: number | null,
+    receptionConnectivityId: number | null,
+    receptionChannelNumber: number | null,
+    excludeAllocationId?: number,
+  ): Promise<ChannelValidationResult> {
+    return apiClient.post<ChannelValidationResult>('/operation-orders/validate-channel', {
+      operationOrderId,
+      transmissionConnectivityId,
+      transmissionChannelNumber,
+      receptionConnectivityId,
+      receptionChannelNumber,
+      excludeAllocationId,
+    });
   },
 };

@@ -143,8 +143,10 @@ interface OperationOrderHeaderProps {
   onChange: (data: Partial<CreateOperationOrderDto>) => void;
   errors?: {
     name?: string;
-    date?: string;
-    time?: string;
+    startDate?: string;
+    startTime?: string;
+    endDate?: string;
+    endTime?: string;
   };
   disabled?: boolean;
   onEdit?: () => void;
@@ -218,15 +220,15 @@ export const OperationOrderHeader = ({
         <FieldWrapper>
           <FieldLabel>
             <span className="required">*</span>
-            תאריך
+            תאריך התחלה
           </FieldLabel>
           <StyledTextField
             fullWidth
             type="date"
-            value={data.date || ''}
-            onChange={handleChange('date')}
-            error={!!errors?.date}
-            helperText={errors?.date}
+            value={data.startDate || ''}
+            onChange={handleChange('startDate')}
+            error={!!errors?.startDate}
+            helperText={errors?.startDate}
             disabled={disabled}
             size="small"
             InputLabelProps={{ shrink: true }}
@@ -236,15 +238,51 @@ export const OperationOrderHeader = ({
         <FieldWrapper>
           <FieldLabel>
             <span className="required">*</span>
-            שעה
+            שעת התחלה
           </FieldLabel>
           <StyledTextField
             fullWidth
             type="time"
-            value={data.time || ''}
-            onChange={handleChange('time')}
-            error={!!errors?.time}
-            helperText={errors?.time}
+            value={data.startTime || ''}
+            onChange={handleChange('startTime')}
+            error={!!errors?.startTime}
+            helperText={errors?.startTime}
+            disabled={disabled}
+            size="small"
+            InputLabelProps={{ shrink: true }}
+          />
+        </FieldWrapper>
+
+        <FieldWrapper>
+          <FieldLabel>
+            <span className="required">*</span>
+            תאריך סיום
+          </FieldLabel>
+          <StyledTextField
+            fullWidth
+            type="date"
+            value={data.endDate || ''}
+            onChange={handleChange('endDate')}
+            error={!!errors?.endDate}
+            helperText={errors?.endDate}
+            disabled={disabled}
+            size="small"
+            InputLabelProps={{ shrink: true }}
+          />
+        </FieldWrapper>
+
+        <FieldWrapper>
+          <FieldLabel>
+            <span className="required">*</span>
+            שעת סיום
+          </FieldLabel>
+          <StyledTextField
+            fullWidth
+            type="time"
+            value={data.endTime || ''}
+            onChange={handleChange('endTime')}
+            error={!!errors?.endTime}
+            helperText={errors?.endTime}
             disabled={disabled}
             size="small"
             InputLabelProps={{ shrink: true }}

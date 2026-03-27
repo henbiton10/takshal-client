@@ -204,7 +204,7 @@ export const OperationOrderPage = () => {
   const [formMode, setFormMode] = useState<FormMode>(null);
   
   const [headerData, setHeaderData] = useState<Partial<CreateOperationOrderDto>>({});
-  const [headerErrors, setHeaderErrors] = useState<{ name?: string; date?: string; time?: string }>({});
+  const [headerErrors, setHeaderErrors] = useState<{ name?: string; startDate?: string; startTime?: string; endDate?: string; endTime?: string }>({});
   
   const [editingAllocation, setEditingAllocation] = useState<AllocationData | undefined>();
   const [parentAllocation, setParentAllocation] = useState<AllocationData | undefined>();
@@ -271,16 +271,31 @@ export const OperationOrderPage = () => {
   }, []);
 
   const validateHeader = useCallback((): boolean => {
-    const errors: { name?: string; date?: string; time?: string } = {};
+    const errors: { name?: string; startDate?: string; startTime?: string; endDate?: string; endTime?: string } = {};
     
     if (!headerData.name?.trim()) {
       errors.name = 'שם פקודת מבצע הינו שדה חובה';
     }
-    if (!headerData.date) {
-      errors.date = 'תאריך הינו שדה חובה';
+    if (!headerData.startDate) {
+      errors.startDate = 'תאריך התחלה הינו שדה חובה';
     }
-    if (!headerData.time) {
-      errors.time = 'שעה הינה שדה חובה';
+    if (!headerData.startTime) {
+      errors.startTime = 'שעת התחלה הינה שדה חובה';
+    }
+    if (!headerData.endDate) {
+      errors.endDate = 'תאריך סיום הינו שדה חובה';
+    }
+    if (!headerData.endTime) {
+      errors.endTime = 'שעת סיום הינה שדה חובה';
+    }
+    
+    if (headerData.startDate && headerData.endDate && headerData.startDate > headerData.endDate) {
+      errors.endDate = 'תאריך סיום חייב להיות אחרי תאריך התחלה';
+    }
+    
+    if (headerData.startDate && headerData.endDate && headerData.startDate === headerData.endDate && 
+        headerData.startTime && headerData.endTime && headerData.startTime >= headerData.endTime) {
+      errors.endTime = 'שעת סיום חייבת להיות אחרי שעת התחלה';
     }
     
     setHeaderErrors(errors);
@@ -471,7 +486,7 @@ export const OperationOrderPage = () => {
                   <OrderInfo>
                     <OrderName>{order.name}</OrderName>
                     <OrderDate>
-                      {order.date} | {order.time}
+                      {order.startDate} {order.startTime} - {order.endDate} {order.endTime}
                     </OrderDate>
                   </OrderInfo>
                   <ArrowBackIcon
@@ -534,16 +549,20 @@ export const OperationOrderPage = () => {
           <OperationOrderHeader
             data={{
               name: selectedOrder.name,
-              date: selectedOrder.date,
-              time: selectedOrder.time,
+              startDate: selectedOrder.startDate,
+              startTime: selectedOrder.startTime,
+              endDate: selectedOrder.endDate,
+              endTime: selectedOrder.endTime,
             }}
             onChange={() => {}}
             disabled={true}
             onEdit={() => {
               setHeaderData({
                 name: selectedOrder.name,
-                date: selectedOrder.date,
-                time: selectedOrder.time,
+                startDate: selectedOrder.startDate,
+                startTime: selectedOrder.startTime,
+                endDate: selectedOrder.endDate,
+                endTime: selectedOrder.endTime,
               });
               setViewMode('edit');
               setFormMode('header');

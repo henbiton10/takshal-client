@@ -1,4 +1,3 @@
-import { ReactNode } from 'react';
 import styled from 'styled-components';
 import { Box, SvgIconProps } from '@mui/material';
 import { theme } from '../../../theme';

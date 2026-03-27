@@ -22,11 +22,15 @@ import {
   Terminal,
   ConnectivityValidationResult,
   SubAllocationPayload,
+  AntennaSatelliteConflict,
+  ChannelConflict,
 } from '../../services/api/types';
 import { operationOrdersApi, terminalsApi, satellitesApi } from '../../services/api';
 import { AntennaSelector } from './AntennaSelector';
 import { ConnectivitySelector } from './ConnectivitySelector';
 import { useAllocationValidation } from './useAllocationValidation';
+import { AntennaConflictWarning } from './AntennaConflictWarning';
+import { ChannelConflictError } from './ChannelConflictError';
 
 const FormContainer = styled.div`
   display: flex;
@@ -726,6 +730,17 @@ export const AllocationForm = ({
   const [subAllocations, setSubAllocations] = useState<SubAllocationFormData[]>([]);
   const [removedSubAllocationIds, setRemovedSubAllocationIds] = useState<number[]>([]);
   const [subAllocationErrors, setSubAllocationErrors] = useState<Record<string, SubAllocationErrors>>({});
+  const [conflictWarning, setConflictWarning] = useState<{
+    open: boolean;
+    conflicts: AntennaSatelliteConflict[];
+    pendingPayload: CreateAllocationDto | null;
+    pendingSubPayloads: SubAllocationPayload[] | null;
+  }>({ open: false, conflicts: [], pendingPayload: null, pendingSubPayloads: null });
+
+  const [channelConflictError, setChannelConflictError] = useState<{
+    open: boolean;
+    conflicts: ChannelConflict[];
+  }>({ open: false, conflicts: [] });
 
   const isMainAllocation = !parentAllocation;
 
@@ -977,76 +992,10 @@ export const AllocationForm = ({
     return !hasErrors;
   }, [subAllocations]);
 
-  const onSubmit = useCallback(
-    async (data: AllocationFormData) => {
-      if (subAllocations.length > 0 && !validateSubAllocations()) {
-        return;
-      }
-
+  const performSave = useCallback(
+    async (payload: CreateAllocationDto, subPayloads: SubAllocationPayload[]) => {
       setSaving(true);
       try {
-        const payload: CreateAllocationDto = {
-          terminalId: Number(data.terminalId),
-          transmissionSatelliteId: Number(data.transmissionSatelliteId),
-          transmissionAntennaId: Number(data.transmissionAntennaId),
-          transmissionFrequency: Number(data.transmissionFrequency),
-          receptionSatelliteId: Number(data.receptionSatelliteId),
-          receptionAntennaId: Number(data.receptionAntennaId),
-          receptionFrequency: Number(data.receptionFrequency),
-          transmissionConnectivityId: data.transmissionConnectivityId
-            ? Number(data.transmissionConnectivityId)
-            : null,
-          receptionConnectivityId: data.receptionConnectivityId
-            ? Number(data.receptionConnectivityId)
-            : null,
-          transmissionChannelNumber: data.transmissionChannelNumber
-            ? Number(data.transmissionChannelNumber)
-            : null,
-          receptionChannelNumber: data.receptionChannelNumber
-            ? Number(data.receptionChannelNumber)
-            : null,
-          tailNumber: data.tailNumber ? Number(data.tailNumber) : null,
-          notes: data.addNotes ? data.notes : null,
-          parentAllocationId: parentAllocation?.id || null,
-          hasConflict:
-            transmissionValidation?.error === 'channels_full' ||
-            receptionValidation?.error === 'channels_full',
-        };
-
-        const subPayloads: SubAllocationPayload[] = subAllocations
-          .filter((sub) => sub.terminalId && sub.transmissionSatelliteId && sub.receptionSatelliteId)
-          .map((sub) => {
-            const basePayload = {
-              existingId: sub.existingId,
-              terminalId: Number(sub.terminalId),
-              transmissionSatelliteId: Number(sub.transmissionSatelliteId),
-              transmissionAntennaId: Number(sub.transmissionAntennaId),
-              transmissionFrequency: Number(sub.transmissionFrequency),
-              transmissionConnectivityId: sub.transmissionConnectivityId
-                ? Number(sub.transmissionConnectivityId)
-                : null,
-              transmissionChannelNumber: sub.transmissionChannelNumber
-                ? Number(sub.transmissionChannelNumber)
-                : null,
-              receptionSatelliteId: Number(sub.receptionSatelliteId),
-              receptionAntennaId: Number(sub.receptionAntennaId),
-              receptionFrequency: Number(sub.receptionFrequency),
-              receptionConnectivityId: sub.receptionConnectivityId
-                ? Number(sub.receptionConnectivityId)
-                : null,
-              receptionChannelNumber: sub.receptionChannelNumber
-                ? Number(sub.receptionChannelNumber)
-                : null,
-              tailNumber: sub.tailNumber ? Number(sub.tailNumber) : null,
-              notes: null,
-              hasConflict: false,
-            };
-            if (!sub.existingId) {
-              return { ...basePayload, parentAllocationId: null };
-            }
-            return basePayload;
-          });
-
         await onSave(
           payload,
           subPayloads.length > 0 ? subPayloads : undefined,
@@ -1058,7 +1007,144 @@ export const AllocationForm = ({
         setSaving(false);
       }
     },
-    [onSave, parentAllocation, transmissionValidation, receptionValidation, subAllocations, removedSubAllocationIds, validateSubAllocations]
+    [onSave, removedSubAllocationIds]
+  );
+
+  const handleConflictConfirm = useCallback(async () => {
+    if (conflictWarning.pendingPayload) {
+      const payloadWithConflict = {
+        ...conflictWarning.pendingPayload,
+        hasConflict: true,
+        conflictIgnored: true,
+      };
+      await performSave(payloadWithConflict, conflictWarning.pendingSubPayloads || []);
+    }
+    setConflictWarning({ open: false, conflicts: [], pendingPayload: null, pendingSubPayloads: null });
+  }, [conflictWarning, performSave]);
+
+  const handleConflictCancel = useCallback(() => {
+    setConflictWarning({ open: false, conflicts: [], pendingPayload: null, pendingSubPayloads: null });
+  }, []);
+
+  const handleChannelConflictClose = useCallback(() => {
+    setChannelConflictError({ open: false, conflicts: [] });
+  }, []);
+
+  const onSubmit = useCallback(
+    async (data: AllocationFormData) => {
+      if (subAllocations.length > 0 && !validateSubAllocations()) {
+        return;
+      }
+
+      const payload: CreateAllocationDto = {
+        terminalId: Number(data.terminalId),
+        transmissionSatelliteId: Number(data.transmissionSatelliteId),
+        transmissionAntennaId: Number(data.transmissionAntennaId),
+        transmissionFrequency: Number(data.transmissionFrequency),
+        receptionSatelliteId: Number(data.receptionSatelliteId),
+        receptionAntennaId: Number(data.receptionAntennaId),
+        receptionFrequency: Number(data.receptionFrequency),
+        transmissionConnectivityId: data.transmissionConnectivityId
+          ? Number(data.transmissionConnectivityId)
+          : null,
+        receptionConnectivityId: data.receptionConnectivityId
+          ? Number(data.receptionConnectivityId)
+          : null,
+        transmissionChannelNumber: data.transmissionChannelNumber
+          ? Number(data.transmissionChannelNumber)
+          : null,
+        receptionChannelNumber: data.receptionChannelNumber
+          ? Number(data.receptionChannelNumber)
+          : null,
+        tailNumber: data.tailNumber ? Number(data.tailNumber) : null,
+        notes: data.addNotes ? data.notes : null,
+        parentAllocationId: parentAllocation?.id || null,
+        hasConflict:
+          transmissionValidation?.error === 'channels_full' ||
+          receptionValidation?.error === 'channels_full',
+      };
+
+      const subPayloads: SubAllocationPayload[] = subAllocations
+        .filter((sub) => sub.terminalId && sub.transmissionSatelliteId && sub.receptionSatelliteId)
+        .map((sub) => {
+          const basePayload = {
+            existingId: sub.existingId,
+            terminalId: Number(sub.terminalId),
+            transmissionSatelliteId: Number(sub.transmissionSatelliteId),
+            transmissionAntennaId: Number(sub.transmissionAntennaId),
+            transmissionFrequency: Number(sub.transmissionFrequency),
+            transmissionConnectivityId: sub.transmissionConnectivityId
+              ? Number(sub.transmissionConnectivityId)
+              : null,
+            transmissionChannelNumber: sub.transmissionChannelNumber
+              ? Number(sub.transmissionChannelNumber)
+              : null,
+            receptionSatelliteId: Number(sub.receptionSatelliteId),
+            receptionAntennaId: Number(sub.receptionAntennaId),
+            receptionFrequency: Number(sub.receptionFrequency),
+            receptionConnectivityId: sub.receptionConnectivityId
+              ? Number(sub.receptionConnectivityId)
+              : null,
+            receptionChannelNumber: sub.receptionChannelNumber
+              ? Number(sub.receptionChannelNumber)
+              : null,
+            tailNumber: sub.tailNumber ? Number(sub.tailNumber) : null,
+            notes: null,
+            hasConflict: false,
+          };
+          if (!sub.existingId) {
+            return { ...basePayload, parentAllocationId: null };
+          }
+          return basePayload;
+        });
+
+      setSaving(true);
+      try {
+        const channelValidationResult = await operationOrdersApi.validateChannel(
+          operationOrderId,
+          payload.transmissionConnectivityId ?? null,
+          payload.transmissionChannelNumber ?? null,
+          payload.receptionConnectivityId ?? null,
+          payload.receptionChannelNumber ?? null,
+          editingAllocation?.id
+        );
+
+        if (channelValidationResult.hasConflicts) {
+          setSaving(false);
+          setChannelConflictError({
+            open: true,
+            conflicts: channelValidationResult.conflicts,
+          });
+          return;
+        }
+
+        const validationResult = await operationOrdersApi.validateAntennaSatellite(
+          operationOrderId,
+          payload.transmissionAntennaId,
+          payload.transmissionSatelliteId,
+          payload.receptionAntennaId,
+          payload.receptionSatelliteId,
+          editingAllocation?.id
+        );
+
+        if (validationResult.hasConflicts) {
+          setSaving(false);
+          setConflictWarning({
+            open: true,
+            conflicts: validationResult.conflicts,
+            pendingPayload: payload,
+            pendingSubPayloads: subPayloads,
+          });
+          return;
+        }
+
+        await performSave(payload, subPayloads);
+      } catch (error) {
+        console.error('Failed to validate or save allocation:', error);
+        setSaving(false);
+      }
+    },
+    [operationOrderId, editingAllocation, parentAllocation, transmissionValidation, receptionValidation, subAllocations, validateSubAllocations, performSave]
   );
 
   if (loading) {
@@ -1500,6 +1586,19 @@ export const AllocationForm = ({
           ביטול
         </CancelButton>
       </ButtonsRow>
+
+      <AntennaConflictWarning
+        open={conflictWarning.open}
+        conflicts={conflictWarning.conflicts}
+        onConfirm={handleConflictConfirm}
+        onCancel={handleConflictCancel}
+      />
+
+      <ChannelConflictError
+        open={channelConflictError.open}
+        conflicts={channelConflictError.conflicts}
+        onClose={handleChannelConflictClose}
+      />
     </FormContainer>
   );
 };

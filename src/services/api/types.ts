@@ -208,8 +208,10 @@ export interface AllocationData {
 export interface OperationOrder {
   id: number;
   name: string;
-  date: string;
-  time: string;
+  startDate: string;
+  startTime: string;
+  endDate: string;
+  endTime: string;
   allocations?: AllocationData[];
   isDeleted: boolean;
   createdAt: Date;
@@ -219,20 +221,26 @@ export interface OperationOrder {
 export interface OperationOrderSummary {
   id: number;
   name: string;
-  date: string;
-  time: string;
+  startDate: string;
+  startTime: string;
+  endDate: string;
+  endTime: string;
 }
 
 export interface CreateOperationOrderDto {
   name: string;
-  date: string;
-  time: string;
+  startDate: string;
+  startTime: string;
+  endDate: string;
+  endTime: string;
 }
 
 export interface UpdateOperationOrderDto {
   name?: string;
-  date?: string;
-  time?: string;
+  startDate?: string;
+  startTime?: string;
+  endDate?: string;
+  endTime?: string;
 }
 
 export interface CreateAllocationDto {
@@ -298,4 +306,34 @@ export interface ConnectivityValidationResult {
   availableChannels: Record<number, number[]>;
   error?: string;
   message?: string;
+}
+
+export interface AntennaSatelliteConflict {
+  direction: 'transmission' | 'reception';
+  antennaId: number;
+  antennaName: string;
+  conflictingSatelliteId: number;
+  conflictingSatelliteName: string;
+  requestedSatelliteId: number;
+  requestedSatelliteName: string;
+  operationOrderId: number;
+  operationOrderName: string;
+}
+
+export interface AntennaSatelliteValidationResult {
+  hasConflicts: boolean;
+  conflicts: AntennaSatelliteConflict[];
+}
+
+export interface ChannelConflict {
+  direction: 'transmission' | 'reception';
+  connectivityId: number;
+  channelNumber: number;
+  operationOrderId: number;
+  operationOrderName: string;
+}
+
+export interface ChannelValidationResult {
+  hasConflicts: boolean;
+  conflicts: ChannelConflict[];
 }

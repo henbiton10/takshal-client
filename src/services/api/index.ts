@@ -6,6 +6,7 @@ export { networksApi } from './networks';
 export { terminalTypesApi, type TerminalType } from './terminalTypes';
 export { connectivityTypesApi, type ConnectivityType } from './connectivityTypes';
 export { operationOrdersApi } from './operationOrders';
+export { dashboardApi } from './dashboard';
 export type { 
   Satellite, 
   SatelliteSummary, 

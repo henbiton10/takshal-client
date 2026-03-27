@@ -75,7 +75,6 @@ export const EditableNameField = <T extends FieldValues>({
   control,
   icon: Icon,
   placeholder = 'הזן שם',
-  value,
 }: EditableNameFieldProps<T>) => {
   const [isEditing, setIsEditing] = useState(false);
 
