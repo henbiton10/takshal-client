@@ -395,6 +395,12 @@ export const OperationOrderPage = () => {
     }
   }, [selectedOrder]);
 
+  const handleReorderAllocations = useCallback(async () => {
+    if (selectedOrder) {
+      await fetchOrderDetails(selectedOrder.id);
+    }
+  }, [selectedOrder, fetchOrderDetails]);
+
   const handleConfirmDelete = useCallback(async () => {
     try {
       if (deleteDialog.type === 'allocation') {
@@ -581,6 +587,7 @@ export const OperationOrderPage = () => {
               onEdit={handleEditAllocation}
               onDelete={handleDeleteAllocation}
               onAddSubAllocation={handleAddSubAllocation}
+              onReorder={handleReorderAllocations}
             />
           </AllocationsSection>
         )}

@@ -69,4 +69,10 @@ export const operationOrdersApi = {
       excludeAllocationId,
     });
   },
+
+  async reorderAllocations(
+    allocations: Array<{ id: number; orderNumber: number; subOrderNumber: number | null }>
+  ): Promise<void> {
+    return apiClient.post('/operation-orders/reorder-allocations', { allocations });
+  },
 };

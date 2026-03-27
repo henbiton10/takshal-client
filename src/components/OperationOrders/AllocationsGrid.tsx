@@ -6,11 +6,13 @@ import {
   AllCommunityModule,
   ICellRendererParams,
   GridApi,
+  RowDragEndEvent,
 } from 'ag-grid-community';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import styled from 'styled-components';
 import { AllocationData } from '../../services/api/types';
+import { operationOrdersApi } from '../../services/api';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import EditIcon from '@mui/icons-material/Edit';
 import SatelliteAltIcon from '@mui/icons-material/SatelliteAlt';
@@ -142,6 +144,28 @@ const GridContainer = styled.div`
     border: none !important;
     outline: none !important;
   }
+
+  .ag-row-drag {
+    color: rgba(255, 255, 255, 0.85) !important;
+    cursor: grab;
+    margin-left: 8px;
+  }
+
+  .ag-row-drag .ag-icon {
+    color: rgba(255, 255, 255, 0.85) !important;
+  }
+
+  .ag-row-dragging {
+    opacity: 0.5;
+  }
+
+  .ag-row-drag:hover {
+    color: rgba(59, 130, 246, 0.8) !important;
+  }
+
+  .ag-row-drag:hover .ag-icon {
+    color: rgba(59, 130, 246, 0.8) !important;
+  }
 `;
 
 const CellWithIcon = styled.div`
@@ -157,7 +181,7 @@ const IconWrapper = styled.span`
   color: rgba(255, 255, 255, 0.85);
 `;
 
-const StatusBadge = styled.div<{ $status: 'success' | 'error' }>`
+const StatusBadge = styled.div<{ $status: 'success' | 'error' | 'warning' }>`
   display: flex;
   align-items: center;
   gap: 4px;
@@ -165,8 +189,13 @@ const StatusBadge = styled.div<{ $status: 'success' | 'error' }>`
   border-radius: 12px;
   font-size: 12px;
   background: ${(props) =>
-    props.$status === 'success' ? 'rgba(34, 197, 94, 0.15)' : 'rgba(239, 68, 68, 0.15)'};
-  color: ${(props) => (props.$status === 'success' ? '#22c55e' : '#ef4444')};
+    props.$status === 'success'
+      ? 'rgba(34, 197, 94, 0.15)'
+      : props.$status === 'warning'
+      ? 'rgba(251, 191, 36, 0.15)'
+      : 'rgba(239, 68, 68, 0.15)'};
+  color: ${(props) =>
+    props.$status === 'success' ? '#22c55e' : props.$status === 'warning' ? '#fbbf24' : '#ef4444'};
 `;
 
 const ActionsCell = styled.div`
@@ -203,17 +232,29 @@ interface FlattenedAllocation extends AllocationData {
   hasChildren: boolean;
 }
 
+const getHebrewCommunicationType = (type: string): string => {
+  const mapping: Record<string, string> = {
+    'fiber_optic': 'סיב אופטי',
+    'radio': 'רדיו',
+    'satellite': 'לוויני',
+    'microwave': 'גל מיקרו',
+  };
+  return mapping[type] || type;
+};
+
 interface AllocationsGridProps {
   allocations: AllocationData[];
   onEdit: (allocation: AllocationData) => void;
   onDelete: (allocationId: number) => void;
   onAddSubAllocation: (parentAllocation: AllocationData) => void;
+  onReorder: () => Promise<void>;
 }
 
 export const AllocationsGrid = ({
   allocations,
   onEdit,
   onDelete,
+  onReorder,
 }: AllocationsGridProps) => {
   const [collapsedIds, setCollapsedIds] = useState<Set<number>>(new Set());
   const gridRef = useRef<GridApi<FlattenedAllocation> | null>(null);
@@ -232,6 +273,103 @@ export const AllocationsGrid = ({
       gridRef.current?.refreshCells({ force: true });
     }, 0);
   }, []);
+
+  const handleRowDragEnd = useCallback(
+    async (event: RowDragEndEvent<FlattenedAllocation>) => {
+      const draggedNode = event.node;
+      const overNode = event.overNode;
+
+      if (!draggedNode || !overNode || !draggedNode.data || !overNode.data) return;
+
+      const draggedData = draggedNode.data;
+      const overData = overNode.data;
+
+      const isDraggedSub = draggedData.isSubAllocation;
+      const isOverSub = overData.isSubAllocation;
+
+      if (isDraggedSub && !isOverSub) {
+        return;
+      }
+
+      if (isDraggedSub && isOverSub) {
+        if (draggedData.parentAllocationId !== overData.parentAllocationId) {
+          return;
+        }
+      }
+
+      if (!isDraggedSub && isOverSub) {
+        return;
+      }
+
+      const updates: Array<{ id: number; orderNumber: number; subOrderNumber: number | null }> = [];
+
+      if (isDraggedSub) {
+        const parentId = draggedData.parentAllocationId;
+        const siblings = allocations
+          .find((a) => a.id === parentId)
+          ?.subAllocations?.filter((s) => !s.isDeleted)
+          .sort((a, b) => (a.subOrderNumber || 0) - (b.subOrderNumber || 0)) || [];
+
+        const draggedIndex = siblings.findIndex((s) => s.id === draggedData.id);
+        const overIndex = siblings.findIndex((s) => s.id === overData.id);
+
+        if (draggedIndex === -1 || overIndex === -1) return;
+
+        const reordered = [...siblings];
+        const [removed] = reordered.splice(draggedIndex, 1);
+        reordered.splice(overIndex, 0, removed);
+
+        reordered.forEach((sub, index) => {
+          updates.push({
+            id: sub.id,
+            orderNumber: sub.orderNumber,
+            subOrderNumber: index + 1,
+          });
+        });
+      } else {
+        const mainAllocations = allocations
+          .filter((a) => !a.isDeleted && !a.parentAllocationId)
+          .sort((a, b) => a.orderNumber - b.orderNumber);
+
+        const draggedIndex = mainAllocations.findIndex((a) => a.id === draggedData.id);
+        const overIndex = mainAllocations.findIndex((a) => a.id === overData.id);
+
+        if (draggedIndex === -1 || overIndex === -1) return;
+
+        const reordered = [...mainAllocations];
+        const [removed] = reordered.splice(draggedIndex, 1);
+        reordered.splice(overIndex, 0, removed);
+
+        reordered.forEach((alloc, index) => {
+          updates.push({
+            id: alloc.id,
+            orderNumber: index + 1,
+            subOrderNumber: null,
+          });
+
+          if (alloc.subAllocations && alloc.subAllocations.length > 0) {
+            alloc.subAllocations
+              .filter((s) => !s.isDeleted)
+              .forEach((sub) => {
+                updates.push({
+                  id: sub.id,
+                  orderNumber: index + 1,
+                  subOrderNumber: sub.subOrderNumber,
+                });
+              });
+          }
+        });
+      }
+
+      try {
+        await operationOrdersApi.reorderAllocations(updates);
+        await onReorder();
+      } catch (error) {
+        console.error('Failed to reorder allocations:', error);
+      }
+    },
+    [allocations, onReorder]
+  );
 
   const flattenedData = useMemo((): FlattenedAllocation[] => {
     const result: FlattenedAllocation[] = [];
@@ -353,7 +491,6 @@ export const AllocationsGrid = ({
     const data = params.data;
     if (!data) return null;
 
-    const hasTransmissionConn = data.transmissionConnectivityId || data.receptionConnectivityId;
     const terminalStationId = data.terminal?.stationId;
     const txAntennaStationId = data.transmissionAntenna?.stationId;
     const rxAntennaStationId = data.receptionAntenna?.stationId;
@@ -371,11 +508,15 @@ export const AllocationsGrid = ({
       );
     }
 
-    if (hasTransmissionConn) {
+    const txConnType = data.transmissionConnectivity?.communicationType;
+    const rxConnType = data.receptionConnectivity?.communicationType;
+    
+    if (txConnType || rxConnType) {
+      const displayType = getHebrewCommunicationType(txConnType || rxConnType || '');
       return (
-        <StatusBadge $status="success">
-          <CheckCircleIcon sx={{ fontSize: 14 }} />
-          ישיר
+        <StatusBadge $status="warning">
+          <LinkIcon sx={{ fontSize: 14 }} />
+          {displayType}
         </StatusBadge>
       );
     }
@@ -435,6 +576,7 @@ export const AllocationsGrid = ({
         width: 120,
         pinned: 'right',
         cellRenderer: OrderCellRenderer,
+        rowDrag: true,
       },
       {
         headerName: 'טרמינל מקור',
@@ -569,13 +711,15 @@ export const AllocationsGrid = ({
         columnDefs={columnDefs}
         defaultColDef={defaultColDef}
         enableRtl={true}
-        animateRows={false}
+        animateRows={true}
         getRowClass={getRowClass}
         getRowHeight={getRowHeight}
         headerHeight={44}
         rowSelection="multiple"
         suppressRowClickSelection={true}
         suppressCellFocus={true}
+        rowDragManaged={false}
+        onRowDragEnd={handleRowDragEnd}
       />
     </GridContainer>
   );
