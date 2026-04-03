@@ -20,9 +20,9 @@ const AntennaRow = styled.div<{ $index: number }>`
 `;
 
 const AntennaLabel = styled.div<{ $index: number }>`
-  min-width: 70px;
+  min-width: 180px;
   padding: 8px 12px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 500;
   color: white;
   background: ${props => {
@@ -30,6 +30,7 @@ const AntennaLabel = styled.div<{ $index: number }>`
     return colors[props.$index % colors.length];
   }};
   border-radius: 4px 0 0 4px;
+  white-space: nowrap;
 `;
 
 const ChannelsContainer = styled.div`
@@ -83,14 +84,15 @@ const DataRow = styled.tr`
 const AntennaLabelCell = styled.td<{ $index: number }>`
   padding: 8px 12px;
   text-align: right;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 500;
   color: white;
   background: ${props => {
     const colors = ['#3b82f6', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316'];
     return colors[props.$index % colors.length];
   }};
-  min-width: 80px;
+  min-width: 180px;
+  white-space: nowrap;
 `;
 
 const UsageCell = styled.td<{ $usage: number }>`
@@ -136,7 +138,7 @@ export const AntennaConnectivityMatrix = ({ stations, showFullView = false }: Pr
     }> = [];
 
     stations.forEach(station => {
-      station.antennas.forEach((antenna, idx) => {
+      station.antennas.forEach((antenna) => {
         const channelsMap: { [key: string]: { used: number; total: number } } = {};
         antenna.channels.forEach(ch => {
           channelsMap[ch.channelType] = { used: ch.used, total: ch.total };
@@ -144,7 +146,7 @@ export const AntennaConnectivityMatrix = ({ stations, showFullView = false }: Pr
 
         antennas.push({
           id: antenna.id,
-          label: `אנטנה ${idx + 1}`,
+          label: `אנטנה ${station.name} ${antenna.size}`,
           stationId: station.id,
           stationName: station.name,
           channels: channelsMap,
