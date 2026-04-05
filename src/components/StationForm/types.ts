@@ -24,4 +24,6 @@ export interface StationFormProps {
   onSave?: (data: StationFormData) => Promise<void>;
   editingStationId?: number | null;
   initialData?: StationFormData | null;
+  onClose?: () => void;
+  onCancel?: () => void;
 }

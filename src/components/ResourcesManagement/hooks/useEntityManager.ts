@@ -69,6 +69,15 @@ export const useEntityManager = (entityConfig: EntityConfig) => {
     }
   }, [state.selectedData]);
 
+  const switchToViewMode = useCallback(() => {
+    if (state.selectedData) {
+      setState(prev => ({
+        ...prev,
+        viewMode: 'view',
+      }));
+    }
+  }, [state.selectedData]);
+
   const switchToAddMode = useCallback(() => {
     setState(prev => ({
       ...prev,
@@ -167,6 +176,7 @@ export const useEntityManager = (entityConfig: EntityConfig) => {
     fetchItems,
     handleCardClick,
     switchToEditMode,
+    switchToViewMode,
     switchToAddMode,
     handleSave,
     handleDelete,

@@ -4,31 +4,37 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import { DashboardStation, DashboardTerminal } from './types';
 
 const MatrixContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
   direction: rtl;
 `;
 
-const StationRow = styled.div`
+const StationColumn = styled.div`
   display: flex;
-  align-items: stretch;
+  flex-direction: column;
   gap: 8px;
-  min-height: 60px;
 `;
 
-const StationCell = styled.div<{ $affiliation: string }>`
+const StationCard = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: rgba(20, 35, 65, 0.3);
+  border-radius: 8px;
+  padding: 12px;
+`;
+
+const StationHeader = styled.div<{ $affiliation: string }>`
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
-  min-width: 140px;
-  max-width: 140px;
-  border-radius: 8px;
+  border-radius: 6px;
   background: ${props => {
     switch (props.$affiliation) {
       case 'airforce': return 'rgba(59, 130, 246, 0.2)';
-      case 'navy': return 'rgba(20, 184, 166, 0.2)';
+      case 'tikshuv': return 'rgba(20, 184, 166, 0.2)';
       case 'ground': return 'rgba(34, 197, 94, 0.2)';
       case 'intelligence': return 'rgba(168, 85, 247, 0.2)';
       default: return 'rgba(107, 114, 128, 0.2)';
@@ -37,7 +43,7 @@ const StationCell = styled.div<{ $affiliation: string }>`
   border: 1px solid ${props => {
     switch (props.$affiliation) {
       case 'airforce': return 'rgba(59, 130, 246, 0.3)';
-      case 'navy': return 'rgba(20, 184, 166, 0.3)';
+      case 'tikshuv': return 'rgba(20, 184, 166, 0.3)';
       case 'ground': return 'rgba(34, 197, 94, 0.3)';
       case 'intelligence': return 'rgba(168, 85, 247, 0.3)';
       default: return 'rgba(107, 114, 128, 0.3)';
@@ -49,7 +55,7 @@ const StationCell = styled.div<{ $affiliation: string }>`
     color: ${props => {
       switch (props.$affiliation) {
         case 'airforce': return '#3b82f6';
-        case 'navy': return '#14b8a6';
+        case 'tikshuv': return '#14b8a6';
         case 'ground': return '#22c55e';
         case 'intelligence': return '#a855f7';
         default: return '#6b7280';
@@ -65,27 +71,10 @@ const StationCell = styled.div<{ $affiliation: string }>`
   }
 `;
 
-const TerminalsContainer = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-`;
-
-const TerminalsHeader = styled.div`
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.5);
-  padding: 0 4px;
-  text-align: center;
-`;
-
 const TerminalsGrid = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
-  padding: 4px;
-  background: rgba(20, 35, 65, 0.3);
-  border-radius: 8px;
   min-height: 40px;
 `;
 
@@ -148,7 +137,7 @@ interface Props {
 export const StationsTerminalsMatrix = ({ stations, onTerminalClick }: Props) => {
   const sortedStations = useMemo(() => {
     return [...stations].sort((a, b) => {
-      const order = ['airforce', 'navy', 'ground', 'intelligence', 'other'];
+      const order = ['airforce', 'tikshuv', 'ground', 'intelligence', 'other'];
       return order.indexOf(a.organizationalAffiliation) - order.indexOf(b.organizationalAffiliation);
     });
   }, [stations]);
@@ -168,36 +157,55 @@ export const StationsTerminalsMatrix = ({ stations, onTerminalClick }: Props) =>
     return terminal.name;
   };
 
+  const columns = useMemo(() => {
+    const col1: DashboardStation[] = [];
+    const col2: DashboardStation[] = [];
+    
+    sortedStations.forEach((station, index) => {
+      if (index % 2 === 0) {
+        col1.push(station);
+      } else {
+        col2.push(station);
+      }
+    });
+    
+    return [col1, col2];
+  }, [sortedStations]);
+
+  const renderStationCard = (station: DashboardStation) => (
+    <StationCard key={station.id}>
+      <StationHeader $affiliation={station.organizationalAffiliation}>
+        <SettingsIcon className="station-icon" />
+        <span className="station-name">{station.name}</span>
+      </StationHeader>
+      <TerminalsGrid>
+        {station.terminals.length > 0 ? (
+          station.terminals.map(terminal => (
+            <TerminalCell
+              key={terminal.id}
+              $status={terminal.readinessStatus}
+              $isAllocated={terminal.isAllocated}
+              onClick={() => onTerminalClick(terminal)}
+              title={`${terminal.name} - ${terminal.readinessStatus === 'ready' ? 'כשיר' : terminal.readinessStatus === 'partly_ready' ? 'כשיר חלקית' : 'תקול'}`}
+            >
+              {getTerminalStatusLabel(terminal)}
+            </TerminalCell>
+          ))
+        ) : (
+          <EmptyTerminals>אין טרמינלים</EmptyTerminals>
+        )}
+      </TerminalsGrid>
+    </StationCard>
+  );
+
   return (
     <MatrixContainer>
-      {sortedStations.map(station => (
-        <StationRow key={station.id}>
-          <StationCell $affiliation={station.organizationalAffiliation}>
-            <SettingsIcon className="station-icon" />
-            <span className="station-name">{station.name}</span>
-          </StationCell>
-          <TerminalsContainer>
-            <TerminalsHeader>טרמינלים</TerminalsHeader>
-            <TerminalsGrid>
-              {station.terminals.length > 0 ? (
-                station.terminals.map(terminal => (
-                  <TerminalCell
-                    key={terminal.id}
-                    $status={terminal.readinessStatus}
-                    $isAllocated={terminal.isAllocated}
-                    onClick={() => onTerminalClick(terminal)}
-                    title={`${terminal.name} - ${terminal.readinessStatus === 'ready' ? 'כשיר' : terminal.readinessStatus === 'partly_ready' ? 'כשיר חלקית' : 'תקול'}`}
-                  >
-                    {getTerminalStatusLabel(terminal)}
-                  </TerminalCell>
-                ))
-              ) : (
-                <EmptyTerminals>אין טרמינלים</EmptyTerminals>
-              )}
-            </TerminalsGrid>
-          </TerminalsContainer>
-        </StationRow>
-      ))}
+      <StationColumn>
+        {columns[0].map(renderStationCard)}
+      </StationColumn>
+      <StationColumn>
+        {columns[1].map(renderStationCard)}
+      </StationColumn>
     </MatrixContainer>
   );
 };

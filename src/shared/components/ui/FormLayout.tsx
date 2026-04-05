@@ -1,5 +1,6 @@
 import styled from 'styled-components';
-import { Box } from '@mui/material';
+import { Box, IconButton } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import { theme } from '../../../theme';
 
 export const FormContainer = styled(Box)`
@@ -9,14 +10,53 @@ export const FormContainer = styled(Box)`
   direction: rtl;
 `;
 
+const FormHeaderContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: ${theme.spacing.xl};
+  direction: rtl;
+`;
+
 export const FormTitle = styled.h1`
   color: ${theme.colors.text.primary};
   font-size: ${theme.typography.fontSize.xl};
   font-weight: ${theme.typography.fontWeight.medium};
-  margin: 0 0 ${theme.spacing.xl} 0;
+  margin: 0;
   text-align: center;
+  flex: 1;
   direction: rtl;
 `;
+
+const CloseButton = styled(IconButton)`
+  && {
+    color: rgba(225, 234, 255, 0.6);
+    padding: 8px;
+    
+    &:hover {
+      color: ${theme.colors.text.white};
+      background: rgba(255, 255, 255, 0.1);
+    }
+  }
+`;
+
+interface FormHeaderProps {
+  title: string;
+  onClose?: () => void;
+}
+
+export const FormHeader = ({ title, onClose }: FormHeaderProps) => {
+  return (
+    <FormHeaderContainer>
+      {onClose && (
+        <CloseButton onClick={onClose}>
+          <CloseIcon sx={{ fontSize: 20 }} />
+        </CloseButton>
+      )}
+      <FormTitle>{title}</FormTitle>
+    </FormHeaderContainer>
+  );
+};
 
 export const FormGrid = styled.div`
   display: grid;

@@ -81,6 +81,8 @@ interface EntitySectionProps {
   selectedData: any;
   editingData: any;
   onCardClick: (id: number) => void;
+  onClose: () => void;
+  onCancel: () => void;
   onEdit: () => void;
   onDelete: (id: number, name: string) => void;
   onSave: (data: any) => Promise<void>;
@@ -95,6 +97,8 @@ export const EntitySection = ({
   selectedData,
   editingData,
   onCardClick,
+  onClose,
+  onCancel,
   onEdit,
   onDelete,
   onSave,
@@ -133,17 +137,19 @@ export const EntitySection = ({
       }
     };
     
-    if (config.id === 'satellites') return { satellite: selectedData, onEdit, onDelete: handleDelete };
-    if (config.id === 'terminals') return { terminal: selectedData, onEdit, onDelete: handleDelete };
-    if (config.id === 'networks') return { network: selectedData, onEdit, onDelete: handleDelete };
-    if (config.id === 'stations') return { station: selectedData, onEdit, onDelete: handleDelete };
-    return { data: selectedData, onEdit, onDelete: handleDelete };
+    if (config.id === 'satellites') return { satellite: selectedData, onEdit, onDelete: handleDelete, onClose };
+    if (config.id === 'terminals') return { terminal: selectedData, onEdit, onDelete: handleDelete, onClose };
+    if (config.id === 'networks') return { network: selectedData, onEdit, onDelete: handleDelete, onClose };
+    if (config.id === 'stations') return { station: selectedData, onEdit, onDelete: handleDelete, onClose };
+    return { data: selectedData, onEdit, onDelete: handleDelete, onClose };
   };
 
   const getFormProps = () => {
     const baseProps = {
       onSave,
       initialData: editingData,
+      onClose,
+      onCancel: selectedId ? onCancel : undefined,
     };
     
     if (config.id === 'satellites') {

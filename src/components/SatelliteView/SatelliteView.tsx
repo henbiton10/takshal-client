@@ -5,6 +5,7 @@ interface SatelliteViewProps {
   satellite: any;
   onEdit: () => void;
   onDelete: () => void;
+  onClose?: () => void;
 }
 
 const formatAffiliation = (affiliation: string): string => {
@@ -13,7 +14,7 @@ const formatAffiliation = (affiliation: string): string => {
   return affiliation;
 };
 
-export const SatelliteView = ({ satellite, onEdit, onDelete }: SatelliteViewProps) => {
+export const SatelliteView = ({ satellite, onEdit, onDelete, onClose }: SatelliteViewProps) => {
   const sections: ViewSection[] = [
     {
       fields: [
@@ -59,6 +60,7 @@ export const SatelliteView = ({ satellite, onEdit, onDelete }: SatelliteViewProp
       editLabel="ערוך לווין"
       onEdit={onEdit}
       onDelete={onDelete}
+      onClose={onClose}
     />
   );
 };

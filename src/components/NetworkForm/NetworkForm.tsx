@@ -6,7 +6,7 @@ import { NetworkFormProps, NetworkFormData } from './types';
 import { READINESS_STATUS_OPTIONS, INITIAL_FORM_DATA } from './constants';
 import {
   FormContainer,
-  FormTitle,
+  FormHeader,
   FormGrid,
   FullWidthField,
   CombinedFieldWrapper,
@@ -20,7 +20,7 @@ import { EditableNameField } from '../../shared/components/EditableNameField';
 import { terminalTypesApi, connectivityTypesApi } from '../../services/api';
 import { mapConnectivityTypeToLabel } from './utils';
 
-export const NetworkForm = ({ onSave, editingNetworkId, initialData }: NetworkFormProps) => {
+export const NetworkForm = ({ onSave, editingNetworkId, initialData, onClose, onCancel }: NetworkFormProps) => {
   const [terminalTypes, setTerminalTypes] = useState<Array<{ value: string; label: string }>>([]);
   const [connectivityTypes, setConnectivityTypes] = useState<Array<{ value: string; label: string }>>([]);
 
@@ -85,7 +85,10 @@ export const NetworkForm = ({ onSave, editingNetworkId, initialData }: NetworkFo
 
   return (
     <FormContainer>
-      <FormTitle>{editingNetworkId ? 'עריכת רשת' : 'הוספת רשת חדשה'}</FormTitle>
+      <FormHeader 
+        title={editingNetworkId ? 'עריכת רשת' : 'הוספת רשת חדשה'}
+        onClose={onClose}
+      />
       <form onSubmit={handleSubmit(onSubmit)}>
         <EditableNameField
           name="name"
@@ -177,6 +180,15 @@ export const NetworkForm = ({ onSave, editingNetworkId, initialData }: NetworkFo
               startIcon={<DeleteOutlineIcon />}
             >
               נקה שדות
+            </StyledButton>
+          )}
+          {editingNetworkId && onCancel && (
+            <StyledButton
+              variant="outlined"
+              onClick={onCancel}
+              disabled={isSubmitting}
+            >
+              ביטול
             </StyledButton>
           )}
           <StyledButton

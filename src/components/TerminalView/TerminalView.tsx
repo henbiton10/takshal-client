@@ -6,9 +6,10 @@ interface TerminalViewProps {
   terminal: any;
   onEdit: () => void;
   onDelete: () => void;
+  onClose?: () => void;
 }
 
-export const TerminalView = ({ terminal, onEdit, onDelete }: TerminalViewProps) => {
+export const TerminalView = ({ terminal, onEdit, onDelete, onClose }: TerminalViewProps) => {
   const sections: ViewSection[] = [
     {
       fields: [
@@ -58,6 +59,7 @@ export const TerminalView = ({ terminal, onEdit, onDelete }: TerminalViewProps) 
       editLabel="ערוך טרמינל"
       onEdit={onEdit}
       onDelete={onDelete}
+      onClose={onClose}
     />
   );
 };

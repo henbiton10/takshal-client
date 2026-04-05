@@ -1,9 +1,10 @@
 import styled from 'styled-components';
 import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import CloseIcon from '@mui/icons-material/Close';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
-import { Button } from '@mui/material';
+import { Button, IconButton } from '@mui/material';
 import { theme } from '../../../theme';
 
 export interface ViewField {
@@ -37,6 +38,7 @@ interface EntityViewProps {
   editLabel: string;
   onEdit: () => void;
   onDelete?: () => void;
+  onClose?: () => void;
 }
 
 const ViewContainer = styled.div`
@@ -114,7 +116,6 @@ const EditButton = styled(Button)`
 
 const DeleteButton = styled(Button)`
   && {
-    background: rgba(244, 67, 54, 0.15);
     color: #f44336;
     border-radius: 50%;
     min-width: 40px;
@@ -123,7 +124,19 @@ const DeleteButton = styled(Button)`
     padding: 0;
     
     &:hover {
-      background: rgba(244, 67, 54, 0.25);
+      background: rgba(244, 67, 54, 0.1);
+    }
+  }
+`;
+
+const CloseButton = styled(IconButton)`
+  && {
+    color: rgba(225, 234, 255, 0.6);
+    padding: 8px;
+    
+    &:hover {
+      color: ${theme.colors.text.white};
+      background: rgba(255, 255, 255, 0.1);
     }
   }
 `;
@@ -253,19 +266,25 @@ export const EntityView = ({
   editLabel,
   onEdit,
   onDelete,
+  onClose,
 }: EntityViewProps) => {
   return (
     <ViewContainer>
       <ViewHeader>
         <HeaderLeft>
-          {onDelete && (
-            <DeleteButton onClick={onDelete}>
-              <DeleteIcon sx={{ fontSize: 20 }} />
-            </DeleteButton>
-          )}
           <EditButton onClick={onEdit} startIcon={<EditIcon sx={{ fontSize: 18 }} />}>
             {editLabel}
           </EditButton>
+          {onDelete && (
+            <DeleteButton onClick={onDelete}>
+              <DeleteOutlineIcon sx={{ fontSize: 20 }} />
+            </DeleteButton>
+          )}
+          {onClose && (
+            <CloseButton onClick={onClose}>
+              <CloseIcon sx={{ fontSize: 20 }} />
+            </CloseButton>
+          )}
         </HeaderLeft>
         <HeaderRight>
           <EntityName>

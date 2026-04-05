@@ -98,6 +98,7 @@ const MainContent = styled.div`
 
 const TopSection = styled.div`
   display: flex;
+  flex-direction: column;
   gap: 16px;
   direction: rtl;
 `;
@@ -108,7 +109,7 @@ const BottomSection = styled.div`
   direction: rtl;
 `;
 
-const SectionCard = styled.div<{ $flex?: number; $isFullscreen?: boolean }>`
+const SectionCard = styled.div<{ $flex?: number; $isFullscreen?: boolean; $maxHeight?: string }>`
   display: flex;
   flex-direction: column;
   background: rgba(20, 35, 65, 0.4);
@@ -117,6 +118,7 @@ const SectionCard = styled.div<{ $flex?: number; $isFullscreen?: boolean }>`
   overflow: hidden;
   flex: ${props => props.$flex || 1};
   min-height: ${props => (props.$isFullscreen ? '100%' : 'auto')};
+  max-height: ${props => props.$maxHeight || 'none'};
 `;
 
 const SectionHeader = styled.div`
@@ -174,12 +176,49 @@ const formatDateForApi = (date: Date) => {
   return `${year}-${month}-${day}`;
 };
 
+const STORAGE_KEY = 'dashboard_time_range';
+
+const loadTimeRangeFromStorage = (): TimeRange | null => {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (!stored) return null;
+    
+    const parsed = JSON.parse(stored);
+    return {
+      startDate: new Date(parsed.startDate),
+      endDate: new Date(parsed.endDate),
+      startTime: parsed.startTime,
+      endTime: parsed.endTime,
+    };
+  } catch (error) {
+    console.error('Failed to load time range from storage:', error);
+    return null;
+  }
+};
+
+const saveTimeRangeToStorage = (timeRange: TimeRange | null) => {
+  try {
+    if (timeRange) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        startDate: timeRange.startDate.toISOString(),
+        endDate: timeRange.endDate.toISOString(),
+        startTime: timeRange.startTime,
+        endTime: timeRange.endTime,
+      }));
+    } else {
+      localStorage.removeItem(STORAGE_KEY);
+    }
+  } catch (error) {
+    console.error('Failed to save time range to storage:', error);
+  }
+};
+
 export const DashboardPage = () => {
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedTerminal, setSelectedTerminal] = useState<DashboardTerminal | null>(null);
   const [showTimeSelector, setShowTimeSelector] = useState(false);
-  const [timeRange, setTimeRange] = useState<TimeRange | null>(null);
+  const [timeRange, setTimeRange] = useState<TimeRange | null>(() => loadTimeRangeFromStorage());
   const [lastUpdated, setLastUpdated] = useState<string>(new Date().toLocaleString('he-IL'));
   const [fullscreenSection, setFullscreenSection] = useState<DashboardSection | null>(null);
 
@@ -226,6 +265,7 @@ export const DashboardPage = () => {
 
   const handleTimeSelect = useCallback((range: TimeRange) => {
     setTimeRange(range);
+    saveTimeRangeToStorage(range);
     setShowTimeSelector(false);
   }, []);
 
@@ -249,11 +289,13 @@ export const DashboardPage = () => {
     title: string,
     content: React.ReactNode,
     flex = 1,
+    maxHeight?: string,
   ) => (
     <SectionCard
       key={section}
       $flex={fullscreenSection ? undefined : flex}
       $isFullscreen={fullscreenSection === section}
+      $maxHeight={fullscreenSection === section ? undefined : maxHeight}
     >
       <SectionHeader>
         <SectionTitle>{title}</SectionTitle>
@@ -311,6 +353,8 @@ export const DashboardPage = () => {
                         stations={dashboardData?.stations || []}
                         satellites={dashboardData?.satellites || []}
                       />,
+                      1,
+                      '350px',
                     )}
 
                     {renderSectionCard(
@@ -320,25 +364,27 @@ export const DashboardPage = () => {
                         stations={dashboardData?.stations || []}
                         onTerminalClick={handleTerminalClick}
                       />,
+                      1,
+                      '300px',
                     )}
+
+                    <BottomSection>
+                      {renderSectionCard(
+                        'antenna-connectivity',
+                        'מצבת קישוריות אנטנות',
+                        <AntennaConnectivityMatrix
+                          stations={dashboardData?.stations || []}
+                          showFullView
+                        />,
+                      )}
+
+                      {renderSectionCard(
+                        'networks',
+                        'מצבת רשתות',
+                        <NetworksMatrix networks={dashboardData?.networks || []} />,
+                      )}
+                    </BottomSection>
                   </TopSection>
-
-                  <BottomSection>
-                    {renderSectionCard(
-                      'antenna-connectivity',
-                      'מצבת קישוריות אנטנות',
-                      <AntennaConnectivityMatrix
-                        stations={dashboardData?.stations || []}
-                        showFullView
-                      />,
-                    )}
-
-                    {renderSectionCard(
-                      'networks',
-                      'מצבת רשתות',
-                      <NetworksMatrix networks={dashboardData?.networks || []} />,
-                    )}
-                  </BottomSection>
                 </>
               ) : (
                 renderSectionCard(

@@ -195,7 +195,12 @@ interface Props {
 }
 
 export const TimeSelector = ({ onSelect, onClose, currentRange }: Props) => {
-  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [currentMonth, setCurrentMonth] = useState(() => {
+    if (currentRange?.startDate) {
+      return new Date(currentRange.startDate.getFullYear(), currentRange.startDate.getMonth(), 1);
+    }
+    return new Date();
+  });
   const [selectedStartDate, setSelectedStartDate] = useState<Date | null>(
     currentRange?.startDate || null
   );

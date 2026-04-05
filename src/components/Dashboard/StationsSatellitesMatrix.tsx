@@ -21,10 +21,10 @@ const HeaderRow = styled.tr`
 `;
 
 const CategoryHeader = styled.th<{ $type: 'local' | 'global' }>`
-  padding: 8px 12px;
+  padding: 12px 16px;
   text-align: center;
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: 700;
   color: white;
   background: ${props => props.$type === 'local' ? 'rgba(34, 197, 94, 0.2)' : 'rgba(59, 130, 246, 0.2)'};
   border-bottom: 2px solid ${props => props.$type === 'local' ? '#22c55e' : '#3b82f6'};
@@ -32,26 +32,26 @@ const CategoryHeader = styled.th<{ $type: 'local' | 'global' }>`
 `;
 
 const SatelliteHeader = styled.th<{ $affiliation: 'local' | 'global' }>`
-  padding: 8px 12px;
+  padding: 12px 16px;
   text-align: center;
-  font-size: 11px;
-  font-weight: 400;
-  color: rgba(255, 255, 255, 0.8);
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
   background: ${props => props.$affiliation === 'local' ? 'rgba(34, 197, 94, 0.1)' : 'rgba(59, 130, 246, 0.1)'};
   white-space: nowrap;
 
   .satellite-icon {
-    margin-left: 4px;
-    font-size: 14px;
-    opacity: 0.7;
+    margin-left: 5px;
+    font-size: 16px;
+    opacity: 0.8;
   }
 `;
 
 const StationHeader = styled.th`
-  padding: 8px 12px;
+  padding: 12px 16px;
   text-align: right;
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: 700;
   color: white;
   background: rgba(30, 45, 80, 0.5);
   white-space: nowrap;
@@ -68,16 +68,17 @@ const DataRow = styled.tr`
 `;
 
 const StationCell = styled.td<{ $affiliation: string }>`
-  padding: 8px 12px;
+  padding: 12px 16px;
   text-align: right;
-  font-size: 12px;
+  font-size: 13px;
+  font-weight: 600;
   color: white;
   border-left: 1px solid rgba(174, 199, 255, 0.08);
   white-space: nowrap;
   background: ${props => {
     switch (props.$affiliation) {
       case 'airforce': return 'rgba(59, 130, 246, 0.15)';
-      case 'navy': return 'rgba(20, 184, 166, 0.15)';
+      case 'tikshuv': return 'rgba(20, 184, 166, 0.15)';
       case 'ground': return 'rgba(34, 197, 94, 0.15)';
       case 'intelligence': return 'rgba(168, 85, 247, 0.15)';
       default: return 'rgba(107, 114, 128, 0.15)';
@@ -91,11 +92,11 @@ const StationCell = styled.td<{ $affiliation: string }>`
   }
 
   .station-icon {
-    font-size: 16px;
+    font-size: 17px;
     color: ${props => {
       switch (props.$affiliation) {
         case 'airforce': return '#3b82f6';
-        case 'navy': return '#14b8a6';
+        case 'tikshuv': return '#14b8a6';
         case 'ground': return '#22c55e';
         case 'intelligence': return '#a855f7';
         default: return '#6b7280';
@@ -105,7 +106,7 @@ const StationCell = styled.td<{ $affiliation: string }>`
 `;
 
 const AllocationCell = styled.td<{ $affiliation: 'local' | 'global'; $hasAllocation: boolean }>`
-  padding: 8px 12px;
+  padding: 12px 16px;
   text-align: center;
   border-left: 1px solid rgba(174, 199, 255, 0.05);
   background: ${props => {
@@ -121,7 +122,7 @@ const AllocationCell = styled.td<{ $affiliation: 'local' | 'global'; $hasAllocat
 const AllocationBadgesContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
   align-items: center;
   direction: rtl;
 `;
@@ -129,17 +130,17 @@ const AllocationBadgesContainer = styled.div`
 const AllocationBadge = styled.div<{ $band: 'ka' | 'ku' }>`
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 3px 8px;
-  border-radius: 12px;
-  font-size: 10px;
-  font-weight: 500;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 14px;
+  font-size: 12px;
+  font-weight: 700;
   background: ${props => props.$band === 'ku' ? '#22c55e' : '#f97316'};
   color: white;
   white-space: nowrap;
 
   .badge-icon {
-    font-size: 12px;
+    font-size: 14px;
   }
 `;
 
@@ -147,11 +148,12 @@ const MoreIndicator = styled.div`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.2);
-  font-size: 10px;
+  font-size: 12px;
+  font-weight: 700;
   color: white;
   cursor: pointer;
   transition: all 0.2s;

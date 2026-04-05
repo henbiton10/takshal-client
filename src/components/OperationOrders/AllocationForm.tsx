@@ -1459,7 +1459,7 @@ export const AllocationForm = ({
         <Section style={{ marginTop: '16px' }}>
           <SectionTitle>פרטים נוספים</SectionTitle>
           <FieldsRow>
-            <FieldWrapper>
+            <FieldWrapper $flex={0.05}>
               <FieldLabel>מספר זנב</FieldLabel>
               <Controller
                 name="tailNumber"

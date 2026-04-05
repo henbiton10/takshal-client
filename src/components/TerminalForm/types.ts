@@ -11,4 +11,6 @@ export interface TerminalFormProps {
   onSave?: (data: TerminalFormData) => Promise<void>;
   editingTerminalId?: number | null;
   initialData?: TerminalFormData;
+  onClose?: () => void;
+  onCancel?: () => void;
 }

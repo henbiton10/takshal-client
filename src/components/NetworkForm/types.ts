@@ -10,4 +10,6 @@ export interface NetworkFormProps {
   onSave?: (data: NetworkFormData) => Promise<void>;
   editingNetworkId?: number | null;
   initialData?: NetworkFormData | null;
+  onClose?: () => void;
+  onCancel?: () => void;
 }

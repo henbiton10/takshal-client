@@ -15,7 +15,7 @@ import {
 } from './constants';
 import {
   FormContainer,
-  FormTitle,
+  FormHeader,
   FormGrid,
   FullWidthField,
   CombinedFieldWrapper,
@@ -138,7 +138,7 @@ const EmptyAntennaState = styled.div`
   direction: rtl;
 `;
 
-export const StationForm = ({ onSave, editingStationId, initialData }: StationFormProps) => {
+export const StationForm = ({ onSave, editingStationId, initialData, onClose, onCancel }: StationFormProps) => {
   const [stations, setStations] = useState<Array<{ value: string; label: string }>>([]);
   const [showAntennaInput, setShowAntennaInput] = useState(false);
   const [antennaSize, setAntennaSize] = useState<number | ''>('');
@@ -274,7 +274,10 @@ export const StationForm = ({ onSave, editingStationId, initialData }: StationFo
 
   return (
     <FormContainer>
-      <FormTitle>{editingStationId ? 'עריכת תחנה' : 'הוספת תחנה חדשה'}</FormTitle>
+      <FormHeader 
+        title={editingStationId ? 'עריכת תחנה' : 'הוספת תחנה חדשה'}
+        onClose={onClose}
+      />
       <form onSubmit={handleSubmit(onSubmit)}>
         <EditableNameField
           name="name"
@@ -434,7 +437,7 @@ export const StationForm = ({ onSave, editingStationId, initialData }: StationFo
               <div style={{ flex: '1' }}>
                 <input
                   type="number"
-                  placeholder="גודל אנטנה (2.5)"
+                  placeholder= "גודל אנטנה במטרים (2.5)"
                   value={antennaSize}
                   onChange={(e) => setAntennaSize(e.target.value ? Number(e.target.value) : '')}
                   style={{
@@ -505,6 +508,15 @@ export const StationForm = ({ onSave, editingStationId, initialData }: StationFo
               startIcon={<DeleteOutlineIcon />}
             >
               נקה שדות
+            </StyledButton>
+          )}
+          {editingStationId && onCancel && (
+            <StyledButton
+              variant="outlined"
+              onClick={onCancel}
+              disabled={isSubmitting}
+            >
+              ביטול
             </StyledButton>
           )}
           <StyledButton

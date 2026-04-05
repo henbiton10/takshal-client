@@ -12,7 +12,7 @@ import {
 } from './constants';
 import { 
   FormContainer, 
-  FormTitle, 
+  FormHeader, 
   FormGrid, 
   FullWidthField, 
   CombinedFieldWrapper, 
@@ -114,7 +114,7 @@ const AddNewOption = styled.div`
   font-weight: 500;
 `;
 
-export const TerminalForm = ({ onSave, editingTerminalId, initialData }: TerminalFormProps) => {
+export const TerminalForm = ({ onSave, editingTerminalId, initialData, onClose, onCancel }: TerminalFormProps) => {
   const [stations, setStations] = useState<Array<{ value: string; label: string }>>([]);
   const [terminalTypes, setTerminalTypes] = useState<TerminalTypeOption[]>([]);
   
@@ -175,7 +175,10 @@ export const TerminalForm = ({ onSave, editingTerminalId, initialData }: Termina
 
   return (
     <FormContainer>
-      <FormTitle>{editingTerminalId ? 'עריכת טרמינל' : 'הוספת טרמינל חדש'}</FormTitle>
+      <FormHeader 
+        title={editingTerminalId ? 'עריכת טרמינל' : 'הוספת טרמינל חדש'}
+        onClose={onClose}
+      />
       <form onSubmit={handleSubmit(onSubmit)}>
         <EditableNameField
           name="name"
@@ -375,6 +378,15 @@ export const TerminalForm = ({ onSave, editingTerminalId, initialData }: Termina
               startIcon={<DeleteOutlineIcon />}
             >
               נקה שדות
+            </StyledButton>
+          )}
+          {editingTerminalId && onCancel && (
+            <StyledButton
+              variant="outlined"
+              onClick={onCancel}
+              disabled={isSubmitting}
+            >
+              ביטול
             </StyledButton>
           )}
           <StyledButton 

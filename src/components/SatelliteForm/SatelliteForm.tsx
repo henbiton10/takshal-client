@@ -11,7 +11,7 @@ import {
 } from './constants';
 import { 
   FormContainer, 
-  FormTitle, 
+  FormHeader, 
   FormGrid, 
   FullWidthField, 
   CombinedFieldWrapper, 
@@ -23,7 +23,7 @@ import {
 } from '../../shared/components/ui';
 import { EditableNameField } from '../../shared/components/EditableNameField';
 
-export const SatelliteForm = ({ onSave, editingSatelliteId, initialData }: SatelliteFormProps) => {
+export const SatelliteForm = ({ onSave, editingSatelliteId, initialData, onClose, onCancel }: SatelliteFormProps) => {
   const {
     control,
     handleSubmit,
@@ -66,7 +66,10 @@ export const SatelliteForm = ({ onSave, editingSatelliteId, initialData }: Satel
 
   return (
     <FormContainer>
-      <FormTitle>{editingSatelliteId ? 'עריכת לווין' : 'הוספת לווין חדש'}</FormTitle>
+      <FormHeader 
+        title={editingSatelliteId ? 'עריכת לווין' : 'הוספת לווין חדש'}
+        onClose={onClose}
+      />
       <form onSubmit={handleSubmit(onSubmit)}>
         <EditableNameField
           name="name"
@@ -154,6 +157,15 @@ export const SatelliteForm = ({ onSave, editingSatelliteId, initialData }: Satel
               startIcon={<DeleteOutlineIcon />}
             >
               נקה שדות
+            </StyledButton>
+          )}
+          {editingSatelliteId && onCancel && (
+            <StyledButton
+              variant="outlined"
+              onClick={onCancel}
+              disabled={isSubmitting}
+            >
+              ביטול
             </StyledButton>
           )}
           <StyledButton 

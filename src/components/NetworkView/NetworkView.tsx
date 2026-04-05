@@ -5,9 +5,10 @@ interface NetworkViewProps {
   network: any;
   onEdit: () => void;
   onDelete: () => void;
+  onClose?: () => void;
 }
 
-export const NetworkView = ({ network, onEdit, onDelete }: NetworkViewProps) => {
+export const NetworkView = ({ network, onEdit, onDelete, onClose }: NetworkViewProps) => {
   const sections: ViewSection[] = [
     {
       fields: [
@@ -48,6 +49,7 @@ export const NetworkView = ({ network, onEdit, onDelete }: NetworkViewProps) => 
       editLabel="ערוך רשת"
       onEdit={onEdit}
       onDelete={onDelete}
+      onClose={onClose}
     />
   );
 };

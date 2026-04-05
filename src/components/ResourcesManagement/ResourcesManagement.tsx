@@ -302,6 +302,20 @@ export const ResourcesManagement = ({
     }
   }, []);
 
+  const handleClose = useCallback((entityId: string) => {
+    const manager = managersRef.current[entityId as keyof typeof entityManagers];
+    if (manager) {
+      manager.resetEditState();
+    }
+  }, []);
+
+  const handleCancel = useCallback((entityId: string) => {
+    const manager = managersRef.current[entityId as keyof typeof entityManagers];
+    if (manager) {
+      manager.switchToViewMode();
+    }
+  }, []);
+
   const handleEditClick = useCallback((entityId: string) => {
     const manager = managersRef.current[entityId as keyof typeof entityManagers];
     if (manager) {
@@ -427,6 +441,8 @@ export const ResourcesManagement = ({
                       selectedData={manager.selectedData}
                       editingData={manager.editingData}
                       onCardClick={(id) => handleCardClick(config.id, id)}
+                      onClose={() => handleClose(config.id)}
+                      onCancel={() => handleCancel(config.id)}
                       onEdit={() => handleEditClick(config.id)}
                       onDelete={(id, name) => handleDeleteClick(config.id, id, name)}
                       onSave={createSaveHandler(

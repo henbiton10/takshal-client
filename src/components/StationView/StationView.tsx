@@ -3,6 +3,7 @@ import SettingsInputAntennaIcon from '@mui/icons-material/SettingsInputAntenna';
 import LinkIcon from '@mui/icons-material/Link';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import CloseIcon from '@mui/icons-material/Close';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { Button, IconButton } from '@mui/material';
@@ -13,6 +14,7 @@ interface StationViewProps {
   station: any;
   onEdit: () => void;
   onDelete: () => void;
+  onClose?: () => void;
 }
 
 const ViewContainer = styled.div`
@@ -79,13 +81,29 @@ const EditButton = styled(Button)`
   }
 `;
 
-const DeleteButton = styled(IconButton)`
+const DeleteButton = styled(Button)`
   && {
     color: #f44336;
-    padding: 8px;
+    border-radius: 50%;
+    min-width: 40px;
+    width: 40px;
+    height: 40px;
+    padding: 0;
     
     &:hover {
       background: rgba(244, 67, 54, 0.1);
+    }
+  }
+`;
+
+const CloseButton = styled(IconButton)`
+  && {
+    color: rgba(225, 234, 255, 0.6);
+    padding: 8px;
+    
+    &:hover {
+      color: ${theme.colors.text.white};
+      background: rgba(255, 255, 255, 0.1);
     }
   }
 `;
@@ -235,7 +253,7 @@ const formatReadinessStatus = (status: string): React.ReactNode => {
   return status;
 };
 
-export const StationView = ({ station, onEdit, onDelete }: StationViewProps) => {
+export const StationView = ({ station, onEdit, onDelete, onClose }: StationViewProps) => {
   const connectivities = station.connectivities || [];
   const antennas = station.antennas || [];
 
@@ -243,12 +261,17 @@ export const StationView = ({ station, onEdit, onDelete }: StationViewProps) => 
     <ViewContainer>
       <ViewHeader>
         <HeaderButtons>
-          <DeleteButton onClick={onDelete}>
-            <DeleteOutlineIcon sx={{ fontSize: 20 }} />
-          </DeleteButton>
           <EditButton onClick={onEdit} startIcon={<EditIcon sx={{ fontSize: 18 }} />}>
             ערוך תחנה
           </EditButton>
+          <DeleteButton onClick={onDelete}>
+            <DeleteOutlineIcon sx={{ fontSize: 20 }} />
+          </DeleteButton>
+          {onClose && (
+            <CloseButton onClick={onClose}>
+              <CloseIcon sx={{ fontSize: 20 }} />
+            </CloseButton>
+          )}
         </HeaderButtons>
         <HeaderRight>
           <EntityName>
