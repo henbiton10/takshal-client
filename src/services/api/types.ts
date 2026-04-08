@@ -38,6 +38,7 @@ export interface StationConnectivity {
   connectedStationId: number;
   communicationType: string;
   channelCount: number;
+  connectedStation?: { id: number; name: string };
 }
 
 export interface StationAntenna {
@@ -124,7 +125,7 @@ export interface Network {
   id: number;
   name: string;
   terminalTypeId: number;
-  connectivityTypeId: number;
+  connectivityTypeId?: number;
   readinessStatus: 'ready' | 'partly_ready' | 'damaged';
   notes?: string;
   isDeleted: boolean;
@@ -141,7 +142,7 @@ export interface NetworkSummary {
 export interface CreateNetworkDto {
   name: string;
   terminalTypeId: number;
-  connectivityTypeId: number;
+  connectivityTypeId?: number;
   readinessStatus: 'ready' | 'partly_ready' | 'damaged';
   notes?: string;
 }
@@ -149,7 +150,7 @@ export interface CreateNetworkDto {
 export interface UpdateNetworkDto {
   name: string;
   terminalTypeId: number;
-  connectivityTypeId: number;
+  connectivityTypeId?: number;
   readinessStatus: 'ready' | 'partly_ready' | 'damaged';
   notes?: string;
 }

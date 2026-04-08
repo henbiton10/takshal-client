@@ -17,12 +17,10 @@ import {
   FormTextField,
 } from '../../shared/components/ui';
 import { EditableNameField } from '../../shared/components/EditableNameField';
-import { terminalTypesApi, connectivityTypesApi } from '../../services/api';
-import { mapConnectivityTypeToLabel } from './utils';
+import { terminalTypesApi } from '../../services/api';
 
 export const NetworkForm = ({ onSave, editingNetworkId, initialData, onClose, onCancel }: NetworkFormProps) => {
   const [terminalTypes, setTerminalTypes] = useState<Array<{ value: string; label: string }>>([]);
-  const [connectivityTypes, setConnectivityTypes] = useState<Array<{ value: string; label: string }>>([]);
 
   const {
     control,
@@ -38,16 +36,8 @@ export const NetworkForm = ({ onSave, editingNetworkId, initialData, onClose, on
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [terminalTypesData, connectivityTypesData] = await Promise.all([
-          terminalTypesApi.getAllSummary(),
-          connectivityTypesApi.getAllSummary(),
-        ]);
-        
+        const terminalTypesData = await terminalTypesApi.getAllSummary();
         setTerminalTypes(terminalTypesData.map(t => ({ value: t.id.toString(), label: t.name })));
-        setConnectivityTypes(connectivityTypesData.map(c => ({ 
-          value: c.id.toString(), 
-          label: mapConnectivityTypeToLabel(c.name) 
-        })));
       } catch (error) {
         console.error('Failed to fetch dropdown data:', error);
       }
@@ -98,41 +88,20 @@ export const NetworkForm = ({ onSave, editingNetworkId, initialData, onClose, on
         />
 
         <FormGrid>
-          <CombinedFieldWrapper>
-            <CombinedFieldSection hasBorder flexBasis="50%">
-              <FormSelect
-                name="terminalTypeId"
-                control={control}
-                label="סוג טרמינל"
-                options={terminalTypes}
-                placeholder="בחר סוג טרמינל"
-                error={errors.terminalTypeId}
-                rules={{ required: 'סוג טרמינל הינו שדה חובה' }}
-                required
-                transformValue={{
-                  toField: (value) => (value === '' || value === null ? '' : value.toString()),
-                  toForm: (value) => value === '' ? '' : Number(value),
-                }}
-              />
-            </CombinedFieldSection>
-
-            <CombinedFieldSection flexBasis="50%">
-              <FormSelect
-                name="connectivityTypeId"
-                control={control}
-                label="סוג קישוריות"
-                options={connectivityTypes}
-                placeholder="בחר סוג קישוריות"
-                error={errors.connectivityTypeId}
-                rules={{ required: 'סוג קישוריות הינו שדה חובה' }}
-                required
-                transformValue={{
-                  toField: (value) => (value === '' || value === null ? '' : value.toString()),
-                  toForm: (value) => value === '' ? '' : Number(value),
-                }}
-              />
-            </CombinedFieldSection>
-          </CombinedFieldWrapper>
+          <FormSelect
+            name="terminalTypeId"
+            control={control}
+            label="סוג טרמינל"
+            options={terminalTypes}
+            placeholder="בחר סוג טרמינל"
+            error={errors.terminalTypeId}
+            rules={{ required: 'סוג טרמינל הינו שדה חובה' }}
+            required
+            transformValue={{
+              toField: (value) => (value === '' || value === null ? '' : value.toString()),
+              toForm: (value) => value === '' ? '' : Number(value),
+            }}
+          />
 
           <FullWidthField>
             <CombinedFieldWrapper>

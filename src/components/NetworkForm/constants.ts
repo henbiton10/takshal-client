@@ -9,7 +9,6 @@ export const READINESS_STATUS_OPTIONS = [
 export const INITIAL_FORM_DATA: NetworkFormData = {
   name: '',
   terminalTypeId: '',
-  connectivityTypeId: '',
-  readinessStatus: '',
+  readinessStatus: 'ready',
   notes: '',
 };

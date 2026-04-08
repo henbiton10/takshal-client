@@ -160,14 +160,12 @@ export const ENTITY_CONFIGS: Record<string, EntityConfig> = {
     mapToFormData: (network) => ({
       name: network.name,
       terminalTypeId: network.terminalTypeId,
-      connectivityTypeId: network.connectivityTypeId,
       readinessStatus: network.readinessStatus,
       notes: network.notes || '',
     }),
     mapToPayload: (data) => ({
       name: data.name,
       terminalTypeId: data.terminalTypeId,
-      connectivityTypeId: data.connectivityTypeId,
       readinessStatus: data.readinessStatus,
       notes: data.notes,
     }),

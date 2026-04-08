@@ -17,10 +17,6 @@ export const NetworkView = ({ network, onEdit, onDelete, onClose }: NetworkViewP
           value: network.terminalType?.name || 'לא מוגדר',
         },
         {
-          label: 'סוג קישוריות',
-          value: network.connectivityType?.name || 'לא מוגדר',
-        },
-        {
           label: 'סטטוס כשירות',
           value: formatReadinessStatus(network.readinessStatus),
         },

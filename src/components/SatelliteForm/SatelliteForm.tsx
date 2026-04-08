@@ -101,7 +101,7 @@ export const SatelliteForm = ({ onSave, editingSatelliteId, initialData, onClose
                 options={FREQUENCY_CONVERTER_OPTIONS}
                 placeholder="בחר"
                 error={errors.hasFrequencyConverter}
-                rules={{ required: 'ממיר תדר הינו שדה חובה' }}
+                rules={{ validate: (value: any) => value !== null && value !== '' ? true : 'ממיר תדר הינו שדה חובה' }}
                 required
                 transformValue={{
                   toField: (value) => (value === null ? '' : value.toString()),

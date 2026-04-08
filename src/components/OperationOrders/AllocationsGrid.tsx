@@ -596,9 +596,10 @@ export const AllocationsGrid = ({
         valueGetter: (params) => {
           const antenna = params.data?.transmissionAntenna;
           if (!antenna) return '';
-          return `אנטנה ${antenna.id}`;
+          const stationName = antenna.station?.name || '';
+          return `${stationName} ${antenna.size}מ' ${(antenna.frequencyBand || '').toUpperCase()}`;
         },
-        width: 110,
+        width: 160,
         cellRenderer: AntennaCellRenderer,
       },
       {
@@ -618,9 +619,10 @@ export const AllocationsGrid = ({
         valueGetter: (params) => {
           const antenna = params.data?.receptionAntenna;
           if (!antenna) return '';
-          return `אנטנה ${antenna.id}`;
+          const stationName = antenna.station?.name || '';
+          return `${stationName} ${antenna.size}מ' ${(antenna.frequencyBand || '').toUpperCase()}`;
         },
-        width: 110,
+        width: 160,
         cellRenderer: AntennaCellRenderer,
       },
       {

@@ -26,7 +26,7 @@ export const FREQUENCY_BAND_OPTIONS = [
 export const INITIAL_FORM_DATA: StationFormData = {
   name: '',
   organizationalAffiliation: '',
-  readinessStatus: '',
+  readinessStatus: 'ready',
   notes: '',
   connectivities: [],
   antennas: [],

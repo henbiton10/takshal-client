@@ -422,15 +422,35 @@ const SubAllocationCardComponent = ({
       operationOrderId,
     });
 
-  const filteredTransmissionValidation = useMemo(
-    () => filterValidationWithPending(transmissionValidation, pendingSelections, `sub-tx-${sub.id}`),
-    [transmissionValidation, pendingSelections, sub.id]
-  );
+  const isSubTxRxSynced = useMemo(() => {
+    return (
+      sub.transmissionSatelliteId !== '' &&
+      sub.receptionSatelliteId !== '' &&
+      sub.transmissionAntennaId !== '' &&
+      sub.receptionAntennaId !== '' &&
+      sub.transmissionConnectivityId !== '' &&
+      sub.receptionConnectivityId !== '' &&
+      Number(sub.transmissionSatelliteId) === Number(sub.receptionSatelliteId) &&
+      Number(sub.transmissionAntennaId) === Number(sub.receptionAntennaId) &&
+      Number(sub.transmissionConnectivityId) === Number(sub.receptionConnectivityId)
+    );
+  }, [sub]);
 
-  const filteredReceptionValidation = useMemo(
-    () => filterValidationWithPending(receptionValidation, pendingSelections, `sub-rx-${sub.id}`),
-    [receptionValidation, pendingSelections, sub.id]
-  );
+  const filteredTransmissionValidation = useMemo(() => {
+    if (isSubTxRxSynced) {
+      const withoutRx = pendingSelections.filter(p => p.formId !== `sub-rx-${sub.id}`);
+      return filterValidationWithPending(transmissionValidation, withoutRx, `sub-tx-${sub.id}`);
+    }
+    return filterValidationWithPending(transmissionValidation, pendingSelections, `sub-tx-${sub.id}`);
+  }, [transmissionValidation, pendingSelections, sub.id, isSubTxRxSynced]);
+
+  const filteredReceptionValidation = useMemo(() => {
+    if (isSubTxRxSynced) {
+      const withoutTx = pendingSelections.filter(p => p.formId !== `sub-tx-${sub.id}`);
+      return filterValidationWithPending(receptionValidation, withoutTx, `sub-rx-${sub.id}`);
+    }
+    return filterValidationWithPending(receptionValidation, pendingSelections, `sub-rx-${sub.id}`);
+  }, [receptionValidation, pendingSelections, sub.id, isSubTxRxSynced]);
 
   return (
     <SubAllocationCard>
@@ -693,6 +713,8 @@ const SubAllocationCardComponent = ({
               compact
               connectivityError={errors?.receptionConnectivityId}
               channelError={errors?.receptionChannelNumber}
+              channelDisabled={isSubTxRxSynced}
+              channelSyncLabel="מסונכרן עם שידור"
             />
           </FieldWrapper>
         )}
@@ -748,6 +770,7 @@ export const AllocationForm = ({
     control,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<AllocationFormData>({
     defaultValues: {
@@ -819,15 +842,84 @@ export const AllocationForm = ({
     return selections;
   }, [watchedValues, subAllocations]);
 
-  const filteredMainTransmissionValidation = useMemo(
-    () => filterValidationWithPending(transmissionValidation, pendingSelections, 'main-tx'),
-    [transmissionValidation, pendingSelections]
-  );
+  const isTxRxChannelSynced = useMemo(() => {
+    const v = watchedValues;
+    return (
+      v.transmissionSatelliteId !== '' &&
+      v.receptionSatelliteId !== '' &&
+      v.transmissionAntennaId !== '' &&
+      v.receptionAntennaId !== '' &&
+      v.transmissionConnectivityId !== '' &&
+      v.receptionConnectivityId !== '' &&
+      Number(v.transmissionSatelliteId) === Number(v.receptionSatelliteId) &&
+      Number(v.transmissionAntennaId) === Number(v.receptionAntennaId) &&
+      Number(v.transmissionConnectivityId) === Number(v.receptionConnectivityId)
+    );
+  }, [
+    watchedValues.transmissionSatelliteId, watchedValues.receptionSatelliteId,
+    watchedValues.transmissionAntennaId, watchedValues.receptionAntennaId,
+    watchedValues.transmissionConnectivityId, watchedValues.receptionConnectivityId,
+  ]);
 
-  const filteredMainReceptionValidation = useMemo(
-    () => filterValidationWithPending(receptionValidation, pendingSelections, 'main-rx'),
-    [receptionValidation, pendingSelections]
-  );
+  const prevTxChannelRef = useRef(watchedValues.transmissionChannelNumber);
+  const prevRxChannelRef = useRef(watchedValues.receptionChannelNumber);
+  const prevSyncedRef = useRef(false);
+
+  useEffect(() => {
+    const txCh = watchedValues.transmissionChannelNumber;
+    const rxCh = watchedValues.receptionChannelNumber;
+
+    if (!isTxRxChannelSynced) {
+      prevTxChannelRef.current = txCh;
+      prevRxChannelRef.current = rxCh;
+      prevSyncedRef.current = false;
+      return;
+    }
+
+    const prevTx = prevTxChannelRef.current;
+    const prevRx = prevRxChannelRef.current;
+    const justBecameSynced = !prevSyncedRef.current;
+
+    prevTxChannelRef.current = txCh;
+    prevRxChannelRef.current = rxCh;
+    prevSyncedRef.current = true;
+
+    if (txCh === rxCh) return;
+
+    if (justBecameSynced) {
+      if (txCh) {
+        setValue('receptionChannelNumber', txCh);
+      } else if (rxCh) {
+        setValue('transmissionChannelNumber', rxCh);
+      }
+      return;
+    }
+
+    const txChanged = txCh !== prevTx;
+    const rxChanged = rxCh !== prevRx;
+
+    if (txChanged) {
+      setValue('receptionChannelNumber', txCh);
+    } else if (rxChanged) {
+      setValue('transmissionChannelNumber', rxCh);
+    }
+  }, [isTxRxChannelSynced, watchedValues.transmissionChannelNumber, watchedValues.receptionChannelNumber, setValue]);
+
+  const filteredMainTransmissionValidation = useMemo(() => {
+    if (isTxRxChannelSynced) {
+      const withoutRx = pendingSelections.filter(p => p.formId !== 'main-rx');
+      return filterValidationWithPending(transmissionValidation, withoutRx, 'main-tx');
+    }
+    return filterValidationWithPending(transmissionValidation, pendingSelections, 'main-tx');
+  }, [transmissionValidation, pendingSelections, isTxRxChannelSynced]);
+
+  const filteredMainReceptionValidation = useMemo(() => {
+    if (isTxRxChannelSynced) {
+      const withoutTx = pendingSelections.filter(p => p.formId !== 'main-tx');
+      return filterValidationWithPending(receptionValidation, withoutTx, 'main-rx');
+    }
+    return filterValidationWithPending(receptionValidation, pendingSelections, 'main-rx');
+  }, [receptionValidation, pendingSelections, isTxRxChannelSynced]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -929,7 +1021,38 @@ export const AllocationForm = ({
   const handleSubAllocationChange = useCallback(
     (id: string, field: keyof SubAllocationFormData, value: number | '') => {
       setSubAllocations((prev) =>
-        prev.map((sub) => (sub.id === id ? { ...sub, [field]: value } : sub))
+        prev.map((sub) => {
+          if (sub.id !== id) return sub;
+          const updated = { ...sub, [field]: value };
+
+          const synced = (
+            updated.transmissionSatelliteId !== '' &&
+            updated.receptionSatelliteId !== '' &&
+            updated.transmissionAntennaId !== '' &&
+            updated.receptionAntennaId !== '' &&
+            updated.transmissionConnectivityId !== '' &&
+            updated.receptionConnectivityId !== '' &&
+            Number(updated.transmissionSatelliteId) === Number(updated.receptionSatelliteId) &&
+            Number(updated.transmissionAntennaId) === Number(updated.receptionAntennaId) &&
+            Number(updated.transmissionConnectivityId) === Number(updated.receptionConnectivityId)
+          );
+
+          if (synced) {
+            if (field === 'transmissionChannelNumber') {
+              updated.receptionChannelNumber = value;
+            } else if (field === 'receptionChannelNumber') {
+              updated.transmissionChannelNumber = value;
+            }
+          }
+
+          if (field === 'transmissionAntennaId' && value && !sub.receptionAntennaId) {
+            updated.receptionAntennaId = value;
+          } else if (field === 'receptionAntennaId' && value && !sub.transmissionAntennaId) {
+            updated.transmissionAntennaId = value;
+          }
+
+          return updated;
+        })
       );
       
       if (subAllocationErrors[id]?.[field as keyof SubAllocationErrors]) {
@@ -1272,7 +1395,12 @@ export const AllocationForm = ({
                     label="אנטנה"
                     required
                     value={field.value || undefined}
-                    onChange={field.onChange}
+                    onChange={(val) => {
+                      field.onChange(val);
+                      if (val && !watchedValues.receptionAntennaId) {
+                        setValue('receptionAntennaId', val);
+                      }
+                    }}
                     antennas={filteredTransmissionAntennas}
                     error={errors.transmissionAntennaId?.message}
                   />
@@ -1386,7 +1514,12 @@ export const AllocationForm = ({
                     label="אנטנה"
                     required
                     value={field.value || undefined}
-                    onChange={field.onChange}
+                    onChange={(val) => {
+                      field.onChange(val);
+                      if (val && !watchedValues.transmissionAntennaId) {
+                        setValue('transmissionAntennaId', val);
+                      }
+                    }}
                     antennas={filteredReceptionAntennas}
                     error={errors.receptionAntennaId?.message}
                   />
@@ -1446,6 +1579,8 @@ export const AllocationForm = ({
                           compact
                           connectivityError={errors.receptionConnectivityId?.message}
                           channelError={errors.receptionChannelNumber?.message}
+                          channelDisabled={isTxRxChannelSynced}
+                          channelSyncLabel="מסונכרן עם שידור"
                         />
                       )}
                     />

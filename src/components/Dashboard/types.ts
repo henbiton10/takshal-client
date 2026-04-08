@@ -80,7 +80,7 @@ export interface DashboardNetwork {
   id: number;
   name: string;
   terminalTypeId: number;
-  connectivityTypeId: number;
+  connectivityTypeId?: number;
   terminals: { id: number; name: string }[];
 }
 

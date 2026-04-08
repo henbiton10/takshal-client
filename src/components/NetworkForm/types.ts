@@ -1,7 +1,7 @@
 export interface NetworkFormData {
   name: string;
   terminalTypeId: number | '';
-  connectivityTypeId: number | '';
+  connectivityTypeId?: number | '';
   readinessStatus: 'ready' | 'partly_ready' | 'damaged' | '';
   notes: string;
 }

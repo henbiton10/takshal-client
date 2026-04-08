@@ -18,6 +18,6 @@ export const INITIAL_FORM_DATA = {
   name: '',
   affiliation: '' as const,
   hasFrequencyConverter: null,
-  readinessStatus: '' as const,
+  readinessStatus: 'ready' as const,
   notes: '',
 };

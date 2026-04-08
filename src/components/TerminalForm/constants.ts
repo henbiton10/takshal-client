@@ -16,6 +16,6 @@ export const INITIAL_FORM_DATA: TerminalFormData = {
   stationId: '',
   frequencyBand: '',
   terminalType: '',
-  readinessStatus: '',
+  readinessStatus: 'ready',
   notes: '',
 };

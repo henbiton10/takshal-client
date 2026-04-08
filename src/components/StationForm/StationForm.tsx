@@ -187,19 +187,29 @@ export const StationForm = ({ onSave, editingStationId, initialData, onClose, on
   const connectivities = watch('connectivities');
 
   // Filter out current station from connectivity options (can't link to itself)
-  const baseAvailableStations = useMemo(() => {
+  const availableStations = useMemo(() => {
     if (!editingStationId) return stations;
     return stations.filter(s => s.value !== editingStationId.toString());
   }, [stations, editingStationId]);
 
-  // Get available stations for a specific connectivity row (excluding already selected stations)
-  const getAvailableStationsForRow = useCallback((rowIndex: number) => {
-    const selectedStationIds = (connectivities || [])
-      .map((c, idx) => idx !== rowIndex ? c.connectedStationId?.toString() : null)
+  // Get available communication types for a specific connectivity row
+  // Filter out communication types already used for the same station
+  const getAvailableCommunicationTypesForRow = useCallback((rowIndex: number) => {
+    const currentConnectivity = connectivities?.[rowIndex];
+    if (!currentConnectivity?.connectedStationId) {
+      return COMMUNICATION_TYPE_OPTIONS;
+    }
+
+    const usedTypesForStation = (connectivities || [])
+      .filter((c, idx) => 
+        idx !== rowIndex && 
+        c.connectedStationId?.toString() === currentConnectivity.connectedStationId?.toString()
+      )
+      .map(c => c.communicationType)
       .filter(Boolean);
     
-    return baseAvailableStations.filter(s => !selectedStationIds.includes(s.value));
-  }, [baseAvailableStations, connectivities]);
+    return COMMUNICATION_TYPE_OPTIONS.filter(opt => !usedTypesForStation.includes(opt.value));
+  }, [connectivities]);
 
   const handleAddConnectivity = useCallback(() => {
     appendConnectivity({
@@ -344,7 +354,7 @@ export const StationForm = ({ onSave, editingStationId, initialData, onClose, on
                   name={`connectivities.${index}.connectedStationId`}
                   control={control}
                   label="תחנה מקושרת"
-                  options={getAvailableStationsForRow(index)}
+                  options={availableStations}
                   placeholder="בחר תחנה"
                   error={errors.connectivities?.[index]?.connectedStationId}
                   rules={{ required: 'תחנה מקושרת הינה שדה חובה' }}
@@ -360,7 +370,7 @@ export const StationForm = ({ onSave, editingStationId, initialData, onClose, on
                   name={`connectivities.${index}.communicationType`}
                   control={control}
                   label="סוג תקשורת"
-                  options={COMMUNICATION_TYPE_OPTIONS}
+                  options={getAvailableCommunicationTypesForRow(index)}
                   placeholder="בחר סוג"
                   error={errors.connectivities?.[index]?.communicationType}
                   rules={{ required: 'סוג תקשורת הינו שדה חובה' }}

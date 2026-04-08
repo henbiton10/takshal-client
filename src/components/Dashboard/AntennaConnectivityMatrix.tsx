@@ -146,7 +146,7 @@ export const AntennaConnectivityMatrix = ({ stations, showFullView = false }: Pr
 
         antennas.push({
           id: antenna.id,
-          label: `אנטנה ${station.name} ${antenna.size}`,
+          label: `${station.name} ${antenna.size}מ' ${antenna.frequencyBand.toUpperCase()}`,
           stationId: station.id,
           stationName: station.name,
           channels: channelsMap,

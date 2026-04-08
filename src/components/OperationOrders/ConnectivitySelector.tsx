@@ -122,6 +122,8 @@ interface ConnectivitySelectorProps {
   compact?: boolean;
   connectivityError?: string;
   channelError?: string;
+  channelDisabled?: boolean;
+  channelSyncLabel?: string;
 }
 
 export const ConnectivitySelector = ({
@@ -135,6 +137,8 @@ export const ConnectivitySelector = ({
   compact = false,
   connectivityError,
   channelError,
+  channelDisabled = false,
+  channelSyncLabel,
 }: ConnectivitySelectorProps) => {
   const availableChannels = useMemo(() => {
     if (!validation || !selectedConnectivityId) return [];
@@ -275,24 +279,34 @@ export const ConnectivitySelector = ({
 
         {selectedConnectivityId && (
           <FieldWrapper>
-            {!compact && <FieldLabel>ערוץ</FieldLabel>}
+            {!compact && <FieldLabel>{channelDisabled && channelSyncLabel ? channelSyncLabel : 'ערוץ'}</FieldLabel>}
             <FormControl fullWidth error={!!channelError}>
               <StyledSelect
                 value={selectedChannelNumber || ''}
                 onChange={(e) => onChannelChange(e.target.value as number)}
                 size="small"
                 displayEmpty
+                disabled={channelDisabled}
               >
                 <MenuItem value="" disabled>
                   {compact ? 'ערוץ' : 'בחר ערוץ'}
                 </MenuItem>
-                {availableChannels.map((channel) => (
-                  <MenuItem key={channel} value={channel}>
-                    {compact ? channel : `ערוץ ${channel}`}
+                {channelDisabled && selectedChannelNumber ? (
+                  <MenuItem value={selectedChannelNumber}>
+                    {compact ? selectedChannelNumber : `ערוץ ${selectedChannelNumber}`}
                   </MenuItem>
-                ))}
+                ) : (
+                  availableChannels.map((channel) => (
+                    <MenuItem key={channel} value={channel}>
+                      {compact ? channel : `ערוץ ${channel}`}
+                    </MenuItem>
+                  ))
+                )}
               </StyledSelect>
-              {channelError && <FormHelperText>{channelError}</FormHelperText>}
+              {channelDisabled && channelSyncLabel && compact && (
+                <FormHelperText sx={{ color: 'rgba(59, 130, 246, 0.7)', margin: '2px 0 0' }}>{channelSyncLabel}</FormHelperText>
+              )}
+              {channelError && !channelDisabled && <FormHelperText>{channelError}</FormHelperText>}
             </FormControl>
           </FieldWrapper>
         )}
