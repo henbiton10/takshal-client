@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Box, CircularProgress, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
+import Lottie from 'lottie-react';
+import satelliteLoadingData from '../../assets/satelliteLoading.json';
+import accessDeniedData from '../../assets/accessDenied.json';
 import { apiClient } from '../../services/api/client';
 import { PermissionsProvider, useCompartmentalization } from '../../contexts/PermissionsContext';
 
@@ -10,8 +13,11 @@ const PermissionGuard: React.FC<{ children: React.ReactNode }> = ({ children }) 
   if (isLoading) {
     return (
       <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" height="100vh" gap={2}>
-        <CircularProgress />
-        <Typography>Loading Permissions...</Typography>
+        <Lottie
+          animationData={satelliteLoadingData}
+          loop={true}
+          style={{ width: 600, height: 600 }}
+        />
       </Box>
     );
   }
@@ -21,8 +27,13 @@ const PermissionGuard: React.FC<{ children: React.ReactNode }> = ({ children }) 
 
   if (!hasAccess) {
     return (
-      <Box display="flex" alignItems="center" justifyContent="center" height="100vh">
-        <Typography color="error" variant="h6">Access Denied: Missing EnterMagenElyon Permissions</Typography>
+      <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" height="100vh">
+        <Lottie
+          animationData={accessDeniedData}
+          loop={true}
+          style={{ width: 400, height: 400 }}
+        />
+        <Typography color="error" variant="h5" sx={{ mt: -2, fontWeight: 'bold' }}>אין הרשאות</Typography>
       </Box>
     );
   }
@@ -37,7 +48,7 @@ export const Authorization: React.FC<{ children: React.ReactNode }> = ({ childre
 
   useEffect(() => {
     let isMounted = true;
-    
+
     const checkLogin = async () => {
       try {
         await apiClient.get('/auth/login');
@@ -72,8 +83,11 @@ export const Authorization: React.FC<{ children: React.ReactNode }> = ({ childre
   if (isCheckingAuth) {
     return (
       <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" height="100vh" gap={2}>
-        <CircularProgress />
-        <Typography>Checking Authentication...</Typography>
+        <Lottie
+          animationData={satelliteLoadingData}
+          loop={true}
+          style={{ width: 300, height: 300 }}
+        />
       </Box>
     );
   }
