@@ -196,7 +196,7 @@ export interface AllocationData {
   receptionConnectivity?: StationConnectivity | null;
   transmissionChannelNumber: number | null;
   receptionChannelNumber: number | null;
-  tailNumber: number | null;
+  tailNumbers: number[] | null;
   notes: string | null;
   hasConflict: boolean;
   conflictIgnored: boolean;
@@ -257,7 +257,7 @@ export interface CreateAllocationDto {
   receptionConnectivityId?: number | null;
   transmissionChannelNumber?: number | null;
   receptionChannelNumber?: number | null;
-  tailNumber?: number | null;
+  tailNumbers?: number[] | null;
   notes?: string | null;
   hasConflict?: boolean;
   conflictIgnored?: boolean;
@@ -279,7 +279,7 @@ export interface UpdateAllocationDto {
   receptionConnectivityId?: number | null;
   transmissionChannelNumber?: number | null;
   receptionChannelNumber?: number | null;
-  tailNumber?: number | null;
+  tailNumbers?: number[] | null;
   notes?: string | null;
   hasConflict?: boolean;
   conflictIgnored?: boolean;

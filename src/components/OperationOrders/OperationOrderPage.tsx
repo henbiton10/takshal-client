@@ -246,9 +246,16 @@ export const OperationOrderPage = () => {
   }, [fetchOrders]);
 
   const handleCreateNew = useCallback(() => {
+    const now = new Date();
+    const dateStr = now.toISOString().split('T')[0];
+    const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
     setViewMode('create');
     setFormMode('header');
-    setHeaderData({});
+    setHeaderData({
+      startDate: dateStr,
+      startTime: timeStr,
+    });
     setSelectedOrder(null);
   }, []);
 

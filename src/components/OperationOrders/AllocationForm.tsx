@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import styled from 'styled-components';
 import TextField from '@mui/material/TextField';
+import Autocomplete from '@mui/material/Autocomplete';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
@@ -166,7 +167,7 @@ const Section = styled.div`
 const ButtonsRow = styled.div`
   display: flex;
   gap: 12px;
-  justify-content: flex-start;
+  justify-content: flex-end;
   margin-top: 8px;
 `;
 
@@ -310,7 +311,7 @@ interface SubAllocationFormData {
   receptionFrequency: number | '';
   receptionConnectivityId: number | '';
   receptionChannelNumber: number | '';
-  tailNumber: number | '';
+  tailNumbers: number[];
 }
 
 interface AllocationFormData {
@@ -325,7 +326,7 @@ interface AllocationFormData {
   receptionConnectivityId: number | '';
   transmissionChannelNumber: number | '';
   receptionChannelNumber: number | '';
-  tailNumber: number | '';
+  tailNumbers: number[];
   notes: string;
   addNotes: boolean;
 }
@@ -493,15 +494,27 @@ const SubAllocationCardComponent = ({
         </FieldWrapper>
 
         <FieldWrapper>
-          <FieldLabel>מספר זנב</FieldLabel>
-          <StyledTextField
-            type="number"
-            value={sub.tailNumber}
-            onChange={(e) =>
-              onChange(sub.id, 'tailNumber', e.target.value ? Number(e.target.value) : '')
+          <FieldLabel>מספרי זנב</FieldLabel>
+          <Autocomplete
+            multiple
+            freeSolo
+            options={[]}
+            value={sub.tailNumbers || []}
+            onChange={(e, newValue) => {
+              const numericValues = newValue
+                .map(v => typeof v === 'string' ? Number(v.trim()) : v)
+                .filter(v => !isNaN(v) && v !== 0);
+              onChange(sub.id, 'tailNumbers', numericValues as any);
+            }}
+            renderTags={(value, getTagProps) =>
+              value.map((option, index) => {
+                const { key, ...tagProps } = getTagProps({ index });
+                return <Chip key={key} variant="outlined" label={option} size="small" sx={{ '& .MuiChip-deleteIcon': { margin: '0 -4px 0 4px' } }} {...tagProps} />;
+              })
             }
-            placeholder="מספר זנב"
-            size="small"
+            renderInput={(params) => (
+              <StyledTextField {...params} placeholder="מספרי זנב..." size="small" />
+            )}
           />
         </FieldWrapper>
       </FieldsRow>
@@ -785,7 +798,7 @@ export const AllocationForm = ({
       receptionConnectivityId: editingAllocation?.receptionConnectivityId || '',
       transmissionChannelNumber: editingAllocation?.transmissionChannelNumber || '',
       receptionChannelNumber: editingAllocation?.receptionChannelNumber || '',
-      tailNumber: editingAllocation?.tailNumber || '',
+      tailNumbers: editingAllocation?.tailNumbers || [],
       notes: editingAllocation?.notes || '',
       addNotes: !!editingAllocation?.notes,
     },
@@ -960,7 +973,7 @@ export const AllocationForm = ({
           receptionFrequency: sub.receptionFrequency || '',
           receptionConnectivityId: sub.receptionConnectivityId || '',
           receptionChannelNumber: sub.receptionChannelNumber || '',
-          tailNumber: sub.tailNumber || '',
+          tailNumbers: sub.tailNumbers || [],
         }));
       setSubAllocations(existingSubs);
     }
@@ -1003,7 +1016,7 @@ export const AllocationForm = ({
       receptionFrequency: '',
       receptionConnectivityId: '',
       receptionChannelNumber: '',
-      tailNumber: '',
+      tailNumbers: [],
     };
     setSubAllocations((prev) => [...prev, newSub]);
   }, []);
@@ -1179,7 +1192,7 @@ export const AllocationForm = ({
         receptionChannelNumber: data.receptionChannelNumber
           ? Number(data.receptionChannelNumber)
           : null,
-        tailNumber: data.tailNumber ? Number(data.tailNumber) : null,
+        tailNumbers: data.tailNumbers && data.tailNumbers.length > 0 ? data.tailNumbers : null,
         notes: data.addNotes ? data.notes : null,
         parentAllocationId: parentAllocation?.id || null,
         hasConflict:
@@ -1211,7 +1224,7 @@ export const AllocationForm = ({
             receptionChannelNumber: sub.receptionChannelNumber
               ? Number(sub.receptionChannelNumber)
               : null,
-            tailNumber: sub.tailNumber ? Number(sub.tailNumber) : null,
+            tailNumbers: sub.tailNumbers && sub.tailNumbers.length > 0 ? sub.tailNumbers : null,
             notes: null,
             hasConflict: false,
           };
@@ -1340,7 +1353,7 @@ export const AllocationForm = ({
             </FieldWrapper>
             {selectedTerminal && (
               <FieldWrapper>
-                <FieldLabel>פס תדר</FieldLabel>
+                <FieldLabel>תחום תדר</FieldLabel>
                 <StyledTextField
                   value={selectedTerminal.frequencyBand.toUpperCase()}
                   disabled
@@ -1595,16 +1608,31 @@ export const AllocationForm = ({
           <SectionTitle>פרטים נוספים</SectionTitle>
           <FieldsRow>
             <FieldWrapper $flex={0.05}>
-              <FieldLabel>מספר זנב</FieldLabel>
+              <FieldLabel>מספרי זנב</FieldLabel>
               <Controller
-                name="tailNumber"
+                name="tailNumbers"
                 control={control}
                 render={({ field }) => (
-                  <StyledTextField
-                    {...field}
-                    type="number"
-                    placeholder="הזן מספר זנב"
-                    size="small"
+                  <Autocomplete
+                    multiple
+                    freeSolo
+                    options={[]}
+                    value={field.value || []}
+                    onChange={(e, newValue) => {
+                      const numericValues = newValue
+                        .map(v => typeof v === 'string' ? Number(v.trim()) : v)
+                        .filter(v => !isNaN(v) && v !== 0);
+                      field.onChange(numericValues);
+                    }}
+                    renderTags={(value, getTagProps) =>
+                      value.map((option, index) => {
+                        const { key, ...tagProps } = getTagProps({ index });
+                        return <Chip key={key} variant="outlined" label={option} size="small" sx={{ '& .MuiChip-deleteIcon': { margin: '0 -4px 0 4px' } }} {...tagProps} />;
+                      })
+                    }
+                    renderInput={(params) => (
+                      <StyledTextField {...params} placeholder="מספרי זנב" size="small" />
+                    )}
                   />
                 )}
               />
@@ -1711,15 +1739,15 @@ export const AllocationForm = ({
       )}
 
       <ButtonsRow style={{ marginTop: '20px' }}>
+        <CancelButton onClick={onCancel} disabled={saving}>
+          ביטול
+        </CancelButton>
         <SaveButton
           onClick={() => formRef.current?.requestSubmit()}
           disabled={saving}
         >
           {saving ? <CircularProgress size={20} sx={{ color: 'white' }} /> : 'שמור'}
         </SaveButton>
-        <CancelButton onClick={onCancel} disabled={saving}>
-          ביטול
-        </CancelButton>
       </ButtonsRow>
 
       <AntennaConflictWarning
