@@ -4,6 +4,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Sidebar from './components/Sidebar';
 import GlobalStyle from './styles/GlobalStyles';
 import { AppLayout, MainContent } from './components/App/AppLayout';
+import { Authorization } from './components/Authorization/Authorization';
 import { theme } from './theme/theme';
 import { ResourcesManagement } from './components/ResourcesManagement';
 import { SatelliteFormData } from './components/SatelliteForm';
@@ -47,15 +48,17 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <GlobalStyle />
-      <AppLayout>
-        <MainContent>
-          {renderContent()}
-        </MainContent>
-        <Sidebar 
-          selectedItem={selectedMenuItem}
-          onItemSelect={handleMenuItemSelect}
-        />
-      </AppLayout>
+      <Authorization>
+        <AppLayout>
+          <MainContent>
+            {renderContent()}
+          </MainContent>
+          <Sidebar 
+            selectedItem={selectedMenuItem}
+            onItemSelect={handleMenuItemSelect}
+          />
+        </AppLayout>
+      </Authorization>
     </ThemeProvider>
   );
 }
