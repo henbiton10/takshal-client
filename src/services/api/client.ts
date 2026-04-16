@@ -12,7 +12,7 @@ class ApiClient {
     options?: RequestInit,
   ): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
-    
+
     const response = await fetch(url, {
       credentials: 'include',
       ...options,
@@ -24,7 +24,7 @@ class ApiClient {
 
     if (!response.ok) {
       const error = await response.json().catch(() => ({ message: 'Unknown error' }));
-      
+
       if (response.status === 401 && error.redirectURL) {
         // Simulate Axios error structure so UI behaves identically
         throw {
@@ -34,7 +34,7 @@ class ApiClient {
           }
         };
       }
-      
+
       throw new Error(error.message || `HTTP ${response.status}: ${response.statusText}`);
     }
 
@@ -42,7 +42,12 @@ class ApiClient {
     if (!text) {
       return undefined as T;
     }
-    return JSON.parse(text);
+
+    try {
+      return JSON.parse(text);
+    } catch (e) {
+      return text as unknown as T;
+    }
   }
 
   async get<T>(endpoint: string): Promise<T> {
