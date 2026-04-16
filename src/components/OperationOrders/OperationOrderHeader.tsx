@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import styled from 'styled-components';
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
+import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
@@ -21,7 +22,7 @@ const HeaderContainer = styled.div`
 
 const HeaderTitleRow = styled.div`
   display: flex;
-  justify-content: flex-start;
+  justify-content: space-between;
   align-items: center;
 `;
 
@@ -48,17 +49,30 @@ const HeaderActionButtons = styled.div`
   margin-right: 10px;
 `;
 
-const SaveIconButton = styled(IconButton)`
-  color: white !important;
-  padding: 6px;
+const SaveButton = styled(Button)`
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e !important;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-weight: 500;
+  text-transform: none;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  display: flex;
+  gap: 8px;
+
+  & .MuiSvgIcon-root {
+    color: inherit;
+  }
 
   &:hover {
-    background: rgba(34, 197, 94, 0.1);
-    color: white !important;
+    background: rgba(34, 197, 94, 0.25);
+    border-color: rgba(34, 197, 94, 0.5);
   }
 
   &:disabled {
+    background: rgba(34, 197, 94, 0.05);
     color: rgba(34, 197, 94, 0.3) !important;
+    border-color: rgba(34, 197, 94, 0.1);
   }
 `;
 
@@ -128,8 +142,7 @@ const StyledTextField = styled(TextField)`
 
     input[type='date'],
     input[type='time'] {
-      direction: ltr;
-      text-align: left;
+      font-family: inherit;
     }
   }
 
@@ -185,16 +198,17 @@ export const OperationOrderHeader = ({
           )}
           {onSave && onCancel && (
             <>
-              <SaveIconButton onClick={onSave} disabled={saving}>
+              <CancelIconButton onClick={onCancel} disabled={saving}>
+                <CloseIcon sx={{ fontSize: 20 }} />
+              </CancelIconButton>
+              <SaveButton onClick={onSave} disabled={saving}>
                 {saving ? (
                   <CircularProgress size={20} sx={{ color: 'rgba(34, 197, 94, 0.8)' }} />
                 ) : (
                   <SaveIcon sx={{ fontSize: 20 }} />
                 )}
-              </SaveIconButton>
-              <CancelIconButton onClick={onCancel} disabled={saving}>
-                <CloseIcon sx={{ fontSize: 20 }} />
-              </CancelIconButton>
+                שמור
+              </SaveButton>
             </>
           )}
         </HeaderActionButtons>

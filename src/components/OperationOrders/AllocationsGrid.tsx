@@ -632,9 +632,9 @@ export const AllocationsGrid = ({
         valueFormatter: (params) => (params.value ? `${params.value}` : '-'),
       },
       {
-        headerName: 'מספר זנב',
-        valueGetter: (params) => params.data?.tailNumber || '-',
-        width: 90,
+        headerName: 'מספרי זנב',
+        valueGetter: (params) => (params.data?.tailNumbers && params.data.tailNumbers.length > 0) ? params.data.tailNumbers.join(', ') : '-',
+        width: 110,
       },
       {
         headerName: 'קישוריות',

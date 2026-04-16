@@ -229,7 +229,7 @@ export const AntennaSelector = ({
           <SearchContainer>
             <StyledSearchField
               fullWidth
-              placeholder="חפש לפי שם תחנה, פס תדר..."
+              placeholder="חפש לפי שם תחנה, תחום תדר..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               size="small"
@@ -259,7 +259,7 @@ export const AntennaSelector = ({
                     {antenna.isDeleted ? ' (נמחק)' : ''}
                   </OptionName>
                   <OptionDetails>
-                    תחנה: {antenna.stationName} | פס: {antenna.frequencyBand.toUpperCase()} | גודל:{' '}
+                    תחנה: {antenna.stationName} | תחום: {antenna.frequencyBand.toUpperCase()} | גודל:{' '}
                     {antenna.size}m
                   </OptionDetails>
                 </OptionItem>
