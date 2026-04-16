@@ -14,6 +14,7 @@ class ApiClient {
     const url = `${this.baseUrl}${endpoint}`;
     
     const response = await fetch(url, {
+      credentials: 'include',
       ...options,
       headers: {
         'Content-Type': 'application/json',
@@ -23,6 +24,17 @@ class ApiClient {
 
     if (!response.ok) {
       const error = await response.json().catch(() => ({ message: 'Unknown error' }));
+      
+      if (response.status === 401 && error.redirectURL) {
+        // Simulate Axios error structure so UI behaves identically
+        throw {
+          response: {
+            status: 401,
+            data: error
+          }
+        };
+      }
+      
       throw new Error(error.message || `HTTP ${response.status}: ${response.statusText}`);
     }
 
