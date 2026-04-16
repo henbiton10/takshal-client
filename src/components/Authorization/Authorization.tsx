@@ -86,7 +86,7 @@ export const Authorization: React.FC<{ children: React.ReactNode }> = ({ childre
         <Lottie
           animationData={satelliteLoadingData}
           loop={true}
-          style={{ width: 300, height: 300 }}
+          style={{ width: 600, height: 600 }}
         />
       </Box>
     );
