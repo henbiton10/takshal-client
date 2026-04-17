@@ -9,21 +9,27 @@ import {
   READINESS_STATUS_OPTIONS,
   INITIAL_FORM_DATA,
 } from './constants';
-import { 
-  FormContainer, 
-  FormHeader, 
-  FormGrid, 
-  FullWidthField, 
-  CombinedFieldWrapper, 
-  CombinedFieldSection, 
-  ButtonContainer, 
-  StyledButton,
+import SaveIcon from '@mui/icons-material/Save';
+import {
+  FormMainContainer,
+  FormSection,
+  FormSectionHeader,
+  FormSectionTitle,
+  FormFieldRow,
+  FormHeaderTop,
+  FormSubtitle,
+  FormTitleLarge,
+  FormBottomActions,
+  ActionButtonsGroup,
   FormSelect,
   FormTextField,
+  FormPrimaryButton,
+  FormSecondaryButton,
+  FormDeleteButton,
 } from '../../shared/components/ui';
 import { EditableNameField } from '../../shared/components/EditableNameField';
 
-export const SatelliteForm = ({ onSave, editingSatelliteId, initialData, onClose, onCancel }: SatelliteFormProps) => {
+export const SatelliteForm = ({ onSave, onDelete, editingSatelliteId, initialData, onCancel }: SatelliteFormProps) => {
   const {
     control,
     handleSubmit,
@@ -65,22 +71,37 @@ export const SatelliteForm = ({ onSave, editingSatelliteId, initialData, onClose
   }, [reset]);
 
   return (
-    <FormContainer>
-      <FormHeader 
-        title={editingSatelliteId ? 'עריכת לווין' : 'הוספת לווין חדש'}
-        onClose={onClose}
-      />
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <EditableNameField
-          name="name"
-          control={control}
-          icon={SatelliteAltIcon}
-          placeholder="לווין 1"
-        />
+    <div>
+      <FormHeaderTop>
+        <FormTitleLarge>{editingSatelliteId ? 'עריכת לווין' : 'הוספת לווין חדש'}</FormTitleLarge>
+        <FormSubtitle>מלא את הפרטים הנדרשים בטופס</FormSubtitle>
+      </FormHeaderTop>
+      <FormMainContainer>
+        <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <FormSection style={{ padding: '8px 24px' }}>
+            <EditableNameField
+              name="name"
+              control={control}
+              icon={SatelliteAltIcon}
+              placeholder="לווין 1"
+            />
+          </FormSection>
 
-        <FormGrid>
-          <CombinedFieldWrapper>
-            <CombinedFieldSection hasBorder flexBasis="50%">
+          <FormSection>
+            <FormSectionHeader>
+              <FormSectionTitle>פרטי הלווין</FormSectionTitle>
+            </FormSectionHeader>
+            <FormFieldRow>
+              <FormSelect
+                name="readinessStatus"
+                control={control}
+                label="סטטוס כשירות"
+                options={READINESS_STATUS_OPTIONS}
+                placeholder="בחר סטטוס כשירות"
+                error={errors.readinessStatus}
+                rules={{ required: 'סטטוס כשירות הינו שדה חובה' }}
+                required
+              />
               <FormSelect
                 name="affiliation"
                 control={control}
@@ -91,9 +112,6 @@ export const SatelliteForm = ({ onSave, editingSatelliteId, initialData, onClose
                 rules={{ required: 'שייכות הינה שדה חובה' }}
                 required
               />
-            </CombinedFieldSection>
-
-            <CombinedFieldSection flexBasis="50%">
               <FormSelect
                 name="hasFrequencyConverter"
                 control={control}
@@ -108,75 +126,65 @@ export const SatelliteForm = ({ onSave, editingSatelliteId, initialData, onClose
                   toForm: (value) => value === 'true',
                 }}
               />
-            </CombinedFieldSection>
-          </CombinedFieldWrapper>
+              <FormTextField
+                name="notes"
+                control={control}
+                label="הערות"
+                placeholder="פרט על הסטטוס כאן..."
+                error={errors.notes}
+                rules={{
+                  validate: (value: string) => {
+                    if (readinessStatus && readinessStatus !== 'ready' && !value.trim()) {
+                      return 'הערות הינן שדה חובה כאשר סטטוס הכשירות אינו "כשיר"';
+                    }
+                    return true;
+                  },
+                }}
+                required={readinessStatus !== 'ready' && readinessStatus !== ''}
+              />
+            </FormFieldRow>
+          </FormSection>
 
-          <FullWidthField>
-            <CombinedFieldWrapper>
-              <CombinedFieldSection hasBorder flexBasis="20%">
-                <FormSelect
-                  name="readinessStatus"
-                  control={control}
-                  label="סטטוס כשירות"
-                  options={READINESS_STATUS_OPTIONS}
-                  placeholder="בחר סטטוס כשירות"
-                  error={errors.readinessStatus}
-                  rules={{ required: 'סטטוס כשירות הינו שדה חובה' }}
-                  required
-                />
-              </CombinedFieldSection>
-
-              <CombinedFieldSection flexBasis="80%">
-                <FormTextField
-                  name="notes"
-                  control={control}
-                  label="הערות"
-                  placeholder="פרט על הסטטוס כאן..."
-                  error={errors.notes}
-                  rules={{
-                    validate: (value: string) => {
-                      if (readinessStatus && readinessStatus !== 'ready' && !value.trim()) {
-                        return 'הערות הינן שדה חובה כאשר סטטוס הכשירות אינו "כשיר"';
-                      }
-                      return true;
-                    },
-                  }}
-                  required={readinessStatus !== 'ready' && readinessStatus !== ''}
-                />
-              </CombinedFieldSection>
-            </CombinedFieldWrapper>
-          </FullWidthField>
-        </FormGrid>
-
-        <ButtonContainer>
-          {!editingSatelliteId && (
-            <StyledButton
-              variant="outlined"
-              onClick={handleReset}
-              disabled={isSubmitting}
-              startIcon={<DeleteOutlineIcon />}
-            >
-              נקה שדות
-            </StyledButton>
-          )}
-          {editingSatelliteId && onCancel && (
-            <StyledButton
-              variant="outlined"
-              onClick={onCancel}
-              disabled={isSubmitting}
-            >
-              ביטול
-            </StyledButton>
-          )}
-          <StyledButton 
-            variant="contained" 
-            type="submit" 
-            disabled={!isValid || isSubmitting || !isDirty}
-          >
-            {isSubmitting ? 'שומר...' : 'שמירה'}
-          </StyledButton>
-        </ButtonContainer>
-      </form>
-    </FormContainer>
+          <FormBottomActions>
+            {editingSatelliteId != null ? (
+              <FormDeleteButton
+                onClick={onDelete}
+                startIcon={<DeleteOutlineIcon />}
+              >
+                מחק אמצעי
+              </FormDeleteButton>
+            ) : (
+              <div /> // Spacer to keep actions on the left
+            )}
+            <ActionButtonsGroup>
+              {!editingSatelliteId && (
+                <FormSecondaryButton
+                  onClick={handleReset}
+                  disabled={isSubmitting}
+                >
+                  נקה שדות
+                </FormSecondaryButton>
+              )}
+              {editingSatelliteId && onCancel && (
+                <FormSecondaryButton
+                  onClick={onCancel}
+                  disabled={isSubmitting}
+                >
+                  ביטול
+                </FormSecondaryButton>
+              )}
+              <FormPrimaryButton
+                variant="contained"
+                type="submit"
+                disabled={!isValid || isSubmitting || !isDirty}
+                startIcon={<SaveIcon />}
+              >
+                {isSubmitting ? 'שומר...' : 'שמור שינויים'}
+              </FormPrimaryButton>
+            </ActionButtonsGroup>
+          </FormBottomActions>
+        </form>
+      </FormMainContainer>
+    </div>
   );
 };

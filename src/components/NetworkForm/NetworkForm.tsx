@@ -4,22 +4,28 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import PublicIcon from '@mui/icons-material/Public';
 import { NetworkFormProps, NetworkFormData } from './types';
 import { READINESS_STATUS_OPTIONS, INITIAL_FORM_DATA } from './constants';
+import SaveIcon from '@mui/icons-material/Save';
 import {
-  FormContainer,
-  FormHeader,
-  FormGrid,
-  FullWidthField,
-  CombinedFieldWrapper,
-  CombinedFieldSection,
-  ButtonContainer,
-  StyledButton,
+  FormMainContainer,
+  FormSection,
+  FormSectionHeader,
+  FormSectionTitle,
+  FormFieldRow,
+  FormHeaderTop,
+  FormSubtitle,
+  FormTitleLarge,
+  FormBottomActions,
+  ActionButtonsGroup,
   FormSelect,
   FormTextField,
+  FormPrimaryButton,
+  FormSecondaryButton,
+  FormDeleteButton,
 } from '../../shared/components/ui';
 import { EditableNameField } from '../../shared/components/EditableNameField';
 import { terminalTypesApi } from '../../services/api';
 
-export const NetworkForm = ({ onSave, editingNetworkId, initialData, onClose, onCancel }: NetworkFormProps) => {
+export const NetworkForm = ({ onSave, onDelete, editingNetworkId, initialData, onCancel }: NetworkFormProps) => {
   const [terminalTypes, setTerminalTypes] = useState<Array<{ value: string; label: string }>>([]);
 
   const {
@@ -74,101 +80,110 @@ export const NetworkForm = ({ onSave, editingNetworkId, initialData, onClose, on
   }, [reset]);
 
   return (
-    <FormContainer>
-      <FormHeader 
-        title={editingNetworkId ? 'עריכת רשת' : 'הוספת רשת חדשה'}
-        onClose={onClose}
-      />
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <EditableNameField
-          name="name"
-          control={control}
-          icon={PublicIcon}
-          placeholder="רשת 1"
-        />
+    <div>
+      <FormHeaderTop>
+        <FormTitleLarge>{editingNetworkId ? 'עריכת רשת' : 'הוספת רשת חדשה'}</FormTitleLarge>
+        <FormSubtitle>מלא את הפרטים הנדרשים בטופס</FormSubtitle>
+      </FormHeaderTop>
+      <FormMainContainer>
+        <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <FormSection style={{ padding: '8px 24px' }}>
+            <EditableNameField
+              name="name"
+              control={control}
+              icon={PublicIcon}
+              placeholder="רשת 1"
+            />
+          </FormSection>
 
-        <FormGrid>
-          <FormSelect
-            name="terminalTypeId"
-            control={control}
-            label="סוג טרמינל"
-            options={terminalTypes}
-            placeholder="בחר סוג טרמינל"
-            error={errors.terminalTypeId}
-            rules={{ required: 'סוג טרמינל הינו שדה חובה' }}
-            required
-            transformValue={{
-              toField: (value) => (value === '' || value === null ? '' : value.toString()),
-              toForm: (value) => value === '' ? '' : Number(value),
-            }}
-          />
+          <FormSection>
+            <FormSectionHeader>
+              <FormSectionTitle>פרטי רשת</FormSectionTitle>
+            </FormSectionHeader>
+            <FormFieldRow>
+              <FormSelect
+                name="readinessStatus"
+                control={control}
+                label="סטטוס כשירות"
+                options={READINESS_STATUS_OPTIONS}
+                placeholder="בחר סטטוס כשירות"
+                error={errors.readinessStatus}
+                rules={{ required: 'סטטוס כשירות הינו שדה חובה' }}
+                required
+              />
+              <FormSelect
+                name="terminalTypeId"
+                control={control}
+                label="סוג טרמינל"
+                options={terminalTypes}
+                placeholder="בחר סוג טרמינל"
+                error={errors.terminalTypeId}
+                rules={{ required: 'סוג טרמינל הינו שדה חובה' }}
+                required
+                transformValue={{
+                  toField: (value) => (value === '' || value === null ? '' : value.toString()),
+                  toForm: (value) => value === '' ? '' : Number(value),
+                }}
+              />
+              <FormTextField
+                name="notes"
+                control={control}
+                label="הערות"
+                placeholder="פרט על הסטטוס כאן..."
+                error={errors.notes}
+                rules={{
+                  validate: (value: string) => {
+                    if (readinessStatus && readinessStatus !== 'ready' && !value.trim()) {
+                      return 'הערות הינן שדה חובה כאשר סטטוס הכשירות אינו "כשיר"';
+                    }
+                    return true;
+                  },
+                }}
+                required={readinessStatus !== 'ready' && readinessStatus !== ''}
+              />
+            </FormFieldRow>
+          </FormSection>
 
-          <FullWidthField>
-            <CombinedFieldWrapper>
-              <CombinedFieldSection hasBorder flexBasis="20%">
-                <FormSelect
-                  name="readinessStatus"
-                  control={control}
-                  label="סטטוס כשירות"
-                  options={READINESS_STATUS_OPTIONS}
-                  placeholder="בחר סטטוס כשירות"
-                  error={errors.readinessStatus}
-                  rules={{ required: 'סטטוס כשירות הינו שדה חובה' }}
-                  required
-                />
-              </CombinedFieldSection>
-
-              <CombinedFieldSection flexBasis="80%">
-                <FormTextField
-                  name="notes"
-                  control={control}
-                  label="הערות"
-                  placeholder="פרט על הסטטוס כאן..."
-                  error={errors.notes}
-                  rules={{
-                    validate: (value: string) => {
-                      if (readinessStatus && readinessStatus !== 'ready' && !value.trim()) {
-                        return 'הערות הינן שדה חובה כאשר סטטוס הכשירות אינו "כשיר"';
-                      }
-                      return true;
-                    },
-                  }}
-                  required={readinessStatus !== 'ready' && readinessStatus !== ''}
-                />
-              </CombinedFieldSection>
-            </CombinedFieldWrapper>
-          </FullWidthField>
-        </FormGrid>
-
-        <ButtonContainer>
-          {!editingNetworkId && (
-            <StyledButton
-              variant="outlined"
-              onClick={handleReset}
-              disabled={isSubmitting}
-              startIcon={<DeleteOutlineIcon />}
-            >
-              נקה שדות
-            </StyledButton>
-          )}
-          {editingNetworkId && onCancel && (
-            <StyledButton
-              variant="outlined"
-              onClick={onCancel}
-              disabled={isSubmitting}
-            >
-              ביטול
-            </StyledButton>
-          )}
-          <StyledButton
-            variant="contained"
-            type="submit"
-            disabled={!isValid || isSubmitting || !isDirty}
-          >
-            {isSubmitting ? 'שומר...' : 'שמירה'}
-          </StyledButton>
-        </ButtonContainer>
-      </form>
-    </FormContainer>
+          <FormBottomActions>
+            {editingNetworkId ? (
+              <FormDeleteButton
+                onClick={onDelete}
+                startIcon={<DeleteOutlineIcon />}
+              >
+                מחק אמצעי
+              </FormDeleteButton>
+            ) : (
+              <div /> // Spacer to keep actions on the left
+            )}
+            <ActionButtonsGroup>
+              {!editingNetworkId && (
+                <FormSecondaryButton
+                  onClick={handleReset}
+                  disabled={isSubmitting}
+                >
+                  נקה שדות
+                </FormSecondaryButton>
+              )}
+              {editingNetworkId && onCancel && (
+                <FormSecondaryButton
+                  onClick={onCancel}
+                  disabled={isSubmitting}
+                >
+                  ביטול
+                </FormSecondaryButton>
+              )}
+              <FormPrimaryButton
+                variant="contained"
+                type="submit"
+                disabled={!isValid || isSubmitting || !isDirty}
+                startIcon={<SaveIcon />}
+              >
+                {isSubmitting ? 'שומר...' : 'שמור שינויים'}
+              </FormPrimaryButton>
+            </ActionButtonsGroup>
+          </FormBottomActions>
+        </form>
+      </FormMainContainer>
+    </div>
   );
 };

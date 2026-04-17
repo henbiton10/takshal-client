@@ -1,10 +1,7 @@
 import { NetworkFormData } from './types';
+import { READINESS_STATUS_OPTIONS } from '../../shared/constants/status';
 
-export const READINESS_STATUS_OPTIONS = [
-  { value: 'ready', label: 'כשיר' },
-  { value: 'partly_ready', label: 'כשיר חלקית' },
-  { value: 'damaged', label: 'תקול' },
-];
+export { READINESS_STATUS_OPTIONS };
 
 export const INITIAL_FORM_DATA: NetworkFormData = {
   name: '',

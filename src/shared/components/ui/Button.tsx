@@ -6,7 +6,7 @@ interface StyledButtonProps {
   variant?: 'contained' | 'outlined';
 }
 
-export const StyledButton = styled(Button)<StyledButtonProps>`
+export const StyledButton = styled(Button) <StyledButtonProps>`
   && {
     border-radius: ${theme.borderRadius.sm};
     padding: 6px ${theme.spacing.lg};
@@ -16,8 +16,8 @@ export const StyledButton = styled(Button)<StyledButtonProps>`
     min-width: 80px;
     
     ${(props) =>
-      props.variant === 'outlined' &&
-      `
+    props.variant === 'outlined' &&
+    `
       border-color: ${theme.colors.border.accent};
       color: ${theme.colors.text.secondary};
       background: ${theme.colors.background.subtle};
@@ -28,14 +28,14 @@ export const StyledButton = styled(Button)<StyledButtonProps>`
       }
       
       .MuiButton-startIcon {
-        margin-left: ${theme.spacing.sm};
-        margin-right: -4px;
+        margin-right: ${theme.spacing.sm};
+        margin-left: -4px;
       }
     `}
     
     ${(props) =>
-      props.variant === 'contained' &&
-      `
+    props.variant === 'contained' &&
+    `
       background: ${theme.colors.primary.main};
       
       &:hover {

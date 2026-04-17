@@ -1,327 +1,392 @@
 import styled from 'styled-components';
+import { Button } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import CloseIcon from '@mui/icons-material/Close';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import CancelIcon from '@mui/icons-material/Cancel';
-import { Button, IconButton } from '@mui/material';
-import { theme } from '../../../theme';
+import halfWorkingIcon from '../../../assets/halfWorking.svg';
+import workingIcon from '../../../assets/working.svg';
+import notWorkingIcon from '../../../assets/notWorking.svg';
 
 export interface ViewField {
   label: string;
   value: string | React.ReactNode;
   fullWidth?: boolean;
+  flex?: number | string;
+  statusColor?: string;
+  statusIcon?: React.ReactNode;
 }
 
-export interface ViewSection {
-  title?: string;
-  fields: ViewField[];
+export interface TagMetadata {
+  label: string;
 }
 
 export interface TagItem {
   id: number | string;
   label: string;
   icon?: React.ReactNode;
+  metadata?: TagMetadata[];
 }
 
-export interface ViewTagSection {
+export interface ViewSection {
   title: string;
-  tags: TagItem[];
+  icon?: React.ReactNode;
+  fields?: ViewField[];
+  tags?: TagItem[];
 }
 
 interface EntityViewProps {
   name: string;
-  icon: React.ReactNode;
+  icon?: React.ReactNode;
   badge?: string;
-  sections: ViewSection[];
-  tagSections?: ViewTagSection[];
+  mainTitle: string;
+  subtitle?: string;
   editLabel: string;
+  sections: ViewSection[];
   onEdit: () => void;
   onDelete?: () => void;
   onClose?: () => void;
 }
 
-const ViewContainer = styled.div`
-  background: ${theme.colors.background.medium};
-  border-radius: ${theme.borderRadius.lg};
-  padding: ${theme.spacing.xl};
-  direction: rtl;
+const StatusIconImg = styled.img`
+  width: 24px;
+  height: 24px;
 `;
 
-const ViewHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  flex-direction: row-reverse;
-  align-items: center;
-  margin-bottom: ${theme.spacing.xl};
-`;
+export const formatReadinessStatus = (status: string): { text: string; color: string; icon?: React.ReactNode } => {
+  if (status === 'ready') return {
+    text: 'כשיר',
+    color: '#63FF6A',
+    icon: <StatusIconImg src={workingIcon} alt="כשיר" />
+  };
+  if (status === 'partly_ready') return {
+    text: 'כשיר חלקית',
+    color: '#FFB800',
+    icon: <StatusIconImg src={halfWorkingIcon} alt="כשיר חלקית" />
+  };
+  if (status === 'damaged') return {
+    text: 'תקול',
+    color: '#FF4D4D',
+    icon: <StatusIconImg src={notWorkingIcon} alt="תקול" />
+  };
+  return { text: status, color: '#FAFAFA' };
+};
 
-const HeaderRight = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${theme.spacing.md};
-`;
-
-const HeaderLeft = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${theme.spacing.sm};
-`;
-
-const EntityName = styled.h2`
-  color: ${theme.colors.text.white};
-  font-size: 20px;
-  font-weight: ${theme.typography.fontWeight.semiBold};
+// UI Components
+export const PageTitle = styled.h2`
+  color: #FAFAFA;
+  font-family: 'Assistant', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
   margin: 0;
-  display: flex;
-  align-items: center;
-  gap: ${theme.spacing.sm};
-`;
-
-const EntityIcon = styled.div`
-  display: flex;
-  align-items: center;
-  color: ${theme.colors.text.white};
-`;
-
-const Badge = styled.span`
-  background: #1976D2;
-  color: white;
-  padding: 4px 12px;
-  border-radius: 16px;
-  font-size: 12px;
-  font-weight: ${theme.typography.fontWeight.medium};
-`;
-
-const EditButton = styled(Button)`
-  && {
-    background: ${theme.colors.background.light};
-    color: ${theme.colors.text.white};
-    border-radius: 20px;
-    padding: 6px 16px;
-    text-transform: none;
-    font-size: 13px;
-    gap: 8px;
-    
-    .MuiButton-startIcon {
-      margin-right: 0;
-      margin-left: 0;
-    }
-    
-    &:hover {
-      background: rgba(70, 85, 110, 0.8);
-    }
-  }
-`;
-
-const DeleteButton = styled(Button)`
-  && {
-    color: #f44336;
-    border-radius: 50%;
-    min-width: 40px;
-    width: 40px;
-    height: 40px;
-    padding: 0;
-    
-    &:hover {
-      background: rgba(244, 67, 54, 0.1);
-    }
-  }
-`;
-
-const CloseButton = styled(IconButton)`
-  && {
-    color: rgba(225, 234, 255, 0.6);
-    padding: 8px;
-    
-    &:hover {
-      color: ${theme.colors.text.white};
-      background: rgba(255, 255, 255, 0.1);
-    }
-  }
-`;
-
-const SectionContainer = styled.div`
-  margin-bottom: ${theme.spacing.lg};
-`;
-
-const SectionTitle = styled.h3`
-  color: rgba(225, 234, 255, 0.7);
-  font-size: 13px;
-  font-weight: ${theme.typography.fontWeight.medium};
-  margin: 0 0 ${theme.spacing.md} 0;
   text-align: right;
 `;
 
-const FieldsGrid = styled.div`
+export const PageSubtitle = styled.p`
+  color: #E1EAFF;
+  font-family: 'Assistant', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  text-align: right;
+  letter-spacing: 0.18px;
+`;
+
+export const PageHeaderArea = styled.div`
   display: flex;
-  gap: ${theme.spacing.md};
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto 18px auto;
 `;
 
-const FieldCard = styled.div<{ $fullWidth?: boolean }>`
-  background: ${theme.colors.background.dark};
-  border-radius: ${theme.borderRadius.md};
-  padding: ${theme.spacing.md} ${theme.spacing.lg};
-  flex: ${props => props.$fullWidth ? '1 1 100%' : '1 1 auto'};
-  min-width: ${props => props.$fullWidth ? '100%' : '120px'};
-`;
-
-const FieldLabel = styled.div<{ $fullWidth?: boolean }>`
-  color: rgba(225, 234, 255, 0.5);
-  font-size: 11px;
-  margin-bottom: 4px;
-  text-align: ${props => props.$fullWidth ? 'right' : 'center'};
-`;
-
-const FieldValue = styled.div<{ $fullWidth?: boolean }>`
-  color: ${theme.colors.text.white};
-  font-size: 14px;
-  font-weight: ${theme.typography.fontWeight.medium};
-  text-align: ${props => props.$fullWidth ? 'right' : 'center'};
+export const Card = styled.div`
+  background: rgba(45, 58, 89, 0.55);
+  border-radius: 24px;
+  padding: 20px 28px;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  box-shadow: 0px 1px 3px rgba(0,0,0,0.1), 0px 1px 2px -1px rgba(0,0,0,0.1);
   display: flex;
-  align-items: center;
-  justify-content: ${props => props.$fullWidth ? 'flex-start' : 'center'};
-  gap: 6px;
+  flex-direction: column;
+  gap: 18px;
+  direction: rtl;
 `;
 
-const TagsContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: ${theme.spacing.sm};
-`;
-
-const Tag = styled.div`
-  background: ${theme.colors.background.dark};
-  border-radius: 20px;
-  padding: 8px 16px;
-  color: ${theme.colors.text.white};
-  font-size: 13px;
+export const CardHeader = styled.div`
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+`;
+
+export const EntityNameRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`;
+
+export const IconCircle = styled.div`
+  width: 42px;
+  height: 42px;
+  border-radius: 10.5px;
+  background: rgba(0, 166, 62, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+`;
+
+export const EntityNameText = styled.span`
+  color: #FAFAFA;
+  font-family: 'Assistant', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.1;
+`;
+
+export const EditButton = styled(Button)`
+  && {
+    background: #2e3c5a;
+    color: #FAFAFA;
+    border: 1px solid #305088;
+    border-radius: 12px;
+    padding: 10px 20px;
+    text-transform: none;
+    font-family: 'Assistant', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    gap: 8px;
+    
+    &:hover {
+      background: #3a4d72;
+    }
+  }
+`;
+
+export const SectionBox = styled.div`
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 16px;
+  padding: 18px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+`;
+
+export const SectionLabelRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
   gap: 8px;
+  width: 100%;
 `;
 
-const TagIcon = styled.span`
-  display: flex;
-  align-items: center;
-  color: ${theme.colors.text.white};
+export const SectionLabelText = styled.span`
+  color: #E1EAFF;
+  font-family: 'Assistant', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
 `;
 
-const StatusReady = styled.span`
+export const FieldsRow = styled.div`
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 100%;
+  gap: 18px;
+  flex-wrap: wrap;
+`;
+
+export const FieldColumn = styled.div<{ $flex?: number | string }>`
+  flex: ${props => props.$flex || '0 0 auto'};
+  display: flex;
+  flex-direction: column;
   gap: 6px;
-  color: #4caf50;
+  align-items: flex-start;
+  min-width: 140px;
 `;
 
-const StatusPartial = styled.span`
+export const FieldLabelText = styled.span`
+  color: #E1EAFF;
+  font-family: 'Assistant', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.16px;
+  display: block;
+  width: 100%;
+  text-align: right;
+  padding-right: 8px;
+`;
+
+export const FieldValuePill = styled.div<{ $statusColor?: string }>`
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 8px 16px;
+  width: 100%;
+  min-height: 42px;
   display: flex;
   align-items: center;
-  gap: 6px;
-  color: #ff9800;
+  justify-content: flex-start;
+  gap: 8px;
+  
+  span {
+    color: #FAFAFA;
+    font-family: 'Assistant', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 0.18px;
+  }
+  
+  .MuiSvgIcon-root {
+    color: ${props => props.$statusColor || '#FAFAFA'};
+  }
 `;
 
-const StatusDamaged = styled.span`
+// New Tag-based components
+export const TagsContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  width: 100%;
+  justify-content: flex-start;
+`;
+
+export const DataTag = styled.div`
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  height: 42px;
+  padding: 0 12px;
   display: flex;
   align-items: center;
-  gap: 6px;
-  color: #f44336;
+  gap: 10px;
+  direction: rtl;
+  
+  .tag-label {
+    color: #FAFAFA;
+    font-family: 'Assistant', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 0.18px;
+  }
+  
+  .tag-icon {
+    display: flex;
+    color: rgba(225, 234, 255, 0.8);
+  }
 `;
 
-export const formatReadinessStatus = (status: string): React.ReactNode => {
-  if (status === 'ready') {
-    return (
-      <StatusReady>
-        <CheckCircleIcon sx={{ fontSize: 18 }} />
-        כשיר
-      </StatusReady>
-    );
+export const InlineMetadataContainer = styled.div`
+  display: flex;
+  gap: 4px;
+`;
+
+export const InlinePill = styled.div`
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 2px 12px;
+  display: flex;
+  align-items: center;
+  height: 24px;
+  
+  span {
+    color: #FAFAFA;
+    font-family: 'Assistant', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.16px;
+    white-space: nowrap;
   }
-  if (status === 'partly_ready') {
-    return (
-      <StatusPartial>
-        <CheckCircleIcon sx={{ fontSize: 18 }} />
-        כשיר חלקית
-      </StatusPartial>
-    );
-  }
-  if (status === 'damaged') {
-    return (
-      <StatusDamaged>
-        <CancelIcon sx={{ fontSize: 18 }} />
-        תקול
-      </StatusDamaged>
-    );
-  }
-  return status;
+`;
+
+const RenderSection = ({ title, icon, fields, tags }: ViewSection) => {
+  return (
+    <SectionBox>
+      <SectionLabelRow>
+        {icon}
+        <SectionLabelText>{title}</SectionLabelText>
+      </SectionLabelRow>
+
+      {fields && fields.length > 0 && (
+        <FieldsRow>
+          {fields
+            .filter((field) => {
+              if (field.value === null || field.value === undefined) return false;
+              if (typeof field.value === 'string' && field.value.trim() === '') return false;
+              return true;
+            })
+            .map((field, i) => (
+              <FieldColumn
+                key={i}
+                $flex={field.fullWidth ? '1 1 100%' : (field.flex || '1')}
+              >
+                <FieldLabelText>{field.label}</FieldLabelText>
+                <FieldValuePill $statusColor={field.statusColor}>
+                  {field.statusIcon && field.statusIcon}
+                  <span>{field.value}</span>
+                </FieldValuePill>
+              </FieldColumn>
+            ))}
+        </FieldsRow>
+      )}
+
+      {tags && tags.length > 0 && (
+        <TagsContainer>
+          {tags.map((tag) => (
+            <DataTag key={tag.id}>
+              {tag.icon && <div className="tag-icon">{tag.icon}</div>}
+              <span className="tag-label">{tag.label}</span>
+              {tag.metadata && tag.metadata.length > 0 && (
+                <InlineMetadataContainer>
+                  {tag.metadata.map((meta, idx) => (
+                    <InlinePill key={idx}>
+                      <span>{meta.label}</span>
+                    </InlinePill>
+                  ))}
+                </InlineMetadataContainer>
+              )}
+            </DataTag>
+          ))}
+        </TagsContainer>
+      )}
+    </SectionBox>
+  );
 };
 
 export const EntityView = ({
   name,
   icon,
-  badge,
-  sections,
-  tagSections,
+  mainTitle,
+  subtitle,
   editLabel,
+  sections,
   onEdit,
-  onDelete,
-  onClose,
 }: EntityViewProps) => {
   return (
-    <ViewContainer>
-      <ViewHeader>
-        <HeaderLeft>
-          <EditButton onClick={onEdit} startIcon={<EditIcon sx={{ fontSize: 18 }} />}>
+    <div style={{ direction: 'rtl' }}>
+      <PageHeaderArea>
+        <PageTitle>{mainTitle}</PageTitle>
+        {subtitle && <PageSubtitle>{subtitle}</PageSubtitle>}
+      </PageHeaderArea>
+
+      <Card>
+        <CardHeader>
+          <EntityNameRow>
+            {icon && <IconCircle>{icon}</IconCircle>}
+            <EntityNameText>{name}</EntityNameText>
+          </EntityNameRow>
+          <EditButton
+            onClick={onEdit}
+            startIcon={<EditIcon sx={{ fontSize: 24 }} />}
+          >
             {editLabel}
           </EditButton>
-          {onDelete && (
-            <DeleteButton onClick={onDelete}>
-              <DeleteOutlineIcon sx={{ fontSize: 20 }} />
-            </DeleteButton>
-          )}
-          {onClose && (
-            <CloseButton onClick={onClose}>
-              <CloseIcon sx={{ fontSize: 20 }} />
-            </CloseButton>
-          )}
-        </HeaderLeft>
-        <HeaderRight>
-          <EntityName>
-            {name}
-            <EntityIcon>{icon}</EntityIcon>
-          {badge && <Badge>{badge}</Badge>}
-          </EntityName>
-        </HeaderRight>
-      </ViewHeader>
+        </CardHeader>
 
-      {sections.map((section, sectionIndex) => (
-        <SectionContainer key={sectionIndex}>
-          {section.title && <SectionTitle>{section.title}</SectionTitle>}
-          <FieldsGrid>
-            {section.fields.map((field, fieldIndex) => (
-              <FieldCard key={fieldIndex} $fullWidth={field.fullWidth}>
-                <FieldLabel $fullWidth={field.fullWidth}>{field.label}</FieldLabel>
-                <FieldValue $fullWidth={field.fullWidth}>{field.value}</FieldValue>
-              </FieldCard>
-            ))}
-          </FieldsGrid>
-        </SectionContainer>
-      ))}
-
-      {tagSections?.map((tagSection, index) => (
-        <SectionContainer key={`tags-${index}`}>
-          <SectionTitle>{tagSection.title}</SectionTitle>
-          <TagsContainer>
-            {tagSection.tags.map((tag) => (
-              <Tag key={tag.id}>
-                {tag.icon && <TagIcon>{tag.icon}</TagIcon>}
-                {tag.label}
-              </Tag>
-            ))}
-          </TagsContainer>
-        </SectionContainer>
-      ))}
-    </ViewContainer>
+        {sections.map((section, idx) => (
+          <RenderSection key={idx} {...section} />
+        ))}
+      </Card>
+    </div>
   );
 };

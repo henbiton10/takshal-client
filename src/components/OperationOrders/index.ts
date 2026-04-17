@@ -6,3 +6,5 @@ export { AntennaSelector } from './AntennaSelector';
 export { ConnectivitySelector } from './ConnectivitySelector';
 export { ConflictPopup } from './ConflictPopup';
 export { useAllocationValidation } from './useAllocationValidation';
+export { OperationOrderCard } from './OperationOrderCard';
+export { OperationOrderDetails } from './OperationOrderDetails';

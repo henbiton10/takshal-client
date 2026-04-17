@@ -11,31 +11,31 @@ src/
 │   └── index.ts        # Theme export
 │
 ├── shared/             # Reusable components and utilities
-│   └── components/
-│       ├── ui/         # Generic UI components
-│       │   ├── FormLayout.tsx      # Form container, grid, wrappers
-│       │   ├── Button.tsx          # Styled button component
-│       │   ├── FormSelect.tsx      # Reusable select field
-│       │   ├── FormTextField.tsx   # Reusable text field
-│       │   ├── MainContainer.tsx   # Main layout container
-│       │   └── index.ts            # UI exports
-│       │
-│       ├── EntityFormBanner/       # Entity form banner with icon
-│       │   ├── EntityFormBanner.tsx
-│       │   └── index.ts
-│       │
-│       └── EditableNameField/      # Editable name field with icon
-│           ├── EditableNameField.tsx
-│           └── index.ts
+│   ├── components/
+│   │   ├── ui/         # Generic UI components
+│   │   │   ├── FormLayout.tsx      # Form container, grid, wrappers
+│   │   │   ├── Button.tsx          # Styled button component
+│   │   │   ├── FormSelect.tsx      # Reusable select field
+│   │   │   ├── FormTextField.tsx   # Reusable text field
+│   │   │   ├── MainContainer.tsx   # Main layout container
+│   │   │   ├── LoadingSpinner.tsx  # Centralized loading indicator
+│   │   │   ├── BigEmptyState.tsx   # Premium empty state component
+│   │   │   ├── Toast/              # Notification system (Context + Component)
+│   │   │   └── index.ts            # UI exports
+│   │   │
+│   │   └── PageLayout/     # Standardized page structure (Sticky header + Breadcrumbs)
+│   │
+│   └── constants/          # Shared constants and enums
+│       └── status.ts       # Shared readiness status options with icons
 │
 └── components/         # Feature-specific components
-    ├── SatelliteForm/
-    │   ├── SatelliteForm.tsx
-    │   ├── types.ts
-    │   ├── constants.ts
-    │   └── index.ts
+    ├── ResourcesManagement/ # Entity management system (Stations, Satellites, etc.)
+    │   ├── components/      # Sub-components (Dashboard, AddModal, Section)
+    │   ├── hooks/           # EntityManager and ResourcesManagement logic
+    │   ├── entityConfig.tsx # Central configuration for all entities
+    │   └── ResourcesManagement.tsx
     │
-    └── ResourcesManagement/
+    └── OperationOrders/     # Order and Allocation management
         └── ...
 ```
 
@@ -259,20 +259,53 @@ export const StationForm = ({ onSave }: StationFormProps) => {
 };
 ```
 
+## Global Systems
+
+### Toast Notification System
+A centralized system for displaying premium success and error notifications.
+
+**Usage:**
+```tsx
+const { showSuccess, showError } = useToast();
+
+// Trigger a success notification
+showSuccess("הלווין נשמר", "הלווין נוסף בהצלחה למערכת");
+
+// Trigger an error notification
+showError("שגיאה", "לא ניתן היה לשמור את השינויים");
+```
+
+**Architecture:**
+- `ToastContext.tsx`: Manages the state and list of active toasts.
+- `ToastProvider`: Wraps the app and renders overlapping toasts at the bottom-right.
+- `Toast.tsx`: The visual component with slide-in/out animations.
+
+### Readiness Status System
+Standardized status options used across all resource types.
+
+**Usage:**
+```tsx
+import { READINESS_STATUS_OPTIONS } from '../../shared/constants/status';
+
+// In forms
+<FormSelect options={READINESS_STATUS_OPTIONS} ... />
+```
+
+## Visibility & Logic Patterns
+
+### Note Visibility
+In View Mode, notes are hidden if they are empty.
+In Edit Mode, notes are mandatory if the status is NOT "Ready".
+
+### Entity Management Pattern
+Entities (Stations, Satellites, etc.) are managed through a central configuration (`entityConfig.tsx`) and a generic manager hook (`useEntityManager`). This allows the `ResourcesManagement` page to handle any entity type without duplicating logic.
+
 ## Clean Code Principles Applied
 
 1. **Single Responsibility**: Each component does one thing
-2. **DRY**: Common patterns extracted into reusable components
+2. **DRY**: Common patterns like `READINESS_STATUS_OPTIONS` extracted to shared constants
 3. **Consistent Naming**: Clear, descriptive names throughout
-4. **Type Safety**: Full TypeScript coverage
-5. **Theme Consistency**: Centralized styling values
-6. **Composition**: Small components composed into larger features
-7. **Separation of Concerns**: Logic, types, constants, and UI separated
-
-## Benefits
-
-- **Maintainability**: Changes to styling apply everywhere
-- **Consistency**: All forms look and behave the same way
-- **Reusability**: Create new entity forms quickly
-- **Type Safety**: Catch errors at compile time
-- **Readability**: Clear structure and naming conventions
+4. **Type Safety**: Full TypeScript coverage for forms and API responses
+5. **Theme Consistency**: Centralized styling via `styled-components` and theme tokens
+6. **Composition**: Small components like `BigEmptyState` composed into larger features
+7. **Declarative UI**: Features like gender-aware toasts are defined in config objects (`EntityConfig`) rather than hardcoded logic.

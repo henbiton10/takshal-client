@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Sidebar from './components/Sidebar';
@@ -7,9 +7,9 @@ import { AppLayout, MainContent } from './components/App/AppLayout';
 import { Authorization } from './components/Authorization/Authorization';
 import { theme } from './theme/theme';
 import { ResourcesManagement } from './components/ResourcesManagement';
-import { SatelliteFormData } from './components/SatelliteForm';
 import { OperationOrderPage } from './components/OperationOrders';
 import { DashboardPage } from './components/Dashboard';
+import { ToastProvider } from './shared/components/ui/Toast';
 
 const STORAGE_KEY = 'takshal_selected_menu';
 
@@ -26,11 +26,6 @@ function App() {
     setSelectedMenuItem(itemId);
   };
 
-  const handleSaveSatellite = useCallback(async (data: SatelliteFormData) => {
-    console.log('Saving satellite:', data);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-  }, []);
-
   const renderContent = () => {
     switch (selectedMenuItem) {
       case 'dashboard':
@@ -38,7 +33,7 @@ function App() {
       case 'operations':
         return <OperationOrderPage />;
       case 'resources':
-        return <ResourcesManagement onSaveSatellite={handleSaveSatellite} />;
+        return <ResourcesManagement />;
       default:
         return null;
     }
@@ -48,17 +43,19 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <GlobalStyle />
-      <Authorization>
-        <AppLayout>
-          <MainContent>
-            {renderContent()}
-          </MainContent>
-          <Sidebar 
-            selectedItem={selectedMenuItem}
-            onItemSelect={handleMenuItemSelect}
-          />
-        </AppLayout>
-      </Authorization>
+      <ToastProvider>
+        <Authorization>
+          <AppLayout>
+            <MainContent>
+              {renderContent()}
+            </MainContent>
+            <Sidebar 
+              selectedItem={selectedMenuItem}
+              onItemSelect={handleMenuItemSelect}
+            />
+          </AppLayout>
+        </Authorization>
+      </ToastProvider>
     </ThemeProvider>
   );
 }
