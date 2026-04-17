@@ -1,15 +1,12 @@
 import { TerminalFormData } from './types';
+import { READINESS_STATUS_OPTIONS } from '../../shared/constants/status';
 
 export const FREQUENCY_BAND_OPTIONS = [
   { value: 'ka', label: 'KA' },
   { value: 'ku', label: 'KU' },
 ];
 
-export const READINESS_STATUS_OPTIONS = [
-  { value: 'ready', label: 'כשיר' },
-  { value: 'partly_ready', label: 'כשיר חלקית' },
-  { value: 'damaged', label: 'תקול' },
-];
+export { READINESS_STATUS_OPTIONS };
 
 export const INITIAL_FORM_DATA: TerminalFormData = {
   name: '',

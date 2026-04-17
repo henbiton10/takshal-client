@@ -1,5 +1,9 @@
 import SatelliteAltIcon from '@mui/icons-material/SatelliteAlt';
-import { EntityView, ViewSection, formatReadinessStatus } from '../../shared/components/EntityView';
+import { EntityView, formatReadinessStatus, ViewSection } from '../../shared/components/EntityView';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import styled from 'styled-components';
+import israelIcon from '../../assets/israel.png';
+import earthIcon from '../../assets/earth.png';
 
 interface SatelliteViewProps {
   satellite: any;
@@ -8,59 +12,57 @@ interface SatelliteViewProps {
   onClose?: () => void;
 }
 
-const formatAffiliation = (affiliation: string): string => {
-  if (affiliation === 'israeli') return 'ישראלי';
-  if (affiliation === 'international') return 'בינלאומי';
-  return affiliation;
+const getAffiliationData = (affiliation: string): { label: string; icon?: string } => {
+  if (affiliation === 'israeli') return { label: 'ישראלי', icon: israelIcon };
+  if (affiliation === 'international') return { label: 'בינלאומי', icon: earthIcon };
+  return { label: affiliation };
 };
 
-export const SatelliteView = ({ satellite, onEdit, onDelete, onClose }: SatelliteViewProps) => {
+const IconWrapper = styled.div`
+  display: flex;
+  color: #e1eaff;
+  opacity: 0.8;
+`;
+
+export const SatelliteView = ({ satellite, onEdit }: SatelliteViewProps) => {
+  const status = formatReadinessStatus(satellite.readinessStatus);
+  const affData = getAffiliationData(satellite.affiliation);
+
   const sections: ViewSection[] = [
     {
+      title: 'פרטי הלווין',
+      icon: <IconWrapper><AssignmentIcon sx={{ fontSize: 20 }} /></IconWrapper>,
       fields: [
-        {
-          label: 'שייכות',
-          value: formatAffiliation(satellite.affiliation),
+        { 
+          label: 'שייכות', 
+          value: (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              {affData.icon && <img src={affData.icon} alt="" style={{ width: 20, height: 20, objectFit: 'contain' }} />}
+              <span>{affData.label}</span>
+            </div>
+          )
         },
-        {
-          label: 'ממיר תדר',
-          value: satellite.hasFrequencyConverter ? 'כן' : 'לא',
+        { label: 'ממיר תדר', value: satellite.hasFrequencyConverter ? 'כן' : 'לא' },
+        { 
+          label: 'סטטוס כשירות', 
+          value: status.text, 
+          statusColor: status.color,
+          statusIcon: status.icon
         },
-        {
-          label: 'סטטוס כשירות',
-          value: formatReadinessStatus(satellite.readinessStatus),
-        },
-        {
-          label: 'קישור למאגר',
-          value: 'אין',
-        },
-      ],
-    },
+        { label: 'הערות כלליות', value: satellite.notes || '', flex: '2' },
+      ]
+    }
   ];
-
-  if (satellite.notes) {
-    sections.push({
-      title: 'הערות',
-      fields: [
-        {
-          label: '',
-          value: satellite.notes,
-          fullWidth: true,
-        },
-      ],
-    });
-  }
 
   return (
     <EntityView
       name={satellite.name}
-      icon={<SatelliteAltIcon sx={{ fontSize: 24 }} />}
-      badge={formatAffiliation(satellite.affiliation)}
-      sections={sections}
+      icon={<SatelliteAltIcon sx={{ fontSize: 21 }} />}
+      mainTitle="צפייה בלווין"
+      subtitle="ניתן לערוך את פרטי הלווין"
       editLabel="ערוך לווין"
+      sections={sections}
       onEdit={onEdit}
-      onDelete={onDelete}
-      onClose={onClose}
     />
   );
 };

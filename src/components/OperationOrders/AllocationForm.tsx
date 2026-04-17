@@ -58,13 +58,13 @@ const FormTitle = styled.h3`
   margin: 0;
 `;
 
-const AllocationTypeChip = styled(Chip)<{ $isMain?: boolean }>`
+const AllocationTypeChip = styled(Chip) <{ $isMain?: boolean }>`
   background: ${(props) =>
     props.$isMain ? 'rgba(34, 197, 94, 0.15)' : 'rgba(59, 130, 246, 0.15)'};
   color: ${(props) => (props.$isMain ? '#22c55e' : '#3b82f6')};
   border: 1px solid
     ${(props) =>
-      props.$isMain ? 'rgba(34, 197, 94, 0.3)' : 'rgba(59, 130, 246, 0.3)'};
+    props.$isMain ? 'rgba(34, 197, 94, 0.3)' : 'rgba(59, 130, 246, 0.3)'};
   font-size: 12px;
   height: 26px;
 `;
@@ -149,9 +149,16 @@ const StyledSelect = styled(Select)`
   }
 
   .MuiSelect-select {
-    padding: 10px 12px;
+    padding: 10px 12px 10px 32px !important;
     font-size: 14px;
     text-align: right;
+    direction: rtl;
+  }
+
+  .MuiSelect-icon {
+    left: 7px;
+    right: auto;
+    color: rgba(225, 234, 255, 0.7);
   }
 `;
 
@@ -500,7 +507,7 @@ const SubAllocationCardComponent = ({
             freeSolo
             options={[]}
             value={sub.tailNumbers || []}
-            onChange={(e, newValue) => {
+            onChange={(_, newValue) => {
               const numericValues = newValue
                 .map(v => typeof v === 'string' ? Number(v.trim()) : v)
                 .filter(v => !isNaN(v) && v !== 0);
@@ -1067,7 +1074,7 @@ export const AllocationForm = ({
           return updated;
         })
       );
-      
+
       if (subAllocationErrors[id]?.[field as keyof SubAllocationErrors]) {
         setSubAllocationErrors((prev) => {
           const subErrors = { ...prev[id] };
@@ -1312,8 +1319,8 @@ export const AllocationForm = ({
           {editingAllocation
             ? 'עריכת הקצאה'
             : parentAllocation
-            ? `הוספת תת-הקצאה להקצאה #${parentAllocation.orderNumber}`
-            : 'הוספת הקצאה חדשה'}
+              ? `הוספת תת-הקצאה להקצאה #${parentAllocation.orderNumber}`
+              : 'הוספת הקצאה חדשה'}
         </FormTitle>
       </FormHeader>
 
@@ -1451,15 +1458,15 @@ export const AllocationForm = ({
                 <Controller
                   name="transmissionConnectivityId"
                   control={control}
-                  rules={{ 
-                    required: filteredMainTransmissionValidation?.connectivityRequired ? 'שדה חובה' : false 
+                  rules={{
+                    required: filteredMainTransmissionValidation?.connectivityRequired ? 'שדה חובה' : false
                   }}
                   render={({ field: connField }) => (
                     <Controller
                       name="transmissionChannelNumber"
                       control={control}
-                      rules={{ 
-                        required: filteredMainTransmissionValidation?.connectivityRequired ? 'שדה חובה' : false 
+                      rules={{
+                        required: filteredMainTransmissionValidation?.connectivityRequired ? 'שדה חובה' : false
                       }}
                       render={({ field: channelField }) => (
                         <ConnectivitySelector
@@ -1570,15 +1577,15 @@ export const AllocationForm = ({
                 <Controller
                   name="receptionConnectivityId"
                   control={control}
-                  rules={{ 
-                    required: filteredMainReceptionValidation?.connectivityRequired ? 'שדה חובה' : false 
+                  rules={{
+                    required: filteredMainReceptionValidation?.connectivityRequired ? 'שדה חובה' : false
                   }}
                   render={({ field: connField }) => (
                     <Controller
                       name="receptionChannelNumber"
                       control={control}
-                      rules={{ 
-                        required: filteredMainReceptionValidation?.connectivityRequired ? 'שדה חובה' : false 
+                      rules={{
+                        required: filteredMainReceptionValidation?.connectivityRequired ? 'שדה חובה' : false
                       }}
                       render={({ field: channelField }) => (
                         <ConnectivitySelector
@@ -1618,7 +1625,7 @@ export const AllocationForm = ({
                     freeSolo
                     options={[]}
                     value={field.value || []}
-                    onChange={(e, newValue) => {
+                    onChange={(_, newValue) => {
                       const numericValues = newValue
                         .map(v => typeof v === 'string' ? Number(v.trim()) : v)
                         .filter(v => !isNaN(v) && v !== 0);

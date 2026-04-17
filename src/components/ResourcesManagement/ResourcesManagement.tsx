@@ -1,477 +1,240 @@
-import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
-import {
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  TextField,
-  InputAdornment,
-  Button,
-  Box,
-} from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AddIcon from '@mui/icons-material/Add';
+import CellTowerIcon from '@mui/icons-material/CellTower';
 import styled from 'styled-components';
-import { ResourcesManagementProps } from './types';
 import { ENTITY_CONFIGS, ENTITY_CONFIGS_ARRAY } from './entityConfig';
-import { useEntityManager } from './hooks';
-import { EntitySection } from './components';
+import { useResourcesManagement } from './hooks/useResourcesManagement';
+import { EntitySection, AddResourceModal, ResourceDashboard } from './components';
 import { ConfirmDialog } from '../../shared/components/ConfirmDialog';
-import { theme } from '../../theme';
-
-const Container = styled.div`
-  padding: 32px 40px;
-  max-width: 100%;
-  height: 100%;
-`;
-
-const Header = styled.div`
-  display: flex;
-  justify-content: end;
-  align-items: center;
-  margin-bottom: 16px;
-`;
-
-const Title = styled.h1`
-  color: white;
-  font-size: 26px;
-  font-weight: ${theme.typography.fontWeight.bold};
-  margin: 0;
-`;
+import { PageLayout } from '../../shared/components/PageLayout';
+import { LoadingSpinner } from '../../shared/components/ui/LoadingSpinner';
+import { BigEmptyState } from '../../shared/components/ui/BigEmptyState';
 
 const SearchContainer = styled.div`
-  margin-bottom: 16px;
-`;
-
-const AccordionsContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-`;
-
-const StyledAccordion = styled(Accordion)`
-  && {
-    background: rgba(30, 45, 80, 0.4);
-    border-radius: 8px;
-    border: 1px solid rgba(174, 199, 255, 0.08);
-    box-shadow: none;
-    
-    &:before {
-      display: none;
-    }
-    
-    &.Mui-expanded {
-      margin: 0;
-      background: rgba(30, 45, 80, 0.5);
-    }
-  }
-`;
-
-const StyledAccordionSummary = styled(AccordionSummary)`
-  && {
-    min-height: 56px;
-    padding: 0 20px;
-    
-    .MuiAccordionSummary-content {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin: 12px 0;
-      
-      &.Mui-expanded {
-        margin: 12px 0;
-      }
-    }
-    
-    .MuiAccordionSummary-expandIconWrapper {
-      color: rgba(174, 199, 255, 0.6);
-      
-      &.Mui-expanded {
-        color: #aec7ff;
-      }
-    }
-  }
-`;
-
-const SummaryContent = styled.div`
   display: flex;
   align-items: center;
-  gap: 10px;
-  flex: 1;
-  flex-direction: row-reverse;
+  justify-content: space-between;
+  background: #1c2439;
+  border: 1px solid #305088;
+  border-radius: 21px;
+  padding: 0 16px;
+  width: 190px;
+  height: 38px;
+  flex-shrink: 0;
 `;
 
-const SectionIcon = styled.div`
-  display: flex;
-  align-items: center;
-  color: white;
-  font-size: 18px;
+const SearchInput = styled.input`
+  background: none;
+  border: none;
+  color: #e1eaff;
+  outline: none;
+  font-size: 16px;
+  font-weight: 600;
+  width: 100%;
+  text-align: right;
+  direction: rtl;
+  &::placeholder { color: #e1eaff; font-weight: 600; }
 `;
 
-const SectionTitle = styled.h3`
-  color: rgba(225, 234, 255, 0.9);
-  font-size: 14px;
-  margin: 0;
-  font-weight: 500;
-`;
-
-const SummaryActions = styled.div`
+export const AddResourceButton = styled.button`
   display: flex;
   align-items: center;
   gap: 8px;
+  background: #3d62b2;
+  color: #f5f5f5;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 12px 8px 16px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
+  &:hover { background: #304f93; }
 `;
 
-const AddHeaderButton = styled(Button)`
-  && {
-    background: #4a5569;
-    color: white;
-    border-radius: 16px;
-    padding: 4px 12px;
-    text-transform: none;
-    font-weight: 500;
-    font-size: 12px;
-    min-width: auto;
-    &:hover {
-      background: #5a6579;
-    }
-    
-    .MuiButton-startIcon {
-      margin-left: 4px;
-      font-size: 16px;
-      font-weight: 500;
-    }
-  }
-`;
+export const ResourcesManagement = () => {
+  const {
+    searchQuery, setSearchQuery,
+    hasInitialized,
+    showAddModal, setShowAddModal,
+    selectedCategoryId,
+    deleteDialog,
+    entityManagers,
+    filteredItems,
+    addingEntityId,
+    handleSelectEntityType,
+    handleShowAll,
+    handleBackToDashboard,
+    handleAddClick,
+    createSaveHandler,
+    handleCardClick,
+    handleClose,
+    handleCancel,
+    handleEditClick,
+    handleDeleteClick,
+    handleDeleteConfirm,
+    handleDeleteCancel,
+  } = useResourcesManagement();
 
-const StyledAccordionDetails = styled(AccordionDetails)`
-  && {
-    padding: 25px;
-    border-top: 1px solid rgba(174, 199, 255, 0.08);
-    background: rgba(17, 33, 69, 0.3);
-  }
-`;
+  const activeManagerEntry = Object.entries(entityManagers).find(([_, m]) => m.viewMode === 'edit');
+  const activeEntityId = activeManagerEntry ? activeManagerEntry[0] : null;
+  const activeManager = activeManagerEntry ? activeManagerEntry[1] : null;
 
-interface DeleteDialogState {
-  open: boolean;
-  entityId: string | null;
-  itemId: number | null;
-  itemName: string;
-}
+  const viewManagerEntry = Object.entries(entityManagers).find(([_, m]) => m.viewMode === 'view');
+  const viewEntityId = viewManagerEntry ? viewManagerEntry[0] : null;
+  const viewManager = viewManagerEntry ? viewManagerEntry[1] : null;
 
-export const ResourcesManagement = ({
-  onSaveStation,
-  onSaveSatellite,
-  onSaveTerminal,
-  onSaveNetwork,
-}: ResourcesManagementProps) => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
-  const prevSearchQuery = useRef('');
-  const [deleteDialog, setDeleteDialog] = useState<DeleteDialogState>({
-    open: false,
-    entityId: null,
-    itemId: null,
-    itemName: '',
-  });
-
-  // Create entity managers for each entity type
-  const stationsManager = useEntityManager(ENTITY_CONFIGS.stations);
-  const satellitesManager = useEntityManager(ENTITY_CONFIGS.satellites);
-  const terminalsManager = useEntityManager(ENTITY_CONFIGS.terminals);
-  const networksManager = useEntityManager(ENTITY_CONFIGS.networks);
-
-  const entityManagers = {
-    stations: stationsManager,
-    satellites: satellitesManager,
-    terminals: terminalsManager,
-    networks: networksManager,
+  const handleCancelForm = () => {
+    if (activeEntityId) handleCancel(activeEntityId);
   };
 
-  // Keep a ref to access latest managers in callbacks
-  const managersRef = useRef(entityManagers);
-  managersRef.current = entityManagers;
-
-  // Filter items based on search query
-  const filteredItems = useMemo(() => {
-    const result: Record<string, any[]> = {};
-    const query = searchQuery.trim().toLowerCase();
-    
-    Object.entries(entityManagers).forEach(([key, manager]) => {
-      const activeItems = manager.items.filter((item: any) => !item.isDeleted);
-      if (!query) {
-        result[key] = activeItems;
-      } else {
-        result[key] = activeItems.filter((item: any) => 
-          item.name?.toLowerCase().includes(query)
-        );
-      }
-    });
-    
-    return result;
-  }, [searchQuery, entityManagers.stations.items, entityManagers.satellites.items, entityManagers.terminals.items, entityManagers.networks.items]);
-
-  // Fetch all items when search starts and auto-expand/collapse sections
-  useEffect(() => {
-    const query = searchQuery.trim();
-    const prevQuery = prevSearchQuery.current.trim();
-    
-    if (query) {
-      // Fetch items for all sections if not already loaded
-      Object.values(entityManagers).forEach((manager) => {
-        if (manager.items.length === 0 && !manager.loading) {
-          manager.fetchItems();
-        }
-      });
-
-      // Auto-expand sections with results, collapse those without
-      const sectionsWithResults = new Set<string>();
-      Object.entries(filteredItems).forEach(([sectionId, items]) => {
-        if (items.length > 0) {
-          sectionsWithResults.add(sectionId);
-        }
-      });
-      
-      setExpandedSections(sectionsWithResults);
-    } else if (prevQuery && !query) {
-      // Collapse all sections only when search is cleared (was searching, now not)
-      setExpandedSections(new Set());
-    }
-    
-    prevSearchQuery.current = searchQuery;
-  }, [searchQuery, filteredItems]);
-
-  // Auto-refresh expanded sections every 10 seconds (only when in list mode)
-  useEffect(() => {
-    const interval = setInterval(() => {
-      expandedSections.forEach((sectionId) => {
-        const manager = managersRef.current[sectionId as keyof typeof entityManagers];
-        // Only refresh if in list mode (not editing or viewing)
-        if (manager && !manager.loading && manager.viewMode === 'list') {
-          manager.fetchItems(true); // silent refresh - no loading state
-        }
-      });
-    }, 10000);
-
-    return () => clearInterval(interval);
-  }, [expandedSections]);
-
-  const handleAccordionChange = useCallback(
-    (panel: string) => (_event: React.SyntheticEvent, isExpanded: boolean) => {
-      setExpandedSections((prev) => {
-        const newSet = new Set(prev);
-        if (isExpanded) {
-          newSet.add(panel);
-        } else {
-          newSet.delete(panel);
-        }
-        return newSet;
-      });
-      
-      const manager = managersRef.current[panel as keyof typeof entityManagers];
-      if (manager) {
-        if (isExpanded) {
-          manager.fetchItems();
-        } else {
-          manager.resetAll();
-        }
-      }
-    },
-    [],
+  const searchAction = (
+    <SearchContainer>
+      <SearchInput placeholder="חיפוש" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+      <SearchIcon sx={{ color: '#e1eaff', fontSize: 18 }} />
+    </SearchContainer>
   );
 
-  const handleAddClick = useCallback((sectionId: string) => {
-    const manager = managersRef.current[sectionId as keyof typeof entityManagers];
-    if (manager) {
-      manager.switchToAddMode();
+  const getPageConfig = () => {
+    if (activeEntityId && activeManager) {
+      const config = ENTITY_CONFIGS[activeEntityId];
+      return {
+        breadcrumbs: {
+          parent: 'אמצעים', onParentClick: handleBackToDashboard,
+          middle: config.title, onMiddleClick: () => handleShowAll(activeEntityId),
+          current: activeManager.selectedData?.name || (activeManager.selectedId ? '' : 'הוספה'),
+          onBack: handleCancelForm
+        },
+        actions: searchAction
+      };
     }
-  }, []);
-
-  const createSaveHandler = useCallback((entityId: string, onSaveCallback?: (data: any) => Promise<void>) => {
-    return async (formData: any) => {
-      const manager = managersRef.current[entityId as keyof typeof entityManagers];
-      if (manager) {
-        await manager.handleSave(formData, onSaveCallback);
-      }
+    if (viewEntityId && viewManager) {
+      const config = ENTITY_CONFIGS[viewEntityId];
+      return {
+        breadcrumbs: {
+          parent: 'אמצעים', onParentClick: handleBackToDashboard,
+          middle: config.title, onMiddleClick: () => handleShowAll(viewEntityId),
+          current: viewManager.selectedData?.name || config.title,
+          onBack: () => handleClose(viewEntityId)
+        },
+        actions: searchAction
+      };
+    }
+    if (selectedCategoryId) {
+      const config = ENTITY_CONFIGS[selectedCategoryId];
+      return {
+        breadcrumbs: {
+          parent: 'אמצעים', onParentClick: handleBackToDashboard,
+          current: config.title, onBack: handleBackToDashboard
+        },
+        actions: (
+          <>
+            {searchAction}
+            <AddResourceButton onClick={() => handleAddClick(selectedCategoryId)}>
+              הוסף {config.singularTitle}
+              <AddIcon sx={{ fontSize: 24 }} />
+            </AddResourceButton>
+          </>
+        )
+      };
+    }
+    return {
+      title: "אמצעים",
+      actions: (
+        <>
+          {searchAction}
+          <AddResourceButton onClick={() => setShowAddModal(true)}>
+            הוסף אמצעי
+            <AddIcon sx={{ fontSize: 24 }} />
+          </AddResourceButton>
+        </>
+      )
     };
-  }, []);
+  };
 
-  const handleCardClick = useCallback((entityId: string, itemId: number) => {
-    const manager = managersRef.current[entityId as keyof typeof entityManagers];
-    if (manager) {
-      manager.handleCardClick(itemId);
+  const renderContent = () => {
+    if (!hasInitialized) return <LoadingSpinner />;
+    
+    if (activeEntityId && activeManager) {
+      const config = ENTITY_CONFIGS[activeEntityId];
+      const FormComponent = config.FormComponent;
+      
+      const propNameMap: Record<string, string> = {
+        stations: 'editingStationId',
+        satellites: 'editingSatelliteId',
+        terminals: 'editingTerminalId',
+        networks: 'editingNetworkId'
+      };
+
+      return (
+        <FormComponent
+          onSave={createSaveHandler(config.id)}
+          onDelete={() => activeManager.selectedId && activeManager.selectedData && handleDeleteClick(config.id, activeManager.selectedId, activeManager.selectedData.name)}
+          initialData={activeManager.editingData}
+          onClose={() => handleClose(config.id)}
+          onCancel={handleCancelForm}
+          {...{ [propNameMap[config.id]]: activeManager.selectedId }}
+        />
+      );
     }
-  }, []);
 
-  const handleClose = useCallback((entityId: string) => {
-    const manager = managersRef.current[entityId as keyof typeof entityManagers];
-    if (manager) {
-      manager.resetEditState();
+    const isEmpty = addingEntityId === null && Object.values(entityManagers).every(m => (m.items?.length || 0) === 0);
+    if (isEmpty) return (
+      <BigEmptyState 
+        icon={<CellTowerIcon sx={{ fontSize: 48, color: '#e1eaff' }} />}
+        title="טרם הוגדרו אמצעים במערכת"
+        subtitle="כדי להתחיל בתכנון, יש להוסיף אמצעי."
+      />
+    );
+
+    if (selectedCategoryId) {
+      const config = ENTITY_CONFIGS[selectedCategoryId];
+      const manager = entityManagers[selectedCategoryId as keyof typeof entityManagers];
+      return (
+        <EntitySection
+          config={config}
+          items={filteredItems[config.id] || manager.items}
+          loading={manager.loading}
+          viewMode={manager.viewMode}
+          selectedId={manager.selectedId}
+          selectedData={manager.selectedData}
+          editingData={manager.editingData}
+          onCardClick={(id) => handleCardClick(config.id, id)}
+          onClose={() => handleClose(config.id)}
+          onCancel={() => handleCancel(config.id)}
+          onEdit={() => handleEditClick(config.id)}
+          onDelete={(id, name) => handleDeleteClick(config.id, id, name)}
+          onSave={createSaveHandler(config.id)}
+        />
+      );
     }
-  }, []);
 
-  const handleCancel = useCallback((entityId: string) => {
-    const manager = managersRef.current[entityId as keyof typeof entityManagers];
-    if (manager) {
-      manager.switchToViewMode();
-    }
-  }, []);
-
-  const handleEditClick = useCallback((entityId: string) => {
-    const manager = managersRef.current[entityId as keyof typeof entityManagers];
-    if (manager) {
-      manager.switchToEditMode();
-    }
-  }, []);
-
-  const handleDeleteClick = useCallback((entityId: string, itemId: number, itemName: string) => {
-    setDeleteDialog({
-      open: true,
-      entityId,
-      itemId,
-      itemName,
-    });
-  }, []);
-
-  const handleDeleteConfirm = useCallback(async () => {
-    if (deleteDialog.entityId && deleteDialog.itemId) {
-      const manager = managersRef.current[deleteDialog.entityId as keyof typeof entityManagers];
-      if (manager) {
-        try {
-          await manager.handleDelete(deleteDialog.itemId);
-        } catch (error) {
-          console.error('Failed to delete:', error);
-        }
-      }
-    }
-    setDeleteDialog({ open: false, entityId: null, itemId: null, itemName: '' });
-  }, [deleteDialog.entityId, deleteDialog.itemId]);
-
-  const handleDeleteCancel = useCallback(() => {
-    setDeleteDialog({ open: false, entityId: null, itemId: null, itemName: '' });
-  }, []);
+    return (
+      <ResourceDashboard
+        configs={ENTITY_CONFIGS_ARRAY}
+        filteredItems={filteredItems}
+        onCardClick={handleCardClick}
+        onShowAll={handleShowAll}
+      />
+    );
+  };
 
   return (
-    <Container>
-      <Header>
-        <Title>הגדרת אמצעים</Title>
-      </Header>
-
-      <SearchContainer>
-        <TextField
-          placeholder="חיפוש"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          variant="outlined"
-          size="medium"
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon sx={{ color: 'rgba(225, 234, 255, 0.4)', fontSize: '16px' }} />
-              </InputAdornment>
-            ),
-          }}
-          sx={{
-            '& .MuiOutlinedInput-root': {
-              background: 'rgba(20, 35, 65, 0.5)',
-              borderRadius: '20px',
-              paddingRight: '12px',
-              '& fieldset': {
-                borderColor: 'rgba(174, 199, 255, 0.12)',
-              },
-              '&:hover fieldset': {
-                borderColor: 'rgba(174, 199, 255, 0.2)',
-              },
-              '&.Mui-focused fieldset': {
-                borderColor: 'rgba(174, 199, 255, 0.3)',
-              },
-            },
-            '& input': {
-              padding: '10px 0',
-              fontSize: '13px',
-              color: '#e1eaff',
-              direction: 'rtl',
-            },
-            '& input::placeholder': {
-              direction: 'rtl',
-              color: 'rgba(225, 234, 255, 0.4)',
-              opacity: 1,
-              textAlign: 'right',
-            },
-          }}
-        />
-      </SearchContainer>
-
-      <AccordionsContainer>
-        {ENTITY_CONFIGS_ARRAY.map((config) => {
-          const manager = entityManagers[config.id as keyof typeof entityManagers];
-          const hasImplementation = !!manager;
-
-          return (
-            <StyledAccordion
-              key={config.id}
-              expanded={expandedSections.has(config.id)}
-              onChange={handleAccordionChange(config.id)}
-            >
-              <StyledAccordionSummary expandIcon={<ExpandMoreIcon />}>
-                {expandedSections.has(config.id) && (
-                  <SummaryActions onClick={(e) => e.stopPropagation()}>
-                    <AddHeaderButton
-                      startIcon={<AddIcon />}
-                      onClick={() => handleAddClick(config.id)}
-                    >
-                      הוסף {config.title}
-                    </AddHeaderButton>
-                  </SummaryActions>
-                )}
-                <SummaryContent>
-                  <SectionIcon>{config.icon}</SectionIcon>
-                  <SectionTitle>{config.title}</SectionTitle>
-                </SummaryContent>
-              </StyledAccordionSummary>
-
-              {expandedSections.has(config.id) && (
-                <StyledAccordionDetails>
-                  {hasImplementation && manager ? (
-                    <EntitySection
-                      config={config}
-                      items={filteredItems[config.id] || manager.items}
-                      loading={manager.loading}
-                      viewMode={manager.viewMode}
-                      selectedId={manager.selectedId}
-                      selectedData={manager.selectedData}
-                      editingData={manager.editingData}
-                      onCardClick={(id) => handleCardClick(config.id, id)}
-                      onClose={() => handleClose(config.id)}
-                      onCancel={() => handleCancel(config.id)}
-                      onEdit={() => handleEditClick(config.id)}
-                      onDelete={(id, name) => handleDeleteClick(config.id, id, name)}
-                      onSave={createSaveHandler(
-                        config.id, 
-                        config.id === 'stations' ? onSaveStation :
-                        config.id === 'satellites' ? onSaveSatellite : 
-                        config.id === 'terminals' ? onSaveTerminal :
-                        config.id === 'networks' ? onSaveNetwork : 
-                        undefined
-                      )}
-                    />
-                  ) : (
-                    <Box sx={{ padding: '20px', textAlign: 'center', color: '#aec7ff' }}>
-                      טופס {config.title} בפיתוח
-                    </Box>
-                  )}
-                </StyledAccordionDetails>
-              )}
-            </StyledAccordion>
-          );
-        })}
-      </AccordionsContainer>
+    <>
+      <PageLayout {...getPageConfig()}>
+        {renderContent()}
+      </PageLayout>
 
       <ConfirmDialog
         open={deleteDialog.open}
-        message={`האם אתה בטוח שברצונך למחוק את ${deleteDialog.itemName}?`}
+        title={deleteDialog.entityId ? `מחיקת ${ENTITY_CONFIGS[deleteDialog.entityId].singularTitle}` : 'מחיקת אמצעי'}
+        message="שים לב, מחיקת האמצעי מהמערכת תנתק אותו מאמצעים אחרים שמקושרים אליו."
+        confirmText="מחק בכל זאת"
         onConfirm={handleDeleteConfirm}
         onCancel={handleDeleteCancel}
       />
-    </Container>
+
+      {showAddModal && <AddResourceModal onClose={() => setShowAddModal(false)} onSelect={handleSelectEntityType} />}
+    </>
   );
 };

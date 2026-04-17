@@ -10,17 +10,23 @@ import {
   READINESS_STATUS_OPTIONS,
   INITIAL_FORM_DATA,
 } from './constants';
-import { 
-  FormContainer, 
-  FormHeader, 
-  FormGrid, 
-  FullWidthField, 
-  CombinedFieldWrapper, 
-  CombinedFieldSection, 
-  ButtonContainer, 
-  StyledButton,
+import SaveIcon from '@mui/icons-material/Save';
+import {
+  FormMainContainer,
+  FormSection,
+  FormSectionHeader,
+  FormSectionTitle,
+  FormFieldRow,
+  FormHeaderTop,
+  FormSubtitle,
+  FormTitleLarge,
+  FormBottomActions,
+  ActionButtonsGroup,
   FormSelect,
   FormTextField,
+  FormPrimaryButton,
+  FormSecondaryButton,
+  FormDeleteButton,
 } from '../../shared/components/ui';
 import { EditableNameField } from '../../shared/components/EditableNameField';
 import { TerminalIcon } from '../ResourcesManagement/icons/TerminalIcon';
@@ -114,10 +120,10 @@ const AddNewOption = styled.div`
   font-weight: 500;
 `;
 
-export const TerminalForm = ({ onSave, editingTerminalId, initialData, onClose, onCancel }: TerminalFormProps) => {
+export const TerminalForm = ({ onSave, onDelete, editingTerminalId, initialData, onCancel }: TerminalFormProps) => {
   const [stations, setStations] = useState<Array<{ value: string; label: string }>>([]);
   const [terminalTypes, setTerminalTypes] = useState<TerminalTypeOption[]>([]);
-  
+
   const {
     control,
     handleSubmit,
@@ -174,22 +180,37 @@ export const TerminalForm = ({ onSave, editingTerminalId, initialData, onClose, 
   }, [reset]);
 
   return (
-    <FormContainer>
-      <FormHeader 
-        title={editingTerminalId ? 'עריכת טרמינל' : 'הוספת טרמינל חדש'}
-        onClose={onClose}
-      />
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <EditableNameField
-          name="name"
-          control={control}
-          icon={TerminalIcon}
-          placeholder="טרמינל 1"
-        />
+    <div>
+      <FormHeaderTop>
+        <FormTitleLarge>{editingTerminalId ? 'עריכת טרמינל' : 'הוספת טרמינל חדש'}</FormTitleLarge>
+        <FormSubtitle>מלא את הפרטים הנדרשים בטופס</FormSubtitle>
+      </FormHeaderTop>
+      <FormMainContainer>
+        <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <FormSection style={{ padding: '8px 24px' }}>
+            <EditableNameField
+              name="name"
+              control={control}
+              icon={TerminalIcon}
+              placeholder="טרמינל 1"
+            />
+          </FormSection>
 
-        <FormGrid>
-          <CombinedFieldWrapper>
-            <CombinedFieldSection hasBorder flexBasis="50%">
+          <FormSection>
+            <FormSectionHeader>
+              <FormSectionTitle>פרטי טרמינל</FormSectionTitle>
+            </FormSectionHeader>
+            <FormFieldRow>
+              <FormSelect
+                name="readinessStatus"
+                control={control}
+                label="סטטוס כשירות"
+                options={READINESS_STATUS_OPTIONS}
+                placeholder="בחר סטטוס כשירות"
+                error={errors.readinessStatus}
+                rules={{ required: 'סטטוס כשירות הינו שדה חובה' }}
+                required
+              />
               <FormSelect
                 name="stationId"
                 control={control}
@@ -204,200 +225,187 @@ export const TerminalForm = ({ onSave, editingTerminalId, initialData, onClose, 
                   toForm: (value) => value === '' ? '' : Number(value),
                 }}
               />
-            </CombinedFieldSection>
 
-            <CombinedFieldSection flexBasis="50%">
-              <FieldLabel $required>סוג טרמינל</FieldLabel>
-              <Controller
-                name="terminalType"
-                control={control}
-                rules={{ required: 'סוג טרמינל הינו שדה חובה' }}
-                render={({ field }) => (
-                  <StyledAutocomplete
-                    freeSolo
-                    selectOnFocus
-                    clearOnBlur
-                    handleHomeEndKeys
-                    options={terminalTypes}
-                    value={terminalTypes.find(t => t.name === field.value) || (field.value ? { id: null, name: field.value } : null)}
-                    onChange={async (_event, newValue) => {
-                      if (typeof newValue === 'string') {
-                        field.onChange(newValue);
-                      } else if (newValue && newValue.inputValue) {
-                        try {
-                          const created = await terminalTypesApi.create(newValue.inputValue);
-                          setTerminalTypes(prev => [...prev, { id: created.id, name: created.name }]);
-                          field.onChange(created.name);
-                        } catch (error) {
-                          console.error('Failed to create terminal type:', error);
+              <div style={{ flex: 1, minWidth: 200 }}>
+                <FieldLabel $required>סוג טרמינל</FieldLabel>
+                <Controller
+                  name="terminalType"
+                  control={control}
+                  rules={{ required: 'סוג טרמינל הינו שדה חובה' }}
+                  render={({ field }) => (
+                    <StyledAutocomplete
+                      freeSolo
+                      selectOnFocus
+                      clearOnBlur
+                      handleHomeEndKeys
+                      options={terminalTypes}
+                      value={terminalTypes.find(t => t.name === field.value) || (field.value ? { id: null, name: field.value } : null)}
+                      onChange={async (_event, newValue) => {
+                        if (typeof newValue === 'string') {
+                          field.onChange(newValue);
+                        } else if (newValue && newValue.inputValue) {
+                          try {
+                            const created = await terminalTypesApi.create(newValue.inputValue);
+                            setTerminalTypes(prev => [...prev, { id: created.id, name: created.name }]);
+                            field.onChange(created.name);
+                          } catch (error) {
+                            console.error('Failed to create terminal type:', error);
+                          }
+                        } else if (newValue) {
+                          field.onChange(newValue.name);
+                        } else {
+                          field.onChange('');
                         }
-                      } else if (newValue) {
-                        field.onChange(newValue.name);
-                      } else {
-                        field.onChange('');
-                      }
-                    }}
-                    filterOptions={(options, params) => {
-                      const filtered = filter(options, params);
-                      const { inputValue } = params;
-                      const isExisting = options.some((option) => inputValue === option.name);
-                      if (inputValue !== '' && !isExisting) {
-                        filtered.push({
-                          id: null,
-                          name: inputValue,
-                          inputValue,
-                        });
-                      }
-                      return filtered;
-                    }}
-                    getOptionLabel={(option) => {
-                      if (typeof option === 'string') {
-                        return option;
-                      }
-                      if (option.inputValue) {
-                        return option.inputValue;
-                      }
-                      return option.name;
-                    }}
-                    renderOption={(props, option) => {
-                      const { key, ...otherProps } = props;
-                      if (option.inputValue) {
-                        return (
-                          <li key={key} {...otherProps}>
-                            <AddNewOption>
-                              <AddIcon sx={{ fontSize: 18 }} />
-                              הוסף "{option.inputValue}"
-                            </AddNewOption>
-                          </li>
-                        );
-                      }
-                      return <li key={key} {...otherProps}>{option.name}</li>;
-                    }}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        placeholder="בחר או הזן סוג טרמינל"
-                        error={!!errors.terminalType}
-                        sx={{
-                          '& .MuiInputBase-root': {
-                            direction: 'rtl',
-                          },
-                        }}
-                      />
-                    )}
-                    slotProps={{
-                      paper: {
-                        sx: {
-                          background: 'rgba(20, 40, 80, 0.95)',
-                          backdropFilter: 'blur(10px)',
-                          border: '1px solid rgba(174, 199, 255, 0.15)',
-                          borderRadius: '8px',
-                          '& .MuiAutocomplete-listbox': {
-                            padding: '4px',
-                            '& .MuiAutocomplete-option': {
-                              color: 'white',
-                              borderRadius: '4px',
-                              padding: '8px 12px',
+                      }}
+                      filterOptions={(options, params) => {
+                        const filtered = filter(options, params);
+                        const { inputValue } = params;
+                        const isExisting = options.some((option) => inputValue === option.name);
+                        if (inputValue !== '' && !isExisting) {
+                          filtered.push({
+                            id: null,
+                            name: inputValue,
+                            inputValue,
+                          });
+                        }
+                        return filtered;
+                      }}
+                      getOptionLabel={(option) => {
+                        if (typeof option === 'string') {
+                          return option;
+                        }
+                        if (option.inputValue) {
+                          return option.inputValue;
+                        }
+                        return option.name;
+                      }}
+                      renderOption={(props, option) => {
+                        const { key, ...otherProps } = props;
+                        if (option.inputValue) {
+                          return (
+                            <li key={key} {...otherProps}>
+                              <AddNewOption>
+                                <AddIcon sx={{ fontSize: 18 }} />
+                                הוסף "{option.inputValue}"
+                              </AddNewOption>
+                            </li>
+                          );
+                        }
+                        return <li key={key} {...otherProps}>{option.name}</li>;
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          placeholder="בחר או הזן סוג טרמינל"
+                          error={!!errors.terminalType}
+                          sx={{
+                            '& .MuiInputBase-root': {
                               direction: 'rtl',
-                              '&:hover': {
-                                background: 'rgba(174, 199, 255, 0.1)',
-                              },
-                              '&.Mui-focused': {
-                                background: 'rgba(174, 199, 255, 0.15)',
+                            },
+                          }}
+                        />
+                      )}
+                      slotProps={{
+                        paper: {
+                          sx: {
+                            background: 'rgba(20, 40, 80, 0.95)',
+                            backdropFilter: 'blur(10px)',
+                            border: '1px solid rgba(174, 199, 255, 0.15)',
+                            borderRadius: '8px',
+                            '& .MuiAutocomplete-listbox': {
+                              padding: '4px',
+                              '& .MuiAutocomplete-option': {
+                                color: 'white',
+                                borderRadius: '4px',
+                                padding: '8px 12px',
+                                direction: 'rtl',
+                                '&:hover': {
+                                  background: 'rgba(174, 199, 255, 0.1)',
+                                },
+                                '&.Mui-focused': {
+                                  background: 'rgba(174, 199, 255, 0.15)',
+                                },
                               },
                             },
                           },
                         },
-                      },
-                    }}
-                  />
+                      }}
+                    />
+                  )}
+                />
+                {errors.terminalType && (
+                  <FieldError>{errors.terminalType.message}</FieldError>
                 )}
+              </div>
+              <FormSelect
+                name="frequencyBand"
+                control={control}
+                label="תחום תדר"
+                options={FREQUENCY_BAND_OPTIONS}
+                placeholder="בחר תחום תדר"
+                error={errors.frequencyBand}
+                rules={{ required: 'תחום תדר הינו שדה חובה' }}
+                required
               />
-              {errors.terminalType && (
-                <FieldError>{errors.terminalType.message}</FieldError>
+              <FormTextField
+                name="notes"
+                control={control}
+                label="הערות"
+                placeholder="פרט על הסטטוס כאן..."
+                error={errors.notes}
+                rules={{
+                  validate: (value: string) => {
+                    if (readinessStatus && readinessStatus !== 'ready' && !value.trim()) {
+                      return 'הערות הינן שדה חובה כאשר סטטוס הכשירות אינו "כשיר"';
+                    }
+                    return true;
+                  },
+                }}
+                required={readinessStatus !== 'ready' && readinessStatus !== ''}
+              />
+            </FormFieldRow>
+          </FormSection>
+
+          <FormBottomActions>
+            {editingTerminalId != null ? (
+              <FormDeleteButton
+                onClick={onDelete}
+                startIcon={<DeleteOutlineIcon />}
+              >
+                מחק אמצעי
+              </FormDeleteButton>
+            ) : (
+              <div /> // Spacer to keep actions on the left
+            )}
+            <ActionButtonsGroup>
+              {!editingTerminalId && (
+                <FormSecondaryButton
+                  onClick={handleReset}
+                  disabled={isSubmitting}
+                >
+                  נקה שדות
+                </FormSecondaryButton>
               )}
-            </CombinedFieldSection>
-          </CombinedFieldWrapper>
-
-          <FullWidthField>
-            <FormSelect
-              name="frequencyBand"
-              control={control}
-              label="תחום תדר"
-              options={FREQUENCY_BAND_OPTIONS}
-              placeholder="בחר תחום תדר"
-              error={errors.frequencyBand}
-              rules={{ required: 'תחום תדר הינו שדה חובה' }}
-              required
-            />
-          </FullWidthField>
-
-          <FullWidthField>
-            <CombinedFieldWrapper>
-              <CombinedFieldSection hasBorder flexBasis="20%">
-                <FormSelect
-                  name="readinessStatus"
-                  control={control}
-                  label="סטטוס כשירות"
-                  options={READINESS_STATUS_OPTIONS}
-                  placeholder="בחר סטטוס כשירות"
-                  error={errors.readinessStatus}
-                  rules={{ required: 'סטטוס כשירות הינו שדה חובה' }}
-                  required
-                />
-              </CombinedFieldSection>
-
-              <CombinedFieldSection flexBasis="80%">
-                <FormTextField
-                  name="notes"
-                  control={control}
-                  label="הערות"
-                  placeholder="פרט על הסטטוס כאן..."
-                  error={errors.notes}
-                  rules={{
-                    validate: (value: string) => {
-                      if (readinessStatus && readinessStatus !== 'ready' && !value.trim()) {
-                        return 'הערות הינן שדה חובה כאשר סטטוס הכשירות אינו "כשיר"';
-                      }
-                      return true;
-                    },
-                  }}
-                  required={readinessStatus !== 'ready' && readinessStatus !== ''}
-                />
-              </CombinedFieldSection>
-            </CombinedFieldWrapper>
-          </FullWidthField>
-        </FormGrid>
-
-        <ButtonContainer>
-          {!editingTerminalId && (
-            <StyledButton
-              variant="outlined"
-              onClick={handleReset}
-              disabled={isSubmitting}
-              startIcon={<DeleteOutlineIcon />}
-            >
-              נקה שדות
-            </StyledButton>
-          )}
-          {editingTerminalId && onCancel && (
-            <StyledButton
-              variant="outlined"
-              onClick={onCancel}
-              disabled={isSubmitting}
-            >
-              ביטול
-            </StyledButton>
-          )}
-          <StyledButton 
-            variant="contained" 
-            type="submit" 
-            disabled={!isValid || isSubmitting || !isDirty}
-          >
-            {isSubmitting ? 'שומר...' : 'שמירה'}
-          </StyledButton>
-        </ButtonContainer>
-      </form>
-    </FormContainer>
+              {editingTerminalId && onCancel && (
+                <FormSecondaryButton
+                  onClick={onCancel}
+                  disabled={isSubmitting}
+                >
+                  ביטול
+                </FormSecondaryButton>
+              )}
+              <FormPrimaryButton
+                variant="contained"
+                type="submit"
+                disabled={!isValid || isSubmitting || !isDirty}
+                startIcon={<SaveIcon />}
+              >
+                {isSubmitting ? 'שומר...' : 'שמור שינויים'}
+              </FormPrimaryButton>
+            </ActionButtonsGroup>
+          </FormBottomActions>
+        </form>
+      </FormMainContainer>
+    </div>
   );
 };

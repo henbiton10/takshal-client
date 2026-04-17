@@ -32,7 +32,6 @@ const SidebarContainer = styled(Box, {
 }));
 
 const MenuSeparator = styled(Box)({
-  width: '100%',
   height: '1px',
   background: 'rgba(255, 255, 255, 0.12)',
   margin: '0 8px',
@@ -55,13 +54,13 @@ export default function Sidebar({ selectedItem = 'operations', onItemSelect }: S
   };
 
   return (
-    <SidebarContainer 
+    <SidebarContainer
       isExpanded={isExpanded}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       <SidebarHeader isExpanded={isExpanded} />
-      
+
       <MenuSeparator />
 
       <MenuContainer>
@@ -76,6 +75,8 @@ export default function Sidebar({ selectedItem = 'operations', onItemSelect }: S
           />
         ))}
       </MenuContainer>
+
+      <MenuSeparator />
 
       <SidebarFooter isExpanded={isExpanded} isPinned={isPinned} onTogglePin={togglePin} />
     </SidebarContainer>

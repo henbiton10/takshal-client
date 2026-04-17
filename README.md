@@ -1,50 +1,62 @@
-# React + TypeScript + Vite
+# Takshal - Management System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A premium, state-of-the-art resource management and operation planning platform.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Resource Management**: Comprehensive tracking of Stations, Satellites, Terminals, and Networks.
+- **Operation Planning**: Advanced allocation system with real-time connectivity validation.
+- **Premium UI/UX**: Custom designed with a dark, glassmorphic aesthetic and smooth animations.
+- **Global Notifications**: Real-time success and error toasts for all operations.
 
-## Expanding the ESLint configuration
+## Technology Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- **Framework**: React 18 with TypeScript
+- **Bundler**: Vite
+- **Styling**: Styled-components for theme-aware, isolated styles
+- **UI Components**: Material UI (MUI) icons and layout primitives
+- **Forms**: React Hook Form for performant, type-safe forms
+- **State**: React Context for global systems (Toast, etc.)
 
-- Configure the top-level `parserOptions` property like this:
+## Project Structure
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+For a detailed overview of the code architecture, please refer to [ARCHITECTURE.md](./ARCHITECTURE.md).
+
+```bash
+src/
+├── components/         # Feature-specific modules
+├── shared/             # Global UI systems and constants
+├── services/           # API clients and data types
+└── theme/              # Centralized design tokens
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+## Getting Started
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+### Prerequisites
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+- Node.js (v18+)
+- npm
+
+### Installation
+
+```bash
+# Install dependencies
+npm install
+
+# Run development server
+npm run dev
 ```
+
+### Environment Configuration
+
+Create a `.env` file in the root directory (based on `.env.example`).
+The application proxies API requests to `http://localhost:3000` by default.
+
+## Development Principles
+
+- **Convention over Configuration**: Use the established `ENTITY_CONFIGS` pattern for adding new resource types.
+- **Clean Code**: Follow the layout patterns defined in `shared/components/ui`.
+- **Responsive Design**: All pages use the standardized `PageLayout` component.
+
+---
+© 2026 Takshal Team

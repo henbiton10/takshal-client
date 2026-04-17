@@ -1,6 +1,7 @@
-import { EntityView, ViewSection, formatReadinessStatus } from '../../shared/components/EntityView';
+import { EntityView, formatReadinessStatus, ViewSection } from '../../shared/components/EntityView';
 import { TerminalIcon } from '../ResourcesManagement/icons/TerminalIcon';
-import { StationIcon } from '../ResourcesManagement/icons/StationIcon';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import styled from 'styled-components';
 
 interface TerminalViewProps {
   terminal: any;
@@ -9,57 +10,43 @@ interface TerminalViewProps {
   onClose?: () => void;
 }
 
-export const TerminalView = ({ terminal, onEdit, onDelete, onClose }: TerminalViewProps) => {
+const IconWrapper = styled.div`
+  display: flex;
+  color: #e1eaff;
+  opacity: 0.8;
+`;
+
+export const TerminalView = ({ terminal, onEdit }: TerminalViewProps) => {
+  const status = formatReadinessStatus(terminal.readinessStatus);
+
   const sections: ViewSection[] = [
     {
+      title: 'פרטי הטרמינל',
+      icon: <IconWrapper><AssignmentIcon sx={{ fontSize: 20 }} /></IconWrapper>,
       fields: [
-        {
-          label: 'תחנה קרקעית',
-          value: (
-            <>
-              {terminal.station?.name || 'לא משויך'}
-              <StationIcon sx={{ fontSize: 16 }} />
-            </>
-          ),
+        { 
+          label: 'סטטוס כשירות', 
+          value: status.text, 
+          statusColor: status.color,
+          statusIcon: status.icon
         },
-        {
-          label: 'סוג טרמינל',
-          value: terminal.terminalType?.name || 'לא מוגדר',
-        },
-        {
-          label: 'תחום תדר',
-          value: terminal.frequencyBand?.toUpperCase() || 'לא מוגדר',
-        },
-        {
-          label: 'סטטוס כשירות',
-          value: formatReadinessStatus(terminal.readinessStatus),
-        },
-      ],
-    },
+        { label: 'תחום תדר', value: terminal.frequencyBand?.toUpperCase() || 'לא מוגדר' },
+        { label: 'סוג טרמינל', value: terminal.terminalType?.name || 'לא מוגדר' },
+        { label: 'תחנה קרקעית', value: terminal.station?.name || 'לא משויך' },
+        { label: 'הערות כלליות', value: terminal.notes || '', flex: '2' },
+      ]
+    }
   ];
-
-  if (terminal.notes) {
-    sections.push({
-      title: 'הערות',
-      fields: [
-        {
-          label: '',
-          value: terminal.notes,
-          fullWidth: true,
-        },
-      ],
-    });
-  }
 
   return (
     <EntityView
       name={terminal.name}
-      icon={<TerminalIcon style={{ fontSize: 24 }} />}
-      sections={sections}
+      icon={<TerminalIcon style={{ fontSize: 21 }} />}
+      mainTitle="צפייה בטרמינל"
+      subtitle="ניתן לערוך את פרטי הטרמינל"
       editLabel="ערוך טרמינל"
+      sections={sections}
       onEdit={onEdit}
-      onDelete={onDelete}
-      onClose={onClose}
     />
   );
 };

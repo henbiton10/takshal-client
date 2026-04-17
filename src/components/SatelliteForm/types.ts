@@ -8,8 +8,9 @@ export interface SatelliteFormData {
 
 export interface SatelliteFormProps {
   onSave?: (data: SatelliteFormData) => Promise<void>;
+  onDelete?: () => void;
   editingSatelliteId?: number | null;
-  initialData?: SatelliteFormData;
+  initialData?: SatelliteFormData | null;
   onClose?: () => void;
   onCancel?: () => void;
 }

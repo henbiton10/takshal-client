@@ -32,6 +32,8 @@ export interface EntityConfig {
   FormComponent: React.ComponentType<any>;
   ViewComponent: React.ComponentType<any>;
   CardComponent: React.ComponentType<any>;
+  singularTitle: string;
+  gender: 'masculine' | 'feminine';
   mapToFormData: (data: any) => any;
   mapToPayload: (data: any) => any;
 }
@@ -40,11 +42,13 @@ export const ENTITY_CONFIGS: Record<string, EntityConfig> = {
   stations: {
     id: 'stations',
     title: 'תחנות',
+    singularTitle: 'תחנה',
+    gender: 'feminine',
     icon: <StationIcon />,
     emptyMessage: 'לא נמצאו תחנות זמינות',
     emptySubMessage: 'תחנות חדשות יופיעו כאן ברגע שתוספנה',
     api: {
-      getAllSummary: stationsApi.getAllSummary,
+      getAllSummary: stationsApi.getAll,
       getOne: stationsApi.getOne,
       create: stationsApi.create,
       update: stationsApi.update,
@@ -60,6 +64,7 @@ export const ENTITY_CONFIGS: Record<string, EntityConfig> = {
       notes: station.notes || '',
       connectivities: station.connectivities || [],
       antennas: station.antennas || [],
+      terminals: station.terminals || [],
     }),
     mapToPayload: (data) => ({
       name: data.name,
@@ -79,12 +84,14 @@ export const ENTITY_CONFIGS: Record<string, EntityConfig> = {
   },
   satellites: {
     id: 'satellites',
-    title: 'לווין',
+    title: 'לווינים',
+    singularTitle: 'לווין',
+    gender: 'masculine',
     icon: <SatelliteAltIcon />,
     emptyMessage: 'לא נמצאו לווינים זמינים',
     emptySubMessage: 'לווינים חדשים יופיעו כאן ברגע שיוספו',
     api: {
-      getAllSummary: satellitesApi.getAllSummary,
+      getAllSummary: satellitesApi.getAll,
       getOne: satellitesApi.getOne,
       create: satellitesApi.create,
       update: satellitesApi.update,
@@ -111,11 +118,13 @@ export const ENTITY_CONFIGS: Record<string, EntityConfig> = {
   terminals: {
     id: 'terminals',
     title: 'טרמינלים',
+    singularTitle: 'טרמינל',
+    gender: 'masculine',
     icon: <TerminalIcon />,
     emptyMessage: 'לא נמצאו טרמינלים זמינים',
     emptySubMessage: 'טרמינלים חדשים יופיעו כאן ברגע שיוספו',
     api: {
-      getAllSummary: terminalsApi.getAllSummary,
+      getAllSummary: terminalsApi.getAll,
       getOne: terminalsApi.getOne,
       create: terminalsApi.create,
       update: terminalsApi.update,
@@ -143,12 +152,14 @@ export const ENTITY_CONFIGS: Record<string, EntityConfig> = {
   },
   networks: {
     id: 'networks',
-    title: 'רשת',
+    title: 'רשתות',
+    singularTitle: 'רשת',
+    gender: 'feminine',
     icon: <PublicIcon />,
     emptyMessage: 'לא נמצאו רשתות זמינות',
     emptySubMessage: 'רשתות חדשות יופיעו כאן ברגע שתוספנה',
     api: {
-      getAllSummary: networksApi.getAllSummary,
+      getAllSummary: networksApi.getAll,
       getOne: networksApi.getOne,
       create: networksApi.create,
       update: networksApi.update,

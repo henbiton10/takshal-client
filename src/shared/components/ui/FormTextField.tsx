@@ -1,6 +1,5 @@
 import { TextField, SxProps } from '@mui/material';
 import { Control, Controller, FieldValues, Path, FieldError } from 'react-hook-form';
-import { theme } from '../../../theme';
 import { FieldLabel } from './FormLayout';
 
 interface FormTextFieldProps<T extends FieldValues> {
@@ -14,25 +13,40 @@ interface FormTextFieldProps<T extends FieldValues> {
   multiline?: boolean;
   rows?: number;
   type?: 'text' | 'number' | 'email' | 'password';
+  transformValue?: {
+    toField: (value: any) => string;
+    toForm: (value: string) => any;
+  };
 }
 
 const textFieldStyles: SxProps = {
+  backgroundColor: 'rgba(255,255,255,0.04)',
+  borderRadius: '4px',
+  fontFamily: 'Assistant, sans-serif',
   '& .MuiOutlinedInput-root': {
-    color: theme.colors.text.white,
-    height: '38px',
+    height: '36px',
     '& fieldset': {
-      borderColor: theme.colors.border.primary,
+      borderColor: '#666',
     },
     '&:hover fieldset': {
-      borderColor: theme.colors.border.hover,
+      borderColor: '#888',
     },
     '&.Mui-focused fieldset': {
-      borderColor: theme.colors.border.focused,
+      borderColor: '#aaa',
     },
   },
   '& .MuiInputBase-input': {
-    color: theme.colors.text.white,
-    fontSize: theme.typography.fontSize.sm,
+    color: '#bababa',
+    fontSize: '16px',
+    fontWeight: 600,
+    padding: '0 8px',
+    height: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    '&::placeholder': {
+      color: '#bababa',
+      opacity: 1,
+    },
   },
 };
 
@@ -47,6 +61,7 @@ export const FormTextField = <T extends FieldValues>({
   multiline = false,
   rows,
   type = 'text',
+  transformValue,
 }: FormTextFieldProps<T>) => {
   return (
     <div>
@@ -58,6 +73,11 @@ export const FormTextField = <T extends FieldValues>({
         render={({ field }) => (
           <TextField
             {...field}
+            value={transformValue ? transformValue.toField(field.value) : field.value}
+            onChange={(e) => {
+              const val = e.target.value;
+              field.onChange(transformValue ? transformValue.toForm(val) : val);
+            }}
             type={type}
             error={!!error}
             helperText={error?.message}

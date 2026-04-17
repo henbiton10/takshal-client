@@ -9,48 +9,14 @@ import { AntennaConnectivityMatrix } from './AntennaConnectivityMatrix';
 import { NetworksMatrix } from './NetworksMatrix';
 import { TerminalPopup } from './TerminalPopup';
 import { TimeSelector } from './TimeSelector';
-import { 
-  DashboardData, 
-  DashboardTerminal, 
-  TimeRange, 
+import {
+  DashboardTerminal,
+  TimeRange,
   DashboardSection,
+  DashboardData,
 } from './types';
 import { dashboardApi } from '../../services/api';
-
-const PageContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  background: #0a1628;
-  color: white;
-  overflow: auto;
-`;
-
-const Header = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 20px 24px 12px;
-  direction: rtl;
-`;
-
-const HeaderRight = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-`;
-
-const Title = styled.h1`
-  font-size: 28px;
-  font-weight: 600;
-  margin: 0;
-  color: white;
-`;
-
-const StatusDate = styled.div`
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.7);
-`;
+import { PageLayout } from '../../shared/components/PageLayout';
 
 const HeaderLeft = styled.div`
   display: flex;
@@ -64,7 +30,7 @@ const TimeSelectButton = styled.button`
   align-items: center;
   gap: 8px;
   padding: 8px 16px;
-  background: #22c55e;
+  background: rgba(61, 98, 178, 1);
   border: none;
   border-radius: 20px;
   color: white;
@@ -74,7 +40,7 @@ const TimeSelectButton = styled.button`
   transition: background 0.2s;
 
   &:hover {
-    background: #16a34a;
+    background: rgba(61, 98, 178, 0.8);
   }
 
   svg {
@@ -182,7 +148,7 @@ const loadTimeRangeFromStorage = (): TimeRange | null => {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (!stored) return null;
-    
+
     const parsed = JSON.parse(stored);
     return {
       startDate: new Date(parsed.startDate),
@@ -226,7 +192,7 @@ export const DashboardPage = () => {
     try {
       setLoading(true);
       let data: DashboardData;
-      
+
       if (timeRange) {
         const startDate = formatDateForApi(timeRange.startDate);
         const endDate = formatDateForApi(timeRange.endDate);
@@ -239,7 +205,7 @@ export const DashboardPage = () => {
       } else {
         data = await dashboardApi.getDashboardData();
       }
-      
+
       setDashboardData(data);
       setLastUpdated(new Date().toLocaleString('he-IL'));
     } catch (error) {
@@ -309,12 +275,11 @@ export const DashboardPage = () => {
   );
 
   return (
-    <PageContainer>
-      <Header>
-        <HeaderRight>
-          <Title>דאשבורד</Title>
-          <StatusDate>תמונת מצב: {formatDisplayDate()}</StatusDate>
-        </HeaderRight>
+    <PageLayout
+      title="דאשבורד"
+      subtitle={`תמונת מצב: ${formatDisplayDate()}`}
+      contentPadding="0"
+      actions={
         <HeaderLeft>
           <TimeSelectButton onClick={() => setShowTimeSelector(true)}>
             <CalendarTodayIcon />
@@ -322,7 +287,8 @@ export const DashboardPage = () => {
           </TimeSelectButton>
           <LastUpdate>מועד עדכון: {lastUpdated}</LastUpdate>
         </HeaderLeft>
-      </Header>
+      }
+    >
 
       <MainContent>
         {loading && !dashboardData ? (
@@ -435,6 +401,6 @@ export const DashboardPage = () => {
           currentRange={timeRange}
         />
       )}
-    </PageContainer>
+    </PageLayout>
   );
 };

@@ -97,9 +97,16 @@ const StyledSelect = styled(Select)`
   }
 
   .MuiSelect-select {
-    padding: 8px 12px;
+    padding: 8px 12px 8px 32px !important;
     font-size: 13px;
     text-align: right;
+    direction: rtl;
+  }
+
+  .MuiSelect-icon {
+    left: 7px;
+    right: auto;
+    color: rgba(225, 234, 255, 0.7);
   }
 `;
 

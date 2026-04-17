@@ -3,9 +3,8 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
-import SettingsInputAntennaIcon from '@mui/icons-material/SettingsInputAntenna';
 import styled from 'styled-components';
-import { StationFormProps, StationFormData, AntennaFormData } from './types';
+import { StationFormProps, StationFormData } from './types';
 import {
   ORGANIZATIONAL_AFFILIATION_OPTIONS,
   READINESS_STATUS_OPTIONS,
@@ -13,38 +12,31 @@ import {
   FREQUENCY_BAND_OPTIONS,
   INITIAL_FORM_DATA,
 } from './constants';
+import SaveIcon from '@mui/icons-material/Save';
 import {
-  FormContainer,
-  FormHeader,
-  FormGrid,
-  FullWidthField,
-  CombinedFieldWrapper,
-  CombinedFieldSection,
-  ButtonContainer,
-  StyledButton,
+  FormMainContainer,
+  FormSection,
+  FormSectionHeader,
+  FormSectionTitle,
+  FormFieldRow,
+  FormHeaderTop,
+  FormSubtitle,
+  FormTitleLarge,
+  FormBottomActions,
+  ActionButtonsGroup,
   FormSelect,
   FormTextField,
+  FormPrimaryButton,
+  FormSecondaryButton,
+  FormDeleteButton,
+  FormAddButton,
 } from '../../shared/components/ui';
 import { EditableNameField } from '../../shared/components/EditableNameField';
 import { StationIcon } from '../ResourcesManagement/icons/StationIcon';
+import { TerminalIcon } from '../ResourcesManagement/icons/TerminalIcon';
 import { stationsApi } from '../../services/api';
 import { theme } from '../../theme';
 
-const SectionTitle = styled.h3`
-  color: ${theme.colors.text.white};
-  font-size: 14px;
-  font-weight: ${theme.typography.fontWeight.medium};
-  margin: 20px 0 12px 0;
-  direction: rtl;
-`;
-
-const AddButton = styled(StyledButton)`
-  && {
-    margin-top: 5px;
-    width: fit-content;
-    align-self: flex-start;
-  }
-`;
 
 const DynamicRow = styled.div`
   display: flex;
@@ -71,86 +63,15 @@ const DeleteButton = styled.button`
   }
 `;
 
-const AntennaInputSection = styled.div`
-  background: ${theme.colors.background.medium};
-  border-radius: ${theme.borderRadius.md};
-  padding: ${theme.spacing.lg};
-  margin-bottom: ${theme.spacing.md};
-`;
 
-const AntennaTagsContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: ${theme.spacing.sm};
-  margin-bottom: ${theme.spacing.md};
-  min-height: 40px;
-  direction: rtl;
-`;
-
-const AntennaTag = styled.div`
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  background: rgba(79, 93, 117, 0.8);
-  border-radius: 24px;
-  padding: 10px 18px;
-  color: white;
-  font-size: 14px;
-  font-weight: ${theme.typography.fontWeight.medium};
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  direction: rtl;
-`;
-
-const RemoveTagButton = styled.button`
-  background: rgba(255, 255, 255, 0.2);
-  border: none;
-  color: white;
-  cursor: pointer;
-  padding: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  transition: all 0.2s;
-  
-  &:hover {
-    background: rgba(255, 255, 255, 0.3);
-  }
-`;
-
-const AntennaTagContent = styled.span`
-  flex: 1;
-  text-align: center;
-`;
-
-const AntennaIcon = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-`;
-
-const EmptyAntennaState = styled.div`
-  text-align: center;
-  padding: 16px;
-  color: ${theme.colors.text.secondary};
-  font-size: 12px;
-  direction: rtl;
-`;
-
-export const StationForm = ({ onSave, editingStationId, initialData, onClose, onCancel }: StationFormProps) => {
+export const StationForm = ({ onSave, onDelete, editingStationId, initialData, onCancel }: StationFormProps) => {
   const [stations, setStations] = useState<Array<{ value: string; label: string }>>([]);
-  const [showAntennaInput, setShowAntennaInput] = useState(false);
-  const [antennaSize, setAntennaSize] = useState<number | ''>('');
-  const [antennaFrequency, setAntennaFrequency] = useState('');
-  const [editingAntennaId, setEditingAntennaId] = useState<string | null>(null);
 
   const {
     control,
     handleSubmit,
     watch,
     reset,
-    setValue,
     formState: { errors, isSubmitting, isValid, isDirty },
   } = useForm<StationFormData>({
     defaultValues: initialData || INITIAL_FORM_DATA,
@@ -160,6 +81,11 @@ export const StationForm = ({ onSave, editingStationId, initialData, onClose, on
   const { fields: connectivityFields, append: appendConnectivity, remove: removeConnectivity } = useFieldArray({
     control,
     name: 'connectivities',
+  });
+
+  const { fields: antennaFields, append: appendAntenna, remove: removeAntenna } = useFieldArray({
+    control,
+    name: 'antennas',
   });
 
   useEffect(() => {
@@ -182,9 +108,9 @@ export const StationForm = ({ onSave, editingStationId, initialData, onClose, on
     }
   }, [initialData, reset]);
 
-  const readinessStatus = watch('readinessStatus');
-  const antennas = watch('antennas');
   const connectivities = watch('connectivities');
+  const terminals = watch('terminals');
+  const readinessStatus = watch('readinessStatus');
 
   // Filter out current station from connectivity options (can't link to itself)
   const availableStations = useMemo(() => {
@@ -193,7 +119,6 @@ export const StationForm = ({ onSave, editingStationId, initialData, onClose, on
   }, [stations, editingStationId]);
 
   // Get available communication types for a specific connectivity row
-  // Filter out communication types already used for the same station
   const getAvailableCommunicationTypesForRow = useCallback((rowIndex: number) => {
     const currentConnectivity = connectivities?.[rowIndex];
     if (!currentConnectivity?.connectedStationId) {
@@ -201,13 +126,13 @@ export const StationForm = ({ onSave, editingStationId, initialData, onClose, on
     }
 
     const usedTypesForStation = (connectivities || [])
-      .filter((c, idx) => 
-        idx !== rowIndex && 
+      .filter((c, idx) =>
+        idx !== rowIndex &&
         c.connectedStationId?.toString() === currentConnectivity.connectedStationId?.toString()
       )
       .map(c => c.communicationType)
       .filter(Boolean);
-    
+
     return COMMUNICATION_TYPE_OPTIONS.filter(opt => !usedTypesForStation.includes(opt.value));
   }, [connectivities]);
 
@@ -221,41 +146,12 @@ export const StationForm = ({ onSave, editingStationId, initialData, onClose, on
   }, [appendConnectivity]);
 
   const handleAddAntenna = useCallback(() => {
-    if (antennaSize && antennaFrequency) {
-      if (editingAntennaId) {
-        // Update existing antenna
-        const newAntennas = (antennas || []).map((ant) =>
-          ant.id === editingAntennaId
-            ? { ...ant, size: antennaSize, frequencyBand: antennaFrequency }
-            : ant
-        );
-        setValue('antennas', newAntennas, { shouldDirty: true, shouldValidate: true });
-        setEditingAntennaId(null);
-      } else {
-        // Add new antenna
-        const newAntennas = [...(antennas || []), {
-          id: `antenna-${Date.now()}`,
-          size: antennaSize,
-          frequencyBand: antennaFrequency,
-        }];
-        setValue('antennas', newAntennas, { shouldDirty: true, shouldValidate: true });
-      }
-      setAntennaSize('');
-      setAntennaFrequency('');
-    }
-  }, [antennaSize, antennaFrequency, antennas, setValue, editingAntennaId]);
-
-  const handleEditAntenna = useCallback((antenna: AntennaFormData) => {
-    setAntennaSize(antenna.size);
-    setAntennaFrequency(antenna.frequencyBand);
-    setEditingAntennaId(antenna.id);
-    setShowAntennaInput(true);
-  }, []);
-
-  const handleRemoveAntenna = useCallback((id: string) => {
-    const newAntennas = (antennas || []).filter((ant) => ant.id !== id);
-    setValue('antennas', newAntennas, { shouldDirty: true, shouldValidate: true });
-  }, [antennas, setValue]);
+    appendAntenna({
+      id: `antenna-${Date.now()}`,
+      size: 0,
+      frequencyBand: '',
+    });
+  }, [appendAntenna]);
 
   const onSubmit = useCallback(
     async (data: StationFormData) => {
@@ -264,9 +160,6 @@ export const StationForm = ({ onSave, editingStationId, initialData, onClose, on
           await onSave(data);
         }
         reset(INITIAL_FORM_DATA);
-        setAntennaSize('');
-        setAntennaFrequency('');
-        setShowAntennaInput(false);
       } catch (error) {
         console.error('Error saving station:', error);
       }
@@ -276,268 +169,277 @@ export const StationForm = ({ onSave, editingStationId, initialData, onClose, on
 
   const handleReset = useCallback(() => {
     reset(INITIAL_FORM_DATA);
-    setAntennaSize('');
-    setAntennaFrequency('');
-    setShowAntennaInput(false);
-    setEditingAntennaId(null);
   }, [reset]);
 
   return (
-    <FormContainer>
-      <FormHeader 
-        title={editingStationId ? 'עריכת תחנה' : 'הוספת תחנה חדשה'}
-        onClose={onClose}
-      />
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <EditableNameField
-          name="name"
-          control={control}
-          icon={StationIcon}
-          placeholder="תחנה 1"
-        />
-
-        <FormGrid>
-          <CombinedFieldWrapper>
-            <CombinedFieldSection hasBorder flexBasis="50%">
-              <FormSelect
-                name="organizationalAffiliation"
-                control={control}
-                label="שייכות ארגונית"
-                options={ORGANIZATIONAL_AFFILIATION_OPTIONS}
-                placeholder="בחר שייכות"
-                error={errors.organizationalAffiliation}
-                rules={{ required: 'שייכות ארגונית הינה שדה חובה' }}
-                required
-              />
-            </CombinedFieldSection>
-
-            <CombinedFieldSection flexBasis="50%">
-              <FormSelect
-                name="readinessStatus"
-                control={control}
-                label="סטטוס כשירות"
-                options={READINESS_STATUS_OPTIONS}
-                placeholder="בחר סטטוס כשירות"
-                error={errors.readinessStatus}
-                rules={{ required: 'סטטוס כשירות הינו שדה חובה' }}
-                required
-              />
-            </CombinedFieldSection>
-          </CombinedFieldWrapper>
-
-          <FullWidthField>
-            <FormTextField
-              name="notes"
+    <div>
+      <FormHeaderTop>
+        <FormTitleLarge>{editingStationId ? 'עריכת תחנה' : 'הוספת תחנה חדשה'}</FormTitleLarge>
+        <FormSubtitle>מלא את הפרטים הנדרשים בטופס</FormSubtitle>
+      </FormHeaderTop>
+      <FormMainContainer>
+        <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <FormSection style={{ padding: '8px 24px' }}>
+            <EditableNameField
+              name="name"
               control={control}
-              label="הערות"
-              placeholder="פרט על הסטטוס כאן..."
-              error={errors.notes}
-              rules={{
-                validate: (value: string) => {
-                  if (readinessStatus && readinessStatus !== 'ready' && !value.trim()) {
-                    return 'הערות הינן שדה חובה כאשר סטטוס הכשירות אינו "כשיר"';
-                  }
-                  return true;
-                },
-              }}
-              required={readinessStatus !== 'ready' && readinessStatus !== ''}
+              icon={StationIcon}
+              placeholder="תחנה 1"
             />
-          </FullWidthField>
-        </FormGrid>
+          </FormSection>
 
-        <SectionTitle>קישוריות</SectionTitle>
-        {connectivityFields.map((field, index) => (
-          <DynamicRow key={field.id}>
-            <div style={{ flex: '1', display: 'flex', gap: theme.spacing.md }}>
-              <div style={{ flex: '1' }}>
+          <FormSection>
+            <FormSectionHeader>
+              <FormSectionTitle>פרטי התחנה</FormSectionTitle>
+            </FormSectionHeader>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+              <FormFieldRow>
                 <FormSelect
-                  name={`connectivities.${index}.connectedStationId`}
+                  name="organizationalAffiliation"
                   control={control}
-                  label="תחנה מקושרת"
-                  options={availableStations}
-                  placeholder="בחר תחנה"
-                  error={errors.connectivities?.[index]?.connectedStationId}
-                  rules={{ required: 'תחנה מקושרת הינה שדה חובה' }}
+                  label="שייכות ארגונית"
+                  options={ORGANIZATIONAL_AFFILIATION_OPTIONS}
+                  placeholder="בחר שייכות"
+                  error={errors.organizationalAffiliation}
+                  rules={{ required: 'שייכות ארגונית הינה שדה חובה' }}
                   required
-                  transformValue={{
-                    toField: (value) => (value === '' || value === null ? '' : value.toString()),
-                    toForm: (value) => value === '' ? '' : Number(value),
-                  }}
                 />
-              </div>
-              <div style={{ flex: '1' }}>
                 <FormSelect
-                  name={`connectivities.${index}.communicationType`}
+                  name="readinessStatus"
                   control={control}
-                  label="סוג תקשורת"
-                  options={getAvailableCommunicationTypesForRow(index)}
-                  placeholder="בחר סוג"
-                  error={errors.connectivities?.[index]?.communicationType}
-                  rules={{ required: 'סוג תקשורת הינו שדה חובה' }}
+                  label="סטטוס כשירות"
+                  options={READINESS_STATUS_OPTIONS}
+                  placeholder="בחר סטטוס כשירות"
+                  error={errors.readinessStatus}
+                  rules={{ required: 'סטטוס כשירות הינה שדה חובה' }}
                   required
                 />
-              </div>
-              <div style={{ flex: '0 0 120px' }}>
-                <FormTextField
-                  name={`connectivities.${index}.channelCount`}
-                  control={control}
-                  label="מספר ערוצים"
-                  placeholder="1"
-                  type="number" 
-                  error={errors.connectivities?.[index]?.channelCount}
-                  rules={{ 
-                    required: 'מספר ערוצים הינו שדה חובה',
-                    min: { value: 1, message: 'מספר ערוצים חייב להיות חיובי' },
-                  }}
-                  required
-                />
-              </div>
+              </FormFieldRow>
+              <FormTextField
+                name="notes"
+                control={control}
+                label="הערות כלליות"
+                placeholder="פרט על הסטטוס כאן..."
+                error={errors.notes}
+                rules={{
+                  validate: (value: string) => {
+                    if (readinessStatus && readinessStatus !== 'ready' && (!value || !value.trim())) {
+                      return 'הערות הינן שדה חובה כאשר סטטוס הכשירות אינו "כשיר"';
+                    }
+                    return true;
+                  },
+                }}
+                required={readinessStatus !== 'ready' && readinessStatus !== ''}
+              />
             </div>
-            <DeleteButton type="button" onClick={() => removeConnectivity(index)}>
-              <CloseIcon sx={{ fontSize: 20 }} />
-            </DeleteButton>
-          </DynamicRow>
-        ))}
-        <AddButton
-          variant="outlined"
-          startIcon={<AddIcon />}
-          onClick={handleAddConnectivity}
-          type="button"
-        >
-          הוסף קישוריות
-        </AddButton>
+          </FormSection>
 
-        <SectionTitle>אנטנות</SectionTitle>
-        
-        {antennas && antennas.length > 0 && (
-          <AntennaTagsContainer>
-            {antennas.map((antenna) => (
-              <AntennaTag 
-                key={antenna.id} 
-                onClick={() => handleEditAntenna(antenna)}
-                style={{ cursor: 'pointer' }}
-              >
-                <RemoveTagButton 
-                  type="button" 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleRemoveAntenna(antenna.id);
-                  }}
-                >
-                  <CloseIcon sx={{ fontSize: 16 }} />
-                </RemoveTagButton>
-                <AntennaTagContent>
-                  {antenna.size} {antenna.frequencyBand}
-                </AntennaTagContent>
-                <AntennaIcon>
-                  <SettingsInputAntennaIcon sx={{ fontSize: 20 }} />
-                </AntennaIcon>
-              </AntennaTag>
+          <FormSection>
+            <FormSectionHeader>
+              <FormSectionTitle>קישוריות</FormSectionTitle>
+            </FormSectionHeader>
+            {connectivityFields.map((field, index) => (
+              <DynamicRow key={field.id} style={{ alignItems: 'flex-end', gap: '12px' }}>
+                <div style={{
+                  color: '#e1eaff',
+                  fontFamily: 'Assistant, sans-serif',
+                  fontWeight: 700,
+                  fontSize: '16px',
+                  paddingBottom: '6px'
+                }}>
+                  {index + 1}.
+                </div>
+                <div style={{ flex: '1', display: 'flex', gap: theme.spacing.md }}>
+                  <div style={{ flex: '1' }}>
+                    <FormSelect
+                      name={`connectivities.${index}.connectedStationId`}
+                      control={control}
+                      label="תחנה מקושרת"
+                      options={availableStations}
+                      placeholder="בחר תחנה"
+                      error={errors.connectivities?.[index]?.connectedStationId}
+                      rules={{ required: 'תחנה מקושרת הינה שדה חובה' }}
+                      required
+                      transformValue={{
+                        toField: (value) => (value === '' || value === null ? '' : value.toString()),
+                        toForm: (value) => value === '' ? '' : Number(value),
+                      }}
+                    />
+                  </div>
+                  <div style={{ flex: '1' }}>
+                    <FormSelect
+                      name={`connectivities.${index}.communicationType`}
+                      control={control}
+                      label="סוג תקשורת"
+                      options={getAvailableCommunicationTypesForRow(index)}
+                      placeholder="בחר סוג"
+                      error={errors.connectivities?.[index]?.communicationType}
+                      rules={{ required: 'סוג תקשורת הינה שדה חובה' }}
+                      required
+                    />
+                  </div>
+                  <div style={{ flex: '1' }}>
+                    <FormTextField
+                      name={`connectivities.${index}.channelCount`}
+                      control={control}
+                      label="מספר ערוצים"
+                      placeholder="1"
+                      type="number"
+                      error={errors.connectivities?.[index]?.channelCount}
+                      rules={{
+                        required: 'מספר ערוצים הינה שדה חובה',
+                        min: { value: 1, message: 'מספר ערוצים חייב להיות חיובי' },
+                      }}
+                      required
+                    />
+                  </div>
+                </div>
+                <DeleteButton type="button" onClick={() => removeConnectivity(index)} style={{ paddingBottom: '8px' }}>
+                  <CloseIcon sx={{ fontSize: 20 }} />
+                </DeleteButton>
+              </DynamicRow>
             ))}
-          </AntennaTagsContainer>
-        )}
-        
-        <AntennaInputSection>
-          {(!antennas || antennas.length === 0) && !showAntennaInput && (
-            <EmptyAntennaState>לא הוספו אנטנות</EmptyAntennaState>
-          )}
-          
-          {showAntennaInput && (
-            <DynamicRow>
-              <div style={{ flex: '1' }}>
-                <input
-                  type="number"
-                  placeholder= "גודל אנטנה במטרים (2.5)"
-                  value={antennaSize}
-                  onChange={(e) => setAntennaSize(e.target.value ? Number(e.target.value) : '')}
-                  style={{
-                    width: '100%',
-                    padding: '12px',
-                    background: theme.colors.background.dark,
-                    border: `1px solid ${theme.colors.border.subtle}`,
-                    borderRadius: theme.borderRadius.sm,
-                    color: theme.colors.text.white,
-                    fontSize: '13px',
-                    direction: 'rtl',
-                  }}
-                />
-              </div>
-              <div style={{ flex: '1' }}>
-                <select
-                  value={antennaFrequency}
-                  onChange={(e) => setAntennaFrequency(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '12px',
-                    background: theme.colors.background.dark,
-                    border: `1px solid ${theme.colors.border.subtle}`,
-                    borderRadius: theme.borderRadius.sm,
-                    color: theme.colors.text.white,
-                    fontSize: '13px',
-                    direction: 'rtl',
-                    cursor: 'pointer',
-                  }}
-                >
-                  <option value="">בחר תחום תדר</option>
-                  {FREQUENCY_BAND_OPTIONS.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <AddButton
-                variant="contained"
-                endIcon={<AddIcon />}
-                onClick={handleAddAntenna}
-                type="button"
-                disabled={!antennaSize || !antennaFrequency}
-                sx={{ gap: '8px', minWidth: 'auto', padding: '8px 16px' }}
-              >
-                {editingAntennaId ? 'עדכן' : 'הוסף'}
-              </AddButton>
-            </DynamicRow>
-          )}
-          
-          <AddButton
-            variant="outlined"
-            startIcon={<AddIcon />}
-            onClick={() => setShowAntennaInput(true)}
-            type="button"
-          >
-            הוסף אנטנה
-          </AddButton>
-        </AntennaInputSection>
+            <FormAddButton
+              startIcon={<AddIcon />}
+              onClick={handleAddConnectivity}
+              type="button"
+            >
+              הוסף קישוריות
+            </FormAddButton>
+          </FormSection>
 
-        <ButtonContainer>
-          {!editingStationId && (
-            <StyledButton
-              variant="outlined"
-              onClick={handleReset}
-              disabled={isSubmitting}
-              startIcon={<DeleteOutlineIcon />}
-            >
-              נקה שדות
-            </StyledButton>
+          {terminals && terminals.length > 0 && (
+            <FormSection>
+              <FormSectionHeader>
+                <FormSectionTitle>טרמינלים</FormSectionTitle>
+                <TerminalIcon sx={{ fontSize: 20, color: '#e1eaff', opacity: 0.8 }} />
+              </FormSectionHeader>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', direction: 'rtl' }}>
+                {terminals.map((terminal) => (
+                  <div
+                    key={terminal.id}
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.08)',
+                      borderRadius: '12px',
+                      height: '42px',
+                      padding: '0 16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                    }}
+                  >
+                    <span style={{ color: '#FAFAFA', fontSize: '18px', fontWeight: 600 }}>{terminal.name}</span>
+                    <TerminalIcon sx={{ fontSize: 20, color: '#e1eaff', opacity: 0.8 }} />
+                  </div>
+                ))}
+              </div>
+            </FormSection>
           )}
-          {editingStationId && onCancel && (
-            <StyledButton
-              variant="outlined"
-              onClick={onCancel}
-              disabled={isSubmitting}
+
+          <FormSection>
+            <FormSectionHeader>
+              <FormSectionTitle>אנטנות</FormSectionTitle>
+            </FormSectionHeader>
+
+            {antennaFields.map((field, index) => (
+              <DynamicRow key={field.id} style={{ alignItems: 'flex-end', gap: '12px' }}>
+                <div style={{
+                  color: '#e1eaff',
+                  fontFamily: 'Assistant, sans-serif',
+                  fontWeight: 700,
+                  fontSize: '16px',
+                  paddingBottom: '6px'
+                }}>
+                  {index + 1}.
+                </div>
+                <div style={{ flex: '1', display: 'flex', gap: theme.spacing.md }}>
+                  <div style={{ flex: '1' }}>
+                    <FormTextField
+                      name={`antennas.${index}.size`}
+                      control={control}
+                      label="גודל (מטרים)"
+                      placeholder="2.5"
+                      type="number"
+                      error={errors.antennas?.[index]?.size}
+                      rules={{
+                        required: 'גודל הינו שדה חובה',
+                        min: { value: 0.1, message: 'גודל חייב להיות חיובי' }
+                      }}
+                      required
+                      transformValue={{
+                        toField: (value) => (value === 0 ? '' : value.toString()),
+                        toForm: (value) => value === '' ? 0 : Number(value),
+                      }}
+                    />
+                  </div>
+                  <div style={{ flex: '1' }}>
+                    <FormSelect
+                      name={`antennas.${index}.frequencyBand`}
+                      control={control}
+                      label="תחום תדר"
+                      options={FREQUENCY_BAND_OPTIONS}
+                      placeholder="בחר תחום תדר"
+                      error={errors.antennas?.[index]?.frequencyBand}
+                      rules={{ required: 'תחום תדר הינו שדה חובה' }}
+                      required
+                    />
+                  </div>
+                </div>
+                <DeleteButton type="button" onClick={() => removeAntenna(index)} style={{ paddingBottom: '8px' }}>
+                  <CloseIcon sx={{ fontSize: 20 }} />
+                </DeleteButton>
+              </DynamicRow>
+            ))}
+
+            <FormAddButton
+              startIcon={<AddIcon />}
+              onClick={handleAddAntenna}
+              type="button"
             >
-              ביטול
-            </StyledButton>
-          )}
-          <StyledButton
-            variant="contained"
-            type="submit"
-            disabled={!isValid || isSubmitting || !isDirty}
-          >
-            {isSubmitting ? 'שומר...' : 'שמירה'}
-          </StyledButton>
-        </ButtonContainer>
-      </form>
-    </FormContainer>
+              הוסף אנטנה
+            </FormAddButton>
+          </FormSection>
+
+          <FormBottomActions>
+            {editingStationId != null ? (
+              <FormDeleteButton
+                onClick={onDelete}
+                startIcon={<DeleteOutlineIcon />}
+              >
+                מחק אמצעי
+              </FormDeleteButton>
+            ) : (
+              <div /> // Spacer to keep actions on the left
+            )}
+            <ActionButtonsGroup>
+              {!editingStationId && (
+                <FormSecondaryButton
+                  onClick={handleReset}
+                  disabled={isSubmitting}
+                >
+                  נקה שדות
+                </FormSecondaryButton>
+              )}
+              {editingStationId && onCancel && (
+                <FormSecondaryButton
+                  onClick={onCancel}
+                  disabled={isSubmitting}
+                >
+                  ביטול
+                </FormSecondaryButton>
+              )}
+              <FormPrimaryButton
+                variant="contained"
+                type="submit"
+                disabled={!isValid || isSubmitting || !isDirty}
+                startIcon={<SaveIcon />}
+              >
+                {isSubmitting ? 'שומר...' : 'שמור שינויים'}
+              </FormPrimaryButton>
+            </ActionButtonsGroup>
+          </FormBottomActions>
+        </form>
+      </FormMainContainer>
+    </div>
   );
 };

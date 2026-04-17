@@ -55,6 +55,7 @@ export interface Station {
   notes?: string;
   connectivities?: StationConnectivity[];
   antennas?: StationAntenna[];
+  terminals?: Terminal[];
   isDeleted: boolean;
   deletedAt?: Date;
   createdAt: Date;

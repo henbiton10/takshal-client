@@ -1,15 +1,14 @@
 import { StationFormData } from './types';
+import iafIcon from '../../assets/IAF.png';
+import c4iIcon from '../../assets/C4I.svg';
+import { READINESS_STATUS_OPTIONS } from '../../shared/constants/status';
 
 export const ORGANIZATIONAL_AFFILIATION_OPTIONS = [
-  { value: 'airforce', label: 'חה"א' },
-  { value: 'tikshuv', label: 'אגף התקשוב' },
+  { value: 'airforce', label: 'חה"א', icon: iafIcon },
+  { value: 'tikshuv', label: 'אגף התקשוב', icon: c4iIcon },
 ];
 
-export const READINESS_STATUS_OPTIONS = [
-  { value: 'ready', label: 'כשיר' },
-  { value: 'partly_ready', label: 'כשיר חלקית' },
-  { value: 'damaged', label: 'תקול' },
-];
+export { READINESS_STATUS_OPTIONS };
 
 export const COMMUNICATION_TYPE_OPTIONS = [
   { value: 'fiber_optic', label: 'סיב אופטי' },

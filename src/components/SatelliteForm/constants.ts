@@ -1,6 +1,10 @@
+import israelIcon from '../../assets/israel.png';
+import earthIcon from '../../assets/earth.png';
+import { READINESS_STATUS_OPTIONS } from '../../shared/constants/status';
+
 export const AFFILIATION_OPTIONS = [
-  { value: 'israeli', label: 'ישראלי' },
-  { value: 'international', label: 'בין לאומי' },
+  { value: 'israeli', label: 'ישראלי', icon: israelIcon },
+  { value: 'international', label: 'בין לאומי', icon: earthIcon },
 ];
 
 export const FREQUENCY_CONVERTER_OPTIONS = [
@@ -8,11 +12,7 @@ export const FREQUENCY_CONVERTER_OPTIONS = [
   { value: false, label: 'לא' },
 ];
 
-export const READINESS_STATUS_OPTIONS = [
-  { value: 'ready', label: 'כשיר' },
-  { value: 'partly_ready', label: 'כשיר חלקית' },
-  { value: 'damaged', label: 'תקול' },
-];
+export { READINESS_STATUS_OPTIONS };
 
 export const INITIAL_FORM_DATA = {
   name: '',

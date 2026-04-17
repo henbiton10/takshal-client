@@ -18,10 +18,12 @@ export interface StationFormData {
   notes: string;
   connectivities: ConnectivityFormData[];
   antennas: AntennaFormData[];
+  terminals?: Array<{ id: number; name: string }>;
 }
 
 export interface StationFormProps {
   onSave?: (data: StationFormData) => Promise<void>;
+  onDelete?: () => void;
   editingStationId?: number | null;
   initialData?: StationFormData | null;
   onClose?: () => void;

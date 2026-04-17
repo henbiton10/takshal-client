@@ -10,11 +10,12 @@ const HeaderContainer = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'isExpanded',
 })<{ isExpanded: boolean }>(({ isExpanded }) => ({
   display: 'flex',
-  gap: '16px',
+  gap: isExpanded ? '16px' : '0',
   alignItems: 'center',
-  justifyContent: isExpanded ? 'flex-end' : 'center',
+  justifyContent: isExpanded ? 'flex-start' : 'center',
   width: '100%',
-  padding: isExpanded ? '0 8px' : '0',
+  height: '52px',
+  padding: isExpanded ? '0 4px 0 0' : '0',
   transition: 'all 0.3s ease',
 }));
 
@@ -34,7 +35,6 @@ const HeaderContent = styled(Box, {
 const TextContainer = styled(Box)({
   display: 'flex',
   flexDirection: 'column',
-  alignItems: 'flex-end',
   width: '104px',
 });
 
@@ -74,15 +74,15 @@ const LogoBackground = styled(Box)({
 export default function SidebarHeader({ isExpanded }: SidebarHeaderProps) {
   return (
     <HeaderContainer isExpanded={isExpanded}>
+      <LogoBackground>
+        <SatelliteAltIcon />
+      </LogoBackground>
       <HeaderContent isExpanded={isExpanded}>
         <TextContainer>
           <Title>תכנון תקש׳׳ל</Title>
           <Subtitle>מרכז בקרה ושליטה</Subtitle>
         </TextContainer>
       </HeaderContent>
-      <LogoBackground>
-        <SatelliteAltIcon />
-      </LogoBackground>
     </HeaderContainer>
   );
 }

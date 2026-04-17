@@ -5,6 +5,7 @@ const GlobalStyle = createGlobalStyle`
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    direction: rtl;
   }
 
   :root {
@@ -22,11 +23,15 @@ const GlobalStyle = createGlobalStyle`
     -moz-osx-font-smoothing: grayscale;
   }
 
+  html {
+    direction: rtl;
+  }
+
   body {
     margin: 0;
     min-width: 100vw;
     min-height: 100vh;
-    background: linear-gradient(188.23deg, rgb(17, 33, 69) 9.06%, rgb(10, 17, 34) 98.39%);
+    background: linear-gradient(181.55deg, #112145 -9.06%, #0A1122 98.39%);
     overflow: hidden;
     direction: rtl;
   }
@@ -34,6 +39,13 @@ const GlobalStyle = createGlobalStyle`
   #root {
     width: 100%;
     height: 100vh;
+    direction: rtl;
+  }
+
+  /* MUI Portal containers */
+  .MuiPopover-root,
+  .MuiModal-root,
+  .MuiMenu-root {
     direction: rtl;
   }
 `;
