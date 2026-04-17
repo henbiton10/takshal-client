@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import { theme } from '../../../theme';
 import { Button, Box } from '@mui/material';
 import { EntityConfig } from '../entityConfig';
 
@@ -55,7 +54,7 @@ const ShowAllButton = styled(Button)`
 
 const ItemsGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, 350px);
   gap: 16px;
   width: 100%;
 `;

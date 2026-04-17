@@ -55,12 +55,28 @@ export const useResourcesManagement = () => {
   const filteredItems = useMemo(() => {
     const result: Record<string, any[]> = {};
     const query = searchQuery.trim().toLowerCase();
+    
+    const statusPriority: Record<string, number> = {
+      ready: 0,
+      partial: 1,
+      faulty: 2,
+    };
 
     Object.entries(entityManagers).forEach(([key, manager]) => {
       const activeItems = manager.items.filter((item: any) => !item.isDeleted);
-      result[key] = query 
+      let items = query 
         ? activeItems.filter((item: any) => item.name?.toLowerCase().includes(query))
-        : activeItems;
+        : [...activeItems];
+
+      // Sort by status priority, then by name
+      items.sort((a: any, b: any) => {
+        const pA = statusPriority[a.readinessStatus] ?? 3;
+        const pB = statusPriority[b.readinessStatus] ?? 3;
+        if (pA !== pB) return pA - pB;
+        return a.name?.localeCompare(b.name, 'he') || 0;
+      });
+      
+      result[key] = items;
     });
 
     return result;

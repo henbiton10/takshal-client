@@ -1,15 +1,18 @@
 import { Box } from '@mui/material';
 import styled from 'styled-components';
-import { theme } from '../../../theme';
 import { ViewMode } from '../hooks/useEntityManager';
 import { BigEmptyState } from '../../../shared/components/ui/BigEmptyState';
 
-const CardsGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 16px;
+const ColumnContainer = styled.div`
+  column-width: 350px;
+  column-gap: 20px;
   width: 100%;
   direction: rtl;
+  
+  & > * {
+    break-inside: avoid;
+    margin-bottom: 20px;
+  }
 `;
 
 interface EntitySectionProps {
@@ -35,13 +38,10 @@ export const EntitySection = ({
   viewMode,
   selectedId,
   selectedData,
-  editingData,
   onCardClick,
   onClose,
-  onCancel,
   onEdit,
   onDelete,
-  onSave,
 }: EntitySectionProps) => {
   const { ViewComponent, CardComponent, emptyMessage, emptySubMessage, title } = config;
 
@@ -85,9 +85,9 @@ export const EntitySection = ({
     return { data: selectedData, onEdit, onDelete: handleDelete, onClose };
   };
 
-  const renderCards = () => (
-    <Box sx={{ width: '100%' }}>
-      <CardsGrid>
+  const renderCards = () => {
+    return (
+      <ColumnContainer>
         {items.map((item) => (
           <CardComponent 
             key={item.id} 
@@ -96,9 +96,9 @@ export const EntitySection = ({
             onClick={onCardClick}
           />
         ))}
-      </CardsGrid>
-    </Box>
-  );
+      </ColumnContainer>
+    );
+  };
 
   // View mode - show entity details full page
   if (viewMode === 'view' && selectedData) {
