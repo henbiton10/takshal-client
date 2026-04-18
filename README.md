@@ -4,9 +4,10 @@ A premium, state-of-the-art resource management and operation planning platform.
 
 ## Features
 
+- **Modernized Operation Orders**: A high-fidelity, interactive interface for planning operations with a modular, scalable architecture.
+- **Unified Editing Experience**: Real-time allocation management within a unified header view, featuring automatic expansion and focus for sub-allocations.
 - **Resource Management**: Comprehensive tracking of Stations, Satellites, Terminals, and Networks.
-- **Operation Planning**: Advanced allocation system with real-time connectivity validation.
-- **Premium UI/UX**: Custom designed with a dark, glassmorphic aesthetic and smooth animations.
+- **Premium UI/UX**: State-of-the-art dark mode design based on Figma specifications, featuring glassmorphism, red glow shadows, and smooth micro-animations.
 - **Global Notifications**: Real-time success and error toasts for all operations.
 
 ## Technology Stack

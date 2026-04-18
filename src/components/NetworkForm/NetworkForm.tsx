@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import deleteIcon from '../../assets/delete.svg';
 import PublicIcon from '@mui/icons-material/Public';
+import LanIcon from '@mui/icons-material/Lan';
 import { NetworkFormProps, NetworkFormData } from './types';
 import { READINESS_STATUS_OPTIONS, INITIAL_FORM_DATA } from './constants';
 import SaveIcon from '@mui/icons-material/Save';
@@ -33,10 +34,10 @@ export const NetworkForm = ({ onSave, onDelete, editingNetworkId, initialData, o
     handleSubmit,
     watch,
     reset,
-    formState: { errors, isSubmitting, isValid, isDirty },
+    formState: { errors, isSubmitting, isDirty },
   } = useForm<NetworkFormData>({
     defaultValues: initialData || INITIAL_FORM_DATA,
-    mode: 'onChange',
+    mode: 'onTouched',
   });
 
   useEffect(() => {
@@ -98,6 +99,7 @@ export const NetworkForm = ({ onSave, onDelete, editingNetworkId, initialData, o
 
           <FormSection>
             <FormSectionHeader>
+              <LanIcon sx={{ fontSize: 20, color: (theme) => theme.palette.text.secondary }} />
               <FormSectionTitle>פרטי רשת</FormSectionTitle>
             </FormSectionHeader>
             <FormFieldRow>
@@ -132,8 +134,9 @@ export const NetworkForm = ({ onSave, onDelete, editingNetworkId, initialData, o
                 placeholder="פרט על הסטטוס כאן..."
                 error={errors.notes}
                 rules={{
-                  validate: (value: string) => {
-                    if (readinessStatus && readinessStatus !== 'ready' && !value.trim()) {
+                  validate: (value: any) => {
+                    const strValue = value?.toString() || '';
+                    if (readinessStatus && readinessStatus !== 'ready' && !strValue.trim()) {
                       return 'הערות הינן שדה חובה כאשר סטטוס הכשירות אינו "כשיר"';
                     }
                     return true;
@@ -148,7 +151,7 @@ export const NetworkForm = ({ onSave, onDelete, editingNetworkId, initialData, o
             {editingNetworkId ? (
               <FormDeleteButton
                 onClick={onDelete}
-                startIcon={<DeleteOutlineIcon />}
+                startIcon={<img src={deleteIcon} alt="" style={{ width: '18px', height: '18px' }} />}
               >
                 מחק אמצעי
               </FormDeleteButton>
@@ -175,7 +178,7 @@ export const NetworkForm = ({ onSave, onDelete, editingNetworkId, initialData, o
               <FormPrimaryButton
                 variant="contained"
                 type="submit"
-                disabled={!isValid || isSubmitting || !isDirty}
+                disabled={isSubmitting || (!!editingNetworkId && !isDirty)}
                 startIcon={<SaveIcon />}
               >
                 {isSubmitting ? 'שומר...' : 'שמור שינויים'}

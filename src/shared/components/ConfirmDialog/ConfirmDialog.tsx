@@ -1,7 +1,6 @@
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Box } from '@mui/material';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Box, Divider } from '@mui/material';
 import styled from 'styled-components';
-import { theme } from '../../../theme';
+import deleteIcon from '../../../assets/delete.svg';
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -16,13 +15,20 @@ interface ConfirmDialogProps {
 const StyledDialog = styled(Dialog)`
   && {
     .MuiDialog-paper {
-      background: #1C2439;
+      background: #1c2439;
       border: 1px solid #305088;
       border-radius: 12px;
-      min-width: 440px;
+      width: 318px;
+      padding: 24px;
       box-shadow: 0px 0px 12px 0px rgba(255, 77, 77, 0.24);
       direction: rtl;
       overflow: hidden;
+      gap: 12px;
+    }
+    
+    .MuiBackdrop-root {
+      background-color: rgba(10, 17, 34, 0.85);
+      backdrop-filter: blur(4px);
     }
   }
 `;
@@ -31,7 +37,6 @@ const ContentWrapper = styled(Box)`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 24px 24px 12px;
   text-align: center;
 `;
 
@@ -43,17 +48,12 @@ const IconWrapper = styled(Box)`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 12px;
-  
-  svg {
-    font-size: 24px;
-    color: #FF4D4D;
-  }
+  margin-bottom: 24px;
 `;
 
 const StyledDialogTitle = styled(DialogTitle)`
   && {
-    color: #FAFAFA;
+    color: #fafafa;
     font-family: 'Assistant', sans-serif;
     font-size: 18px;
     font-weight: 700;
@@ -67,8 +67,7 @@ const StyledDialogTitle = styled(DialogTitle)`
 const StyledDialogContent = styled(DialogContent)`
   && {
     padding: 0;
-    margin-bottom: 12px;
-    color: #CCC;
+    color: #cccccc;
     font-family: 'Assistant', sans-serif;
     font-size: 14px;
     font-weight: 600;
@@ -77,16 +76,14 @@ const StyledDialogContent = styled(DialogContent)`
   }
 `;
 
-const Separator = styled(Box)`
-  width: 100%;
-  height: 1px;
-  background: #305088;
-  margin-top: 12px;
+const StyledDivider = styled(Divider)`
+  && {
+    border-color: #305088;
+  }
 `;
 
 const StyledDialogActions = styled(DialogActions)`
   && {
-    padding: 12px 24px 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -96,11 +93,11 @@ const StyledDialogActions = styled(DialogActions)`
 const CancelButton = styled(Button)`
   && {
     background: transparent;
-    color: #CCC;
+    color: #cccccc;
     border-radius: 10px;
     padding: 8px 12px;
     text-transform: none;
-    font-family: 'Assistant', sans-serif;
+    font-family: inherit;
     font-size: 16px;
     font-weight: 600;
     line-height: 24px;
@@ -108,26 +105,27 @@ const CancelButton = styled(Button)`
     
     &:hover {
       background: rgba(255, 255, 255, 0.05);
-      color: #FAFAFA;
+      color: #fafafa;
     }
   }
 `;
 
 const ConfirmButton = styled(Button)`
   && {
-    background: rgba(255, 77, 77, 0.8);
+    background: #ff4d4d;
     color: #FAFAFA;
     border-radius: 10px;
     padding: 8px 12px;
     text-transform: none;
-    font-family: 'Assistant', sans-serif;
+    font-family: inherit;
     font-size: 16px;
     font-weight: 600;
     line-height: 24px;
     letter-spacing: 0.16px;
     
     &:hover {
-      background: rgba(255, 77, 77, 0.9);
+      background: #ff3333;
+      box-shadow: 0 0 15px rgba(255, 77, 77, 0.4);
     }
   }
 `;
@@ -145,14 +143,14 @@ export const ConfirmDialog = ({
     <StyledDialog open={open} onClose={onCancel}>
       <ContentWrapper>
         <IconWrapper>
-          <DeleteOutlineIcon />
+          <img src={deleteIcon} alt="מחיקה" style={{ width: '24px', height: '24px' }} />
         </IconWrapper>
         <StyledDialogTitle>{title}</StyledDialogTitle>
         <StyledDialogContent>
           {message}
         </StyledDialogContent>
       </ContentWrapper>
-      <Separator />
+      <StyledDivider />
       <StyledDialogActions>
         <CancelButton onClick={onCancel}>
           {cancelText}

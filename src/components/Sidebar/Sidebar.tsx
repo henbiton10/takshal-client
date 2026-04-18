@@ -8,19 +8,17 @@ import {
   SIDEBAR_WIDTH_COLLAPSED,
   SIDEBAR_WIDTH_EXPANDED,
   SIDEBAR_TRANSITION_DURATION,
-  SIDEBAR_GRADIENT,
-  SIDEBAR_BORDER_COLOR,
   SIDEBAR_BACKDROP_BLUR,
 } from './constants';
 import { SidebarProps } from './types';
 
 const SidebarContainer = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'isExpanded',
-})<{ isExpanded: boolean }>(({ isExpanded }) => ({
+})<{ isExpanded: boolean }>(({ isExpanded, theme }) => ({
   width: isExpanded ? `${SIDEBAR_WIDTH_EXPANDED}px` : `${SIDEBAR_WIDTH_COLLAPSED}px`,
   height: '100vh',
-  background: SIDEBAR_GRADIENT,
-  borderLeft: `1px solid ${SIDEBAR_BORDER_COLOR}`,
+  background: `linear-gradient(204.53deg, ${theme.palette.background.paper} 9.08%, ${theme.palette.background.default} 99.47%)`,
+  borderLeft: `1px solid ${theme.palette.divider}`,
   boxShadow: '0px 4px 24px 0px rgba(0, 0, 0, 0.25)',
   backdropFilter: `blur(${SIDEBAR_BACKDROP_BLUR})`,
   padding: isExpanded ? '12px 12px' : '12px 16px',
@@ -31,11 +29,11 @@ const SidebarContainer = styled(Box, {
   overflow: 'hidden',
 }));
 
-const MenuSeparator = styled(Box)({
+const MenuSeparator = styled(Box)(({ theme }) => ({
   height: '1px',
-  background: 'rgba(255, 255, 255, 0.12)',
+  background: theme.palette.divider,
   margin: '0 8px',
-});
+}));
 
 const MenuContainer = styled(Box)({
   display: 'flex',

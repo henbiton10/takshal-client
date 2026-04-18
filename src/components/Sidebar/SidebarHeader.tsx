@@ -1,6 +1,5 @@
 import { Box, Typography, styled } from '@mui/material';
 import SatelliteAltIcon from '@mui/icons-material/SatelliteAlt';
-import { COLORS } from './constants';
 
 interface SidebarHeaderProps {
   isExpanded: boolean;
@@ -38,38 +37,38 @@ const TextContainer = styled(Box)({
   width: '104px',
 });
 
-const Title = styled(Typography)({
-  fontFamily: 'Assistant, sans-serif',
+const Title = styled(Typography)(({ theme }) => ({
+  fontFamily: 'inherit',
   fontWeight: 700,
   fontSize: '18px',
   lineHeight: '24px',
-  color: COLORS.white,
+  color: theme.palette.text.primary,
   textAlign: 'right',
   whiteSpace: 'nowrap',
-});
+}));
 
-const Subtitle = styled(Typography)({
-  fontFamily: 'Assistant, sans-serif',
+const Subtitle = styled(Typography)(({ theme }) => ({
+  fontFamily: 'inherit',
   fontWeight: 600,
   fontSize: '14px',
   lineHeight: '16px',
   letterSpacing: '0.14px',
-  color: COLORS.secondary,
+  color: theme.palette.text.secondary,
   textAlign: 'right',
   whiteSpace: 'nowrap',
-});
+}));
 
-const LogoBackground = styled(Box)({
+const LogoBackground = styled(Box)(({ theme }) => ({
   width: '40px',
   height: '40px',
-  background: COLORS.logoBackground,
+  background: theme.palette.primary.main,
   borderRadius: '16px',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
   color: '#ffffff',
   flexShrink: 0,
-});
+}));
 
 export default function SidebarHeader({ isExpanded }: SidebarHeaderProps) {
   return (
