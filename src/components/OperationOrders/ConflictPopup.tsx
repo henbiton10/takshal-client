@@ -52,6 +52,14 @@ const ConflictsList = styled.div`
   gap: 12px;
   max-height: 300px;
   overflow-y: auto;
+  
+  /* Force scrollbar to the right */
+  direction: ltr;
+  
+  & > * {
+    /* Set content back to RTL */
+    direction: rtl;
+  }
 `;
 
 const ConflictItem = styled.div`

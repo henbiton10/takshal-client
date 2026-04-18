@@ -106,6 +106,14 @@ const PopupContent = styled.div`
   gap: 12px;
   max-height: 60vh;
   overflow-y: auto;
+  
+  /* Force scrollbar to the right */
+  direction: ltr;
+  
+  & > * {
+    /* Set content back to RTL */
+    direction: rtl;
+  }
 `;
 
 const AllocationCard = styled.div`

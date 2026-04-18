@@ -129,6 +129,15 @@ const ContentSection = styled.div<{ $contentPadding?: string }>`
   flex: 1;
   padding: ${(props) => props.$contentPadding || '24px'};
   overflow-y: auto;
+  
+  /* Force scrollbar to the right */
+  direction: ltr;
+  
+  & > * {
+    /* Set content back to RTL */
+    direction: rtl;
+    width: 100%;
+  }
 `;
 
 export const PageLayout = ({

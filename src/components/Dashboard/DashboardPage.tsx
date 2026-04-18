@@ -60,6 +60,15 @@ const MainContent = styled.div`
   gap: 16px;
   padding: 0 24px 24px;
   overflow: auto;
+  
+  /* Force scrollbar to the right */
+  direction: ltr;
+  
+  & > * {
+    /* Set content back to RTL */
+    direction: rtl;
+    width: 100%;
+  }
 `;
 
 const TopSection = styled.div`
@@ -124,6 +133,16 @@ const SectionContent = styled.div`
   padding: 16px;
   overflow: auto;
   flex: 1;
+  
+  /* Force scrollbar to the right */
+  direction: ltr;
+  
+  & > * {
+    /* Set content back to RTL */
+    direction: rtl;
+    width: 100%;
+    height: 100%;
+  }
 `;
 
 const LoadingContainer = styled.div`

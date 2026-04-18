@@ -87,6 +87,15 @@ const OptionsList = styled.div`
   max-height: 250px;
   overflow-y: auto;
   padding: 8px 0;
+  
+  /* Force scrollbar to the right */
+  direction: ltr;
+  
+  & > * {
+    /* Set content back to RTL */
+    direction: rtl;
+    width: 100%;
+  }
 `;
 
 const OptionItem = styled.div<{ $selected?: boolean; $disabled?: boolean }>`
