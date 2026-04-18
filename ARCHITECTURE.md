@@ -36,7 +36,15 @@ src/
     │   └── ResourcesManagement.tsx
     │
     └── OperationOrders/     # Order and Allocation management
-        └── ...
+        ├── components/      # Modular sub-components
+        │   ├── SortableAllocation.tsx    # Draggable main allocation row
+        │   ├── SortableSubAllocation.tsx # Draggable sub-allocation row
+        │   ├── SubAllocationSection.tsx  # Grouping container for sub-allocations
+        │   ├── AllocationTitle.tsx       # Typography for row identifiers
+        │   └── styles.ts                 # Shared styled-components for rows
+        ├── hooks/           # Business logic for orders
+        ├── OperationOrderPage.tsx   # Page orchestrator
+        └── OperationOrderHeader.tsx # Unified form orchestrator
 ```
 
 ## Theme System
@@ -309,3 +317,32 @@ Entities (Stations, Satellites, etc.) are managed through a central configuratio
 5. **Theme Consistency**: Centralized styling via `styled-components` and theme tokens
 6. **Composition**: Small components like `BigEmptyState` composed into larger features
 7. **Declarative UI**: Features like gender-aware toasts are defined in config objects (`EntityConfig`) rather than hardcoded logic.
+## Modernized Operation Orders Architecture
+
+The Operation Orders module has been refactored from a monolithic form into a modular, highly interactive system.
+
+### Unified Editor Pattern
+Instead of using separate popups (`AllocationForm`) for managing allocations, the system utilizes a **Unified Header Editor**. This allows users to manage the high-level order metadata (name, dates) and all underlying allocations in a single, cohesive view.
+
+### Component Breakdown
+- **OperationOrderHeader**: The primary orchestrator. It manages the global form state via `react-hook-form` and provides contexts for drag-and-drop.
+- **SortableAllocation**: Manages a single top-level allocation row. It handles localized filtering of resources (e.g., antennas filtered by frequency band).
+- **SubAllocationSection**: A specialized component that manages nested field arrays for sub-allocations.
+- **SortableSubAllocation**: A lightweight version of the allocation row designed for nested display.
+
+### Drag-and-Drop Implementation
+The system uses `@dnd-kit` to provide smooth, accessible reordering of allocations. Reordering happens at two levels:
+1. **Top-level Allocations**: Managed within the `OperationOrderHeader`.
+2. **Sub-allocations**: Managed independently within each `SubAllocationSection`.
+
+### Navigation & Focus Logic
+To ensure a smooth transition from the "View" mode to "Edit" mode, the system implements a **Focus & Expand** pattern:
+- When a user modifies an allocation from the grid, the page state transitions to the header editor.
+- The system automatically expands the relevant parent allocation in the `OperationOrderHeader`.
+- The interface automatically scrolls to the target row and applies a temporal highlight (glow effect) to focus the user's attention.
+
+### High-Fidelity Dialogs
+The `ConfirmDialog` system has been completely redesigned to match Figma specifications, featuring:
+- **Red Glow Shadows**: Indicates destructive actions.
+- **Glassmorphism**: Transparent, frosted backgrounds (`rgba(28, 36, 57, 0.95)`).
+- **Premium Separators**: Using MUI `Divider` for sub-pixel precision instead of custom borders.

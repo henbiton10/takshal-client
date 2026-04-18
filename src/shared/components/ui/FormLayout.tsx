@@ -1,12 +1,11 @@
 import styled from 'styled-components';
 import { Box, Button, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { theme } from '../../../theme';
 
 export const FormContainer = styled(Box)`
-  background: ${theme.colors.background.medium};
-  border-radius: ${theme.borderRadius.md};
-  padding: ${theme.spacing.xl} ${theme.spacing.xxl};
+  background: ${({ theme }) => theme.palette.background.paper};
+  border-radius: ${({ theme }) => theme.customBorderRadius.md};
+  padding: ${({ theme }) => `${theme.customSpacing.xl} ${theme.customSpacing.xxl}`};
   direction: rtl;
 `;
 
@@ -14,14 +13,14 @@ const FormHeaderContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: ${theme.spacing.xl};
+  margin-bottom: ${({ theme }) => theme.customSpacing.xl};
   direction: rtl;
 `;
 
 export const FormTitle = styled.h1`
-  color: ${theme.colors.text.primary};
-  font-size: ${theme.typography.fontSize.xl};
-  font-weight: ${theme.typography.fontWeight.medium};
+  color: ${({ theme }) => theme.palette.text.primary};
+  font-size: ${({ theme }) => theme.customTypography.fontSize.xl};
+  font-weight: ${({ theme }) => theme.customTypography.fontWeight.medium};
   margin: 0;
   text-align: center;
   flex: 1;
@@ -30,12 +29,12 @@ export const FormTitle = styled.h1`
 
 const CloseButton = styled(IconButton)`
   && {
-    color: rgba(225, 234, 255, 0.6);
+    color: ${({ theme }) => theme.palette.text.disabled};
     padding: 8px;
     
     &:hover {
-      color: ${theme.colors.text.white};
-      background: rgba(255, 255, 255, 0.1);
+      color: ${({ theme }) => theme.palette.text.primary};
+      background: ${({ theme }) => theme.palette.action.hover};
     }
   }
 `;
@@ -61,8 +60,8 @@ export const FormHeader = ({ title, onClose }: FormHeaderProps) => {
 export const FormGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: ${theme.spacing.lg};
-  margin-bottom: ${theme.spacing.lg};
+  gap: ${({ theme }) => theme.customSpacing.lg};
+  margin-bottom: ${({ theme }) => theme.customSpacing.lg};
   direction: rtl;
 
   @media (max-width: 768px) {
@@ -76,16 +75,16 @@ export const FullWidthField = styled.div`
 `;
 
 export const FieldWrapper = styled.div`
-  background: ${theme.colors.background.medium};
-  border-radius: ${theme.borderRadius.lg};
+  background: ${({ theme }) => theme.palette.background.paper};
+  border-radius: ${({ theme }) => theme.customBorderRadius.lg};
   padding: 14px;
   direction: rtl;
   text-align: right;
 `;
 
 export const CombinedFieldWrapper = styled.div`
-  background: ${theme.colors.background.medium};
-  border-radius: ${theme.borderRadius.lg};
+  background: ${({ theme }) => theme.palette.background.paper};
+  border-radius: ${({ theme }) => theme.customBorderRadius.lg};
   direction: rtl;
   text-align: right;
   display: flex;
@@ -102,7 +101,7 @@ export const CombinedFieldSection = styled.div<CombinedFieldSectionProps>`
   flex: ${props => props.flexBasis ? `1 1 ${props.flexBasis}` : '1'};
   min-width: 0;
   ${props => props.hasBorder && `
-    border-left: 1px solid ${theme.colors.border.divider};
+    border-left: 1px solid ${props.theme.palette.divider};
   `}
 `;
 
@@ -114,8 +113,8 @@ export const FieldLabel = styled.label<FieldLabelProps>`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: #e1eaff;
-  font-family: 'Assistant', sans-serif;
+  color: ${({ theme }) => theme.palette.text.secondary};
+  font-family: inherit;
   font-size: 16px;
   font-weight: 600;
   margin-bottom: 6px;
@@ -124,15 +123,15 @@ export const FieldLabel = styled.label<FieldLabelProps>`
   
   &::after {
     content: '${props => props.$required ? '*' : ''}';
-    color: #fb2c36;
+    color: ${({ theme }) => theme.palette.error.main};
   }
 `;
 
 export const ButtonContainer = styled.div`
   display: flex;
-  gap: ${theme.spacing.md};
+  gap: ${({ theme }) => theme.customSpacing.md};
   justify-content: flex-end;
-  margin-top: ${theme.spacing.xl};
+  margin-top: ${({ theme }) => theme.customSpacing.xl};
   direction: rtl;
 `;
 
@@ -145,7 +144,7 @@ export const FormMainContainer = styled.div`
   width: 100%;
   max-width: 1100px;
   margin: 0 auto;
-  box-shadow: 0px 1px 3px 0px rgba(0,0,0,0.1), 0px 1px 2px -1px rgba(0,0,0,0.1);
+  box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
   gap: 18px;
@@ -153,7 +152,7 @@ export const FormMainContainer = styled.div`
 `;
 
 export const FormSection = styled.div`
-  background: rgba(255, 255, 255, 0.04);
+  background: ${({ theme }) => theme.palette.action.hover};
   border-radius: 16px;
   padding: 18px 24px;
   display: flex;
@@ -171,8 +170,8 @@ export const FormSectionHeader = styled.div`
 `;
 
 export const FormSectionTitle = styled.h3`
-  color: #e1eaff;
-  font-family: 'Assistant', sans-serif;
+  color: ${({ theme }) => theme.palette.text.secondary};
+  font-family: inherit;
   font-size: 18px;
   font-weight: 700;
   margin: 0;
@@ -204,8 +203,8 @@ export const FormHeaderTop = styled.div`
 `;
 
 export const FormTitleLarge = styled.h2`
-  color: #FAFAFA;
-  font-family: 'Assistant', sans-serif;
+  color: ${({ theme }) => theme.palette.text.primary};
+  font-family: inherit;
   font-size: 24px;
   font-weight: 700;
   margin: 0;
@@ -213,8 +212,8 @@ export const FormTitleLarge = styled.h2`
 `;
 
 export const FormSubtitle = styled.p`
-  color: #E1EAFF;
-  font-family: 'Assistant', sans-serif;
+  color: ${({ theme }) => theme.palette.text.secondary};
+  font-family: inherit;
   font-size: 18px;
   font-weight: 600;
   margin: 0;
@@ -227,7 +226,7 @@ export const FormBottomActions = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  border-top: 1px solid #305088;
+  border-top: 1px solid ${({ theme }) => theme.palette.divider};
   padding-top: 17px;
   margin-top: 6px;
 `;
@@ -236,13 +235,13 @@ export const FieldsNotice = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #ccc;
-  font-family: 'Assistant', sans-serif;
+  color: ${({ theme }) => theme.palette.text.disabled};
+  font-family: inherit;
   font-size: 16px;
   font-weight: 600;
 
   span {
-    color: #fb2c36;
+    color: ${({ theme }) => theme.palette.error.main};
   }
 `;
 
@@ -254,25 +253,25 @@ export const ActionButtonsGroup = styled.div`
 
 export const FormPrimaryButton = styled(Button)`
   && {
-    background: linear-gradient(180deg, rgba(99, 255, 106, 0.5) 0%, rgba(66, 228, 73, 0.5) 100%);
-    color: #FAFAFA;
+    background: linear-gradient(180deg, rgba(99, 255, 106, 0.4) 0%, rgba(66, 228, 73, 0.4) 100%);
+    color: ${({ theme }) => theme.palette.text.primary};
     border-radius: 12px;
     padding: 12px 24px;
     width: 160px;
-    font-family: 'Assistant', sans-serif;
+    font-family: inherit;
     font-size: 16px;
     font-weight: 700;
     text-transform: none;
-    box-shadow: 0px 10px 15px 0px rgba(13, 84, 43, 0.3), 0px 4px 6px 0px rgba(13, 84, 43, 0.3);
+    box-shadow: 0px 10px 15px 0px rgba(0, 0, 0, 0.2);
     border: none;
     
     &:hover {
-      background: linear-gradient(180deg, rgba(99, 255, 106, 0.6) 0%, rgba(66, 228, 73, 0.6) 100%);
+      background: linear-gradient(180deg, rgba(99, 255, 106, 0.5) 0%, rgba(66, 228, 73, 0.5) 100%);
     }
     
     &:disabled {
-      background: rgba(255, 255, 255, 0.1);
-      color: rgba(255, 255, 255, 0.3);
+      background: ${({ theme }) => theme.palette.action.disabledBackground};
+      color: ${({ theme }) => theme.palette.action.disabled};
       box-shadow: none;
     }
     
@@ -285,39 +284,38 @@ export const FormPrimaryButton = styled(Button)`
 
 export const FormSecondaryButton = styled(Button)`
   && {
-    color: #CCC;
+    color: ${({ theme }) => theme.palette.text.secondary};
     padding: 12px 20px;
     width: 102px;
-    font-family: 'Assistant', sans-serif;
+    font-family: inherit;
     font-size: 16px;
     font-weight: 700;
     text-transform: none;
     border-radius: 12px;
     
     &:hover {
-      background: rgba(255, 255, 255, 0.05);
-      color: #FAFAFA;
+      background: ${({ theme }) => theme.palette.action.hover};
+      color: ${({ theme }) => theme.palette.text.primary};
     }
   }
 `;
 
 export const FormDeleteButton = styled(Button)`
   && {
-    background: rgba(255, 77, 77, 0.21);
-    border: 1px solid rgba(255, 77, 77, 0.5);
-    color: #FF7878;
+    background: rgba(255, 77, 77, 0.15);
+    border: 1px solid ${({ theme }) => theme.palette.error.main};
+    color: ${({ theme }) => theme.palette.error.main};
     border-radius: 12px;
     padding: 12px 20px;
     width: 149px;
     height: 48px;
-    font-family: 'Assistant', sans-serif;
+    font-family: inherit;
     font-size: 16px;
     font-weight: 700;
     text-transform: none;
     
     &:hover {
-      background: rgba(255, 77, 77, 0.3);
-      border-color: rgba(255, 77, 77, 0.7);
+      background: rgba(255, 77, 77, 0.25);
     }
     
     .MuiButton-startIcon {
@@ -326,14 +324,15 @@ export const FormDeleteButton = styled(Button)`
     }
   }
 `;
+
 export const FormAddButton = styled(Button)`
   && {
     background: #2e3c5a;
     border: 1px solid #3d62b2;
     border-radius: 12px;
-    padding: 8px 12px 8px 16px; 
-    color: #FAFAFA;
-    font-family: 'Assistant', sans-serif;
+    padding: 8px 16px 8px 12px;
+    color: #fafafa;
+    font-family: inherit;
     font-size: 16px;
     font-weight: 600;
     text-transform: none;
@@ -341,18 +340,19 @@ export const FormAddButton = styled(Button)`
     align-items: center;
     gap: 8px;
     width: fit-content;
-    box-shadow: 0px 1px 3px 0px rgba(0,0,0,0.1), 0px 1px 2px -1px rgba(0,0,0,0.1);
+    box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.1), 0px 1px 2px -1px rgba(0, 0, 0, 0.1);
     
     &:hover {
-      background: #37486e;
-      border-color: #4a75cc;
+      background: #364669;
+      border-color: #4d73c7;
     }
     
-    // In RTL, startIcon is on the right by default.
-    // We want the icon on the RIGHT of the text.
     .MuiButton-startIcon {
-      margin-left: 8px;
+      margin-left: 0;
       margin-right: 0;
     }
+    
+    /* Reverse the order for RTL if needed, but since it's a flex with gap, 
+       just ensuring the icon is on the correct side */
   }
 `;

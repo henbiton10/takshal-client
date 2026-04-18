@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import deleteIcon from '../../assets/delete.svg';
 import AddIcon from '@mui/icons-material/Add';
 import { Autocomplete, TextField, createFilterOptions } from '@mui/material';
 import styled from 'styled-components';
@@ -11,6 +11,7 @@ import {
   INITIAL_FORM_DATA,
 } from './constants';
 import SaveIcon from '@mui/icons-material/Save';
+import InfoIcon from '@mui/icons-material/Info';
 import {
   FormMainContainer,
   FormSection,
@@ -27,6 +28,7 @@ import {
   FormPrimaryButton,
   FormSecondaryButton,
   FormDeleteButton,
+  FieldLabel,
 } from '../../shared/components/ui';
 import { EditableNameField } from '../../shared/components/EditableNameField';
 import { TerminalIcon } from '../ResourcesManagement/icons/TerminalIcon';
@@ -41,67 +43,7 @@ interface TerminalTypeOption {
 const filter = createFilterOptions<TerminalTypeOption>();
 
 const StyledAutocomplete = styled(Autocomplete<TerminalTypeOption, false, false, true>)`
-  && {
-    .MuiOutlinedInput-root {
-      background: rgba(20, 40, 80, 0.3);
-      border-radius: 8px;
-      color: white;
-      font-size: 14px;
-      padding: 4px 12px !important;
-      
-      &:hover .MuiOutlinedInput-notchedOutline {
-        border-color: rgba(174, 199, 255, 0.3);
-      }
-      
-      &.Mui-focused .MuiOutlinedInput-notchedOutline {
-        border-color: rgba(174, 199, 255, 0.5);
-        border-width: 1px;
-      }
-      
-      .MuiOutlinedInput-notchedOutline {
-        border-color: rgba(174, 199, 255, 0.15);
-      }
-      
-      .MuiAutocomplete-input {
-        padding: 6px 4px !important;
-        color: white;
-        
-        &::placeholder {
-          color: rgba(174, 199, 255, 0.4);
-          opacity: 1;
-        }
-      }
-      
-      .MuiAutocomplete-endAdornment {
-        .MuiSvgIcon-root {
-          color: rgba(174, 199, 255, 0.5);
-        }
-      }
-    }
-    
-    .MuiInputLabel-root {
-      color: rgba(174, 199, 255, 0.7);
-      
-      &.Mui-focused {
-        color: rgba(174, 199, 255, 0.9);
-      }
-    }
-  }
-`;
-
-const FieldLabel = styled.label<{ $required?: boolean }>`
-  display: block;
-  color: rgba(174, 199, 255, 0.7);
-  font-size: 12px;
-  margin-bottom: 6px;
-  text-align: right;
-  
-  ${props => props.$required && `
-    &::after {
-      content: ' *';
-      color: #ef4444;
-    }
-  `}
+  /* Globally handled in GlobalStyles.tsx */
 `;
 
 const FieldError = styled.span`
@@ -129,10 +71,10 @@ export const TerminalForm = ({ onSave, onDelete, editingTerminalId, initialData,
     handleSubmit,
     watch,
     reset,
-    formState: { errors, isSubmitting, isValid, isDirty },
+    formState: { errors, isSubmitting, isDirty },
   } = useForm<TerminalFormData>({
     defaultValues: initialData || INITIAL_FORM_DATA,
-    mode: 'onChange',
+    mode: 'onTouched',
   });
 
   useEffect(() => {
@@ -198,6 +140,7 @@ export const TerminalForm = ({ onSave, onDelete, editingTerminalId, initialData,
 
           <FormSection>
             <FormSectionHeader>
+              <InfoIcon sx={{ fontSize: 20, color: (theme) => theme.palette.text.secondary }} />
               <FormSectionTitle>פרטי טרמינל</FormSectionTitle>
             </FormSectionHeader>
             <FormFieldRow>
@@ -354,8 +297,9 @@ export const TerminalForm = ({ onSave, onDelete, editingTerminalId, initialData,
                 placeholder="פרט על הסטטוס כאן..."
                 error={errors.notes}
                 rules={{
-                  validate: (value: string) => {
-                    if (readinessStatus && readinessStatus !== 'ready' && !value.trim()) {
+                  validate: (value: any) => {
+                    const strValue = value?.toString() || '';
+                    if (readinessStatus && readinessStatus !== 'ready' && !strValue.trim()) {
                       return 'הערות הינן שדה חובה כאשר סטטוס הכשירות אינו "כשיר"';
                     }
                     return true;
@@ -370,7 +314,7 @@ export const TerminalForm = ({ onSave, onDelete, editingTerminalId, initialData,
             {editingTerminalId != null ? (
               <FormDeleteButton
                 onClick={onDelete}
-                startIcon={<DeleteOutlineIcon />}
+                startIcon={<img src={deleteIcon} alt="" style={{ width: '18px', height: '18px' }} />}
               >
                 מחק אמצעי
               </FormDeleteButton>
@@ -397,7 +341,7 @@ export const TerminalForm = ({ onSave, onDelete, editingTerminalId, initialData,
               <FormPrimaryButton
                 variant="contained"
                 type="submit"
-                disabled={!isValid || isSubmitting || !isDirty}
+                disabled={isSubmitting || (!!editingTerminalId && !isDirty)}
                 startIcon={<SaveIcon />}
               >
                 {isSubmitting ? 'שומר...' : 'שמור שינויים'}

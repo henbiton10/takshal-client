@@ -12,6 +12,12 @@ interface EditableNameFieldProps<T extends FieldValues> {
   value?: string;
 }
 
+const NameFieldOuter = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+`;
+
 const NameFieldContainer = styled.div`
   display: flex;
   align-items: center;
@@ -20,11 +26,12 @@ const NameFieldContainer = styled.div`
   direction: rtl;
 `;
 
-const NameFieldWrapper = styled.div<{ isEditing: boolean }>`
+const NameFieldWrapper = styled.div<{ isEditing: boolean; hasError: boolean }>`
   display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(255, 255, 255, 0.12);
+  background: ${props => props.hasError ? 'rgba(239, 68, 68, 0.15)' : 'rgba(255, 255, 255, 0.12)'};
+  border: 1px solid ${props => props.hasError ? 'rgba(239, 68, 68, 0.4)' : 'transparent'};
   border-radius: 12px;
   padding: 0 12px;
   height: 42px;
@@ -33,20 +40,30 @@ const NameFieldWrapper = styled.div<{ isEditing: boolean }>`
   transition: all 0.2s ease;
   
   &:hover {
-    background: rgba(255, 255, 255, 0.18);
+    background: ${props => props.hasError ? 'rgba(239, 68, 68, 0.2)' : 'rgba(255, 255, 255, 0.18)'};
   }
 `;
 
-const NameFieldIcon = styled.div`
+const ErrorText = styled.span`
+  color: #ef4444;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: right;
+  margin-right: 54px; /* Keeping the offset to match input start, but ensured alignment */
+  direction: rtl;
+`;
+
+const NameFieldIcon = styled.div<{ hasError: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 166, 62, 0.4);
+  background: ${props => props.hasError ? 'rgba(239, 68, 68, 0.4)' : 'rgba(0, 166, 62, 0.4)'};
   color: white;
   width: 42px;
   height: 42px;
   border-radius: 10.5px;
   flex-shrink: 0;
+  transition: all 0.2s ease;
 
   svg {
     font-size: 21px;
@@ -97,45 +114,49 @@ export const EditableNameField = <T extends FieldValues>({
       name={name}
       control={control}
       rules={{ required: 'שם הינו שדה חובה' }}
-      render={({ field }) => (
-        <NameFieldContainer>
-          <NameFieldIcon>
-            <Icon />
-          </NameFieldIcon>
-          <NameFieldWrapper 
-            isEditing={isEditing}
-            onClick={() => !isEditing && setIsEditing(true)}
-          >
-            {isEditing ? (
-              <NameFieldInput
-                {...field}
-                placeholder={placeholder}
-                autoFocus
-                onBlur={() => setIsEditing(false)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    setIsEditing(false);
-                  }
-                }}
-              />
-            ) : (
-              <NameFieldText>
-                {field.value || placeholder}
-              </NameFieldText>
-            )}
-            <IconButton
-              size="small"
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsEditing(true);
-              }}
-              sx={{ color: 'rgba(255, 255, 255, 0.7)', padding: '4px' }}
+      render={({ field, fieldState: { error } }) => (
+        <NameFieldOuter>
+          <NameFieldContainer>
+            <NameFieldIcon hasError={!!error}>
+              <Icon />
+            </NameFieldIcon>
+            <NameFieldWrapper 
+              isEditing={isEditing}
+              hasError={!!error}
+              onClick={() => !isEditing && setIsEditing(true)}
             >
-              <EditIcon sx={{ fontSize: 18 }} />
-            </IconButton>
-          </NameFieldWrapper>
-        </NameFieldContainer>
+              {isEditing ? (
+                <NameFieldInput
+                  {...field}
+                  placeholder={placeholder}
+                  autoFocus
+                  onBlur={() => setIsEditing(false)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      setIsEditing(false);
+                    }
+                  }}
+                />
+              ) : (
+                <NameFieldText>
+                  {field.value || placeholder}
+                </NameFieldText>
+              )}
+              <IconButton
+                size="small"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsEditing(true);
+                }}
+                sx={{ color: 'rgba(255, 255, 255, 0.7)', padding: '4px' }}
+              >
+                <EditIcon sx={{ fontSize: 18 }} />
+              </IconButton>
+            </NameFieldWrapper>
+          </NameFieldContainer>
+          {error && <ErrorText>{error.message}</ErrorText>}
+        </NameFieldOuter>
       )}
     />
   );

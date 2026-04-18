@@ -6,6 +6,7 @@ import GlobalStyle from './styles/GlobalStyles';
 import { AppLayout, MainContent } from './components/App/AppLayout';
 import { Authorization } from './components/Authorization/Authorization';
 import { theme } from './theme/theme';
+import { ThemeProvider as StyledThemeProvider } from 'styled-components';
 import { ResourcesManagement } from './components/ResourcesManagement';
 import { OperationOrderPage } from './components/OperationOrders';
 import { DashboardPage } from './components/Dashboard';
@@ -41,21 +42,23 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <GlobalStyle />
-      <ToastProvider>
-        <Authorization>
-          <AppLayout>
-            <MainContent>
-              {renderContent()}
-            </MainContent>
-            <Sidebar 
-              selectedItem={selectedMenuItem}
-              onItemSelect={handleMenuItemSelect}
-            />
-          </AppLayout>
-        </Authorization>
-      </ToastProvider>
+      <StyledThemeProvider theme={theme}>
+        <CssBaseline />
+        <GlobalStyle />
+        <ToastProvider>
+          <Authorization>
+            <AppLayout>
+              <MainContent>
+                {renderContent()}
+              </MainContent>
+              <Sidebar 
+                selectedItem={selectedMenuItem}
+                onItemSelect={handleMenuItemSelect}
+              />
+            </AppLayout>
+          </Authorization>
+        </ToastProvider>
+      </StyledThemeProvider>
     </ThemeProvider>
   );
 }

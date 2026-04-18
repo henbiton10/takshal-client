@@ -13,15 +13,18 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 import styled from 'styled-components';
 import { AllocationData } from '../../services/api/types';
 import { operationOrdersApi } from '../../services/api';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import EditIcon from '@mui/icons-material/Edit';
+import deleteIcon from '../../assets/delete.svg';
 import SatelliteAltIcon from '@mui/icons-material/SatelliteAlt';
 import SettingsInputAntennaIcon from '@mui/icons-material/SettingsInputAntenna';
 import LinkIcon from '@mui/icons-material/Link';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import ErrorIcon from '@mui/icons-material/Error';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import IconButton from '@mui/material/IconButton';
+import { ConfirmDialog } from '../../shared/components/ConfirmDialog/ConfirmDialog';
+
+import { AG_GRID_LOCALE_HE } from '../../shared/utils/gridLocale';
+
+import workingIcon from '../../assets/working.svg';
+import orangeAlertIcon from '../../assets/orangeAlert.svg';
+import redAlertIcon from '../../assets/redAlert.svg';
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -29,187 +32,366 @@ const GridContainer = styled.div`
   width: 100%;
   direction: rtl;
 
-  .ag-root-wrapper {
-    background: #0a1628;
-    border: none;
-    border-radius: 8px;
-    font-family: inherit;
-  }
-
-  .ag-header {
-    background: #111d32;
-    border-bottom: 1px solid rgba(59, 130, 246, 0.2);
-  }
-
-  .ag-header-cell {
-    color: rgba(255, 255, 255, 0.7);
-    font-weight: 500;
-    font-size: 12px;
-    padding: 0 12px;
-  }
-
-  .ag-header-cell-text {
-    direction: rtl;
-  }
-
-  .ag-row {
-    background: #0d1a2d;
-    border-bottom: 1px solid rgba(59, 130, 246, 0.1);
-  }
-
-  .ag-row-odd {
-    background: #0a1628;
-  }
-
-  .ag-row-hover {
-    background: rgba(7, 29, 63, 0.95) !important;
-  }
-
-  .ag-row-selected {
-    background: rgba(59, 130, 246, 0.1) !important;
-  }
-
-
-  .ag-cell {
-    color: rgba(255, 255, 255, 0.85);
-    font-size: 13px;
-    display: flex;
-    align-items: center;
-    padding: 0 12px;
-    border: none !important;
-    outline: none !important;
-  }
-
-  .ag-cell-focus,
-  .ag-cell-focus:focus,
-  .ag-cell:focus {
-    border: none !important;
-    outline: none !important;
-    box-shadow: none !important;
-  }
-
-  .ag-cell-inline-editing {
+  &.ag-theme-alpine-dark {
+    --ag-header-column-separator-display: block !important;
+    --ag-header-column-separator-color: transparent !important;
+    --ag-header-column-separator-width: 2px !important;
+    --ag-header-column-separator-height: 50% !important;
+    
+    background-color: transparent !important;
     background: transparent !important;
     border: none !important;
-    box-shadow: none !important;
+    color: #ffffff !important;
+
+    /* Styling the actual resize handle */
+    .ag-header-cell-resize {
+      opacity: 1 !important;
+      z-index: 10 !important;
+    }
+    
+    .ag-header-cell-resize::after {
+      content: '' !important;
+      background-color: rgba(255, 255, 255, 0.6) !important;
+      width: 2px !important;
+      height: 60% !important;
+      top: 20% !important;
+      display: block !important;
+      visibility: visible !important;
+      z-index: 11 !important;
+    }
+    
+    .ag-header-cell-resize:hover::after {
+      background-color: #ffffff !important;
+      width: 4px !important;
+    }
+
+    --ag-background-color: transparent !important;
+    --ag-header-background-color: transparent !important;
+    --ag-odd-row-background-color: rgba(255, 255, 255, 0.02) !important;
+    --ag-header-foreground-color: #ffffff !important;
+    --ag-foreground-color: #ffffff !important;
+    --ag-secondary-foreground-color: rgba(255, 255, 255, 0.7) !important;
+    --ag-row-hover-color: rgba(59, 130, 246, 0.08) !important;
+    --ag-selected-row-background-color: rgba(59, 130, 246, 0.15) !important;
+    --ag-row-border-color: rgba(255, 255, 255, 0.06) !important;
+    --ag-border-color: rgba(255, 255, 255, 0.06) !important;
+    
+    /* Target every single container layer of the grid */
+    .ag-root-wrapper,
+    .ag-root-wrapper-body,
+    .ag-root,
+    .ag-body,
+    .ag-body-viewport,
+    .ag-body-horizontal-scroll,
+    .ag-header,
+    .ag-header-row,
+    .ag-pinned-left-cols-container,
+    .ag-pinned-right-cols-container,
+    .ag-center-cols-container,
+    .ag-center-cols-viewport,
+    .ag-center-cols-clipper,
+    .ag-header-viewport,
+    .ag-header-container,
+    .ag-row-odd,
+    .ag-row-even {
+      background-color: transparent !important;
+      background: transparent !important;
+      border: none !important;
+    }
+
+    .ag-header {
+      background-color: transparent !important;
+      height: 60px !important;
+      color: ${({ theme }) => theme.palette.text.primary} !important;
+    }
+
+    .ag-row {
+      background-color: transparent !important;
+      background: transparent !important;
+      border: none !important;
+      overflow: hidden !important; 
+    }
+
+    .ag-header-cell-text {
+      color: ${({ theme }) => theme.palette.text.primary} !important;
+      font-weight: 700;
+    }
+
+    .ag-cell {
+      color: ${({ theme }) => theme.palette.text.primary} !important;
+      border: none !important;
+      background: transparent !important;
+      display: flex;
+      align-items: center;
+      pointer-events: auto !important;
+    }
+
+    /* Card-style grouping */
+    .allocation-group-row {
+      background-color: ${({ theme }) => theme.palette.action.hover} !important;
+      border: none !important;
+    }
+
+    .is-first-in-group {
+      border-top-left-radius: ${({ theme }) => theme.customBorderRadius.xl} !important;
+      border-top-right-radius: ${({ theme }) => theme.customBorderRadius.xl} !important;
+    }
+
+    .is-last-in-group {
+      border-bottom-left-radius: ${({ theme }) => theme.customBorderRadius.xl} !important;
+      border-bottom-right-radius: ${({ theme }) => theme.customBorderRadius.xl} !important;
+      height: 64px !important;
+    }
+
+    .has-children-divider {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    }
+
+    .sub-allocation-row {
+      /* No separate background, uses .allocation-group-row instead */
+    }
+
+    /* Filter Icons Styling */
+    .ag-header-cell-menu-button {
+      color: #ffffff !important;
+      opacity: 0.5 !important;
+      visibility: visible !important;
+      width: 20px !important;
+      
+      &:hover {
+        opacity: 1 !important;
+      }
+    }
+
+    /* Target all possible icon containers and elements */
+    .ag-header-icon,
+    .ag-header-cell-menu-button .ag-icon,
+    .ag-header-cell-menu-button .ag-icon::before,
+    .ag-icon-filter,
+    .ag-icon-filter::before,
+    .ag-icon-menu,
+    .ag-icon-menu::before,
+    .ag-icon {
+      color: #ffffff !important;
+      fill: #ffffff !important;
+      font-size: 20px !important;
+      font-weight: bold !important;
+      display: inline-block !important;
+    }
   }
 
-  .ag-cell-editor {
-    display: none !important;
   }
 
-  .ag-text-field-input {
-    display: none !important;
+  /* Filter Menu Fixes */
+  .ag-popup {
+    z-index: 1000 !important;
   }
 
-  .ag-popup-editor {
-    display: none !important;
+  .ag-filter-wrapper {
+    background-color: #1e293b !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    padding: 8px !important;
+    border-radius: 8px !important;
+  }
+
+  .ag-filter-filter, 
+  .ag-filter-body, 
+  .ag-filter-select {
+    background-color: #1e293b !important;
+    color: #ffffff !important;
+  }
+
+  .ag-filter-condition {
+    color: #ffffff !important;
   }
 
   .ag-input-field-input {
-    display: none !important;
+     background-color: rgba(255, 255, 255, 0.05) !important;
+     border: 1px solid rgba(255, 255, 255, 0.1) !important;
+     color: #ffffff !important;
+     border-radius: 4px !important;
+     padding: 4px 10px 4px 30px !important;
+     direction: rtl !important;
+     text-align: right !important;
   }
 
-  .sub-allocation-row {
-    background: #0f1f35 !important;
+  .ag-input-field-input::placeholder {
+     color: #ffffff !important;
+     opacity: 0.8 !important;
   }
 
-  .sub-allocation-row.ag-row-odd {
-    background: #0c1a2e !important;
+  .ag-text-field-input-wrapper {
+    display: flex !important;
+    direction: ltr !important; /* Move ::before to the left */
+    align-items: center !important;
   }
 
-  .ag-body-horizontal-scroll {
-    display: none;
+  .ag-text-field-input-wrapper::before {
+    color: #ffffff !important;
+    filter: brightness(0) invert(1) !important;
+    margin-left: 8px !important;
+    margin-right: 4px !important;
+    opacity: 0.8 !important;
   }
 
-  .ag-body-viewport {
-    direction: rtl;
+  /* Keep input text flowing from right for Hebrew */
+  .ag-text-field-input-wrapper .ag-input-field-input {
+    direction: rtl !important;
+    text-align: right !important;
+    flex: 1 !important;
+    padding-left: 0 !important;
   }
 
-  .ag-header-viewport {
-    direction: rtl;
+  .ag-picker-field-wrapper {
+     background-color: rgba(255, 255, 255, 0.05) !important;
+     border: 1px solid rgba(255, 255, 255, 0.1) !important;
+     color: #ffffff !important;
   }
 
-  .ag-pinned-left-cols-container,
-  .ag-pinned-left-header {
-    direction: ltr;
+  .ag-set-filter-item, .ag-menu-option {
+    color: #ffffff !important;
+    &:hover {
+      background-color: rgba(59, 130, 246, 0.1) !important;
+    }
   }
 
-  .ag-row-focus {
-    outline: none !important;
+  .ag-icon-filter, .ag-icon-search, .ag-icon-menu {
+    color: #ffffff !important;
   }
 
-  .ag-ltr .ag-cell-focus:not(.ag-cell-range-selected):focus-within,
-  .ag-rtl .ag-cell-focus:not(.ag-cell-range-selected):focus-within {
-    border: none !important;
-    outline: none !important;
-  }
-
-  .ag-row-drag {
-    color: rgba(255, 255, 255, 0.85) !important;
-    cursor: grab;
-    margin-left: 8px;
-  }
-
-  .ag-row-drag .ag-icon {
-    color: rgba(255, 255, 255, 0.85) !important;
-  }
-
-  .ag-row-dragging {
-    opacity: 0.5;
-  }
-
-  .ag-row-drag:hover {
-    color: rgba(59, 130, 246, 0.8) !important;
-  }
-
-  .ag-row-drag:hover .ag-icon {
-    color: rgba(59, 130, 246, 0.8) !important;
+  .ag-row-drag,
+  .ag-row-drag .ag-icon-grip,
+  .ag-row-drag .ag-icon-grip::before {
+    color: #ffffff !important;
+    opacity: 1 !important;
   }
 `;
 
-const CellWithIcon = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  direction: rtl;
-`;
 
-const IconWrapper = styled.span`
-  display: flex;
-  align-items: center;
-  color: rgba(255, 255, 255, 0.85);
-`;
 
 const StatusBadge = styled.div<{ $status: 'success' | 'error' | 'warning' }>`
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 12px;
-  background: ${(props) =>
-    props.$status === 'success'
-      ? 'rgba(34, 197, 94, 0.15)'
-      : props.$status === 'warning'
-      ? 'rgba(251, 191, 36, 0.15)'
-      : 'rgba(239, 68, 68, 0.15)'};
-  color: ${(props) =>
-    props.$status === 'success' ? '#22c55e' : props.$status === 'warning' ? '#fbbf24' : '#ef4444'};
+  gap: 6px;
+  padding: 0 10px;
+  height: 28px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.04);
+  
+  ${(props) => {
+    switch (props.$status) {
+      case 'success':
+        return `
+          border: 1px solid rgba(34, 197, 94, 0.8);
+          color: rgba(34, 197, 94, 0.9);
+        `;
+      case 'warning':
+        return `
+          border: 1px solid rgba(251, 191, 36, 0.8);
+          color: rgba(251, 191, 36, 0.9);
+        `;
+      case 'error':
+        return `
+          border: 1px solid rgba(255, 77, 77, 0.8);
+          color: rgba(255, 77, 77, 0.8);
+        `;
+    }
+  }}
 `;
 
 const ActionsCell = styled.div`
   display: flex;
   align-items: center;
-  gap: 2px;
-  direction: ltr;
+  gap: 8px;
+  direction: rtl;
+  height: 100%;
 `;
+
+const GridActionButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Assistant', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 0 12px;
+  gap: 8px;
+`;
+
+const DeleteGridButton = styled(GridActionButton)`
+  background: rgba(255, 77, 77, 0.15);
+  color: #ff4d4d;
+  
+  &:hover {
+    background: rgba(255, 77, 77, 0.25);
+  }
+`;
+
 
 const OrderCell = styled.div<{ $isSubAllocation?: boolean }>`
   display: flex;
   align-items: center;
   gap: 6px;
   width: 100%;
+`;
+
+const AllocationTypeBadge = styled.div<{ $type: 'main' | 'sub' }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 12px;
+  height: 24px;
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  
+  ${(props) =>
+    props.$type === 'main'
+      ? `
+        background: rgba(0, 188, 125, 0.15);
+        color: #00bc7d;
+      `
+      : `
+        background: rgba(61, 98, 178, 0.3);
+        color: #e1eaff;
+      `}
+`;
+
+const GridChip = styled.div`
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  height: 32px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  color: #fafafa;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+`;
+
+const ChipIcon = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #e1eaff;
+  opacity: 0.8;
 `;
 
 const ExpandIcon = styled.span<{ $expanded?: boolean }>`
@@ -230,6 +412,9 @@ interface FlattenedAllocation extends AllocationData {
   displayOrder: string;
   isSubAllocation: boolean;
   hasChildren: boolean;
+  isFirstInGroup: boolean;
+  isLastInGroup: boolean;
+  parentSortValues?: Record<string, string>;
 }
 
 const getHebrewCommunicationType = (type: string): string => {
@@ -244,7 +429,6 @@ const getHebrewCommunicationType = (type: string): string => {
 
 interface AllocationsGridProps {
   allocations: AllocationData[];
-  onEdit: (allocation: AllocationData) => void;
   onDelete: (allocationId: number) => void;
   onAddSubAllocation: (parentAllocation: AllocationData) => void;
   onReorder: () => Promise<void>;
@@ -252,12 +436,26 @@ interface AllocationsGridProps {
 
 export const AllocationsGrid = ({
   allocations,
-  onEdit,
   onDelete,
   onReorder,
 }: AllocationsGridProps) => {
   const [collapsedIds, setCollapsedIds] = useState<Set<number>>(new Set());
+  const [deleteConfirmation, setDeleteConfirmation] = useState<{ open: boolean; allocationId: number | null }>({
+    open: false,
+    allocationId: null,
+  });
   const gridRef = useRef<GridApi<FlattenedAllocation> | null>(null);
+
+  const handleDeleteClick = useCallback((id: number) => {
+    setDeleteConfirmation({ open: true, allocationId: id });
+  }, []);
+
+  const handleConfirmDelete = useCallback(() => {
+    if (deleteConfirmation.allocationId !== null) {
+      onDelete(deleteConfirmation.allocationId);
+    }
+    setDeleteConfirmation({ open: false, allocationId: null });
+  }, [deleteConfirmation, onDelete]);
 
   const toggleCollapse = useCallback((allocationId: number) => {
     setCollapsedIds((prev) => {
@@ -272,6 +470,37 @@ export const AllocationsGrid = ({
     setTimeout(() => {
       gridRef.current?.refreshCells({ force: true });
     }, 0);
+  }, []);
+
+  const groupComparator = useCallback((field: string) => (valueA: any, valueB: any, nodeA: any, nodeB: any) => {
+    const dataA = nodeA.data as FlattenedAllocation;
+    const dataB = nodeB.data as FlattenedAllocation;
+
+    if (!dataA || !dataB) return 0;
+
+    // 1. Get the values that determine the GROUP order (always based on Parent's value)
+    const groupValA = dataA.isSubAllocation ? (dataA as any).parentSortValues?.[field] : valueA;
+    const groupValB = dataB.isSubAllocation ? (dataB as any).parentSortValues?.[field] : valueB;
+
+    // 2. If the rows belong to different groups (based on parent value), sort by that value
+    if (groupValA !== groupValB) {
+      if (groupValA === null || groupValA === undefined) return -1;
+      if (groupValB === null || groupValB === undefined) return 1;
+      return groupValA > groupValB ? 1 : -1;
+    }
+
+    // 3. If they are in the same group, or the parent values are identical,
+    // ensure parent (isSubAllocation: false) is always above subs
+    if (dataA.isSubAllocation !== dataB.isSubAllocation) {
+      return dataA.isSubAllocation ? 1 : -1;
+    }
+
+    // 4. If both are sub-allocations in the same group, sort by subOrderNumber
+    if (dataA.isSubAllocation && dataB.isSubAllocation) {
+      return (dataA.subOrderNumber || 0) - (dataB.subOrderNumber || 0);
+    }
+
+    return 0;
   }, []);
 
   const handleRowDragEnd = useCallback(
@@ -374,41 +603,50 @@ export const AllocationsGrid = ({
   const flattenedData = useMemo((): FlattenedAllocation[] => {
     const result: FlattenedAllocation[] = [];
 
-    const processAllocation = (
-      allocation: AllocationData,
-      isSubAllocation: boolean = false,
-      parentId?: number
-    ) => {
-      const orderDisplay = allocation.subOrderNumber
-        ? `${allocation.orderNumber}.${allocation.subOrderNumber}`
-        : `${allocation.orderNumber}`;
-
-      const hasChildren =
-        allocation.subAllocations && allocation.subAllocations.filter((s) => !s.isDeleted).length > 0;
-
-      const isParentCollapsed = parentId !== undefined && collapsedIds.has(parentId);
-
-      if (!isParentCollapsed) {
-        result.push({
-          ...allocation,
-          displayOrder: orderDisplay,
-          isSubAllocation,
-          hasChildren: hasChildren || false,
-        });
-      }
-
-      if (allocation.subAllocations && allocation.subAllocations.length > 0 && !collapsedIds.has(allocation.id)) {
-        allocation.subAllocations
-          .filter((sub) => !sub.isDeleted)
-          .sort((a, b) => (a.subOrderNumber || 0) - (b.subOrderNumber || 0))
-          .forEach((sub) => processAllocation(sub, true, allocation.id));
-      }
-    };
-
-    allocations
+    const mainAllocations = allocations
       .filter((a) => !a.isDeleted && !a.parentAllocationId)
-      .sort((a, b) => a.orderNumber - b.orderNumber)
-      .forEach((a) => processAllocation(a));
+      .sort((a, b) => a.orderNumber - b.orderNumber);
+
+    mainAllocations.forEach((parent) => {
+      const visibleSubs =
+        parent.subAllocations && !collapsedIds.has(parent.id)
+          ? parent.subAllocations
+            .filter((s) => !s.isDeleted)
+            .sort((a, b) => (a.subOrderNumber || 0) - (b.subOrderNumber || 0))
+          : [];
+
+      const hasVisibleSubs = visibleSubs.length > 0;
+
+      // Add parent
+      result.push({
+        ...parent,
+        displayOrder: `${parent.orderNumber}`,
+        isSubAllocation: false,
+        hasChildren: hasVisibleSubs || (parent.subAllocations?.length || 0) > 0,
+        isFirstInGroup: true,
+        isLastInGroup: !hasVisibleSubs,
+      });
+
+      // Add subs
+      visibleSubs.forEach((sub, idx) => {
+        result.push({
+          ...sub,
+          displayOrder: `${parent.orderNumber}.${sub.subOrderNumber}`,
+          isSubAllocation: true,
+          hasChildren: false,
+          isFirstInGroup: false,
+          isLastInGroup: idx === visibleSubs.length - 1,
+          // Attach parent data for sorting logic
+          parentSortValues: {
+            displayOrder: String(parent.orderNumber),
+            terminal: parent.terminal?.name || '',
+            transmissionSatellite: parent.transmissionSatellite?.name || '',
+            transmissionAntenna: parent.transmissionAntenna?.station?.name || '',
+            frequencyRange: String(parent.transmissionFrequency || ''),
+          }
+        });
+      });
+    });
 
     return result;
   }, [allocations, collapsedIds]);
@@ -438,9 +676,9 @@ export const AllocationsGrid = ({
         <OrderNumber $isSubAllocation={data.isSubAllocation}>
           {data.isSubAllocation ? `${data.displayOrder}` : `${data.displayOrder}.`}
         </OrderNumber>
-        {data.isSubAllocation && (
-          <span style={{ color: 'rgba(255, 255, 255, 0.4)', fontSize: 11 }}>משני</span>
-        )}
+        <AllocationTypeBadge $type={data.isSubAllocation ? 'sub' : 'main'}>
+          {data.isSubAllocation ? 'משני' : 'ראשי'}
+        </AllocationTypeBadge>
       </OrderCell>
     );
   }, [collapsedIds, toggleCollapse]);
@@ -450,42 +688,43 @@ export const AllocationsGrid = ({
     if (!data) return null;
 
     const terminalName = data.terminal?.name || '-';
+    if (terminalName === '-') return '-';
 
     return (
-      <CellWithIcon>
-        <IconWrapper>
+      <GridChip>
+        <ChipIcon>
           <LinkIcon sx={{ fontSize: 16 }} />
-        </IconWrapper>
+        </ChipIcon>
         <span>{terminalName}</span>
-      </CellWithIcon>
+      </GridChip>
     );
   }, []);
 
   const SatelliteCellRenderer = useCallback((params: ICellRendererParams<FlattenedAllocation>) => {
     const value = params.value;
-    if (!value) return '-';
+    if (!value || value === '-') return '-';
 
     return (
-      <CellWithIcon>
-        <IconWrapper>
+      <GridChip>
+        <ChipIcon>
           <SatelliteAltIcon sx={{ fontSize: 16 }} />
-        </IconWrapper>
+        </ChipIcon>
         <span>{value}</span>
-      </CellWithIcon>
+      </GridChip>
     );
   }, []);
 
   const AntennaCellRenderer = useCallback((params: ICellRendererParams<FlattenedAllocation>) => {
     const value = params.value;
-    if (!value) return '-';
+    if (!value || value === '-') return '-';
 
     return (
-      <CellWithIcon>
-        <IconWrapper>
+      <GridChip>
+        <ChipIcon>
           <SettingsInputAntennaIcon sx={{ fontSize: 16 }} />
-        </IconWrapper>
+        </ChipIcon>
         <span>{value}</span>
-      </CellWithIcon>
+      </GridChip>
     );
   }, []);
 
@@ -496,37 +735,37 @@ export const AllocationsGrid = ({
     const terminalStationId = data.terminal?.stationId;
     const txAntennaStationId = data.transmissionAntenna?.stationId;
     const rxAntennaStationId = data.receptionAntenna?.stationId;
-    
-    const isSameStation = 
-      terminalStationId === txAntennaStationId && 
+
+    const isSameStation =
+      terminalStationId === txAntennaStationId &&
       terminalStationId === rxAntennaStationId;
 
     if (isSameStation) {
       return (
         <StatusBadge $status="success">
-          <CheckCircleIcon sx={{ fontSize: 14 }} />
-          ישיר
+          <img src={workingIcon} width={16} height={16} alt="" />
+          <span>ישיר</span>
         </StatusBadge>
       );
     }
 
     const txConnType = data.transmissionConnectivity?.communicationType;
     const rxConnType = data.receptionConnectivity?.communicationType;
-    
+
     if (txConnType || rxConnType) {
       const displayType = getHebrewCommunicationType(txConnType || rxConnType || '');
       return (
         <StatusBadge $status="warning">
-          <LinkIcon sx={{ fontSize: 14 }} />
-          {displayType}
+          <img src={orangeAlertIcon} width={16} height={16} alt="" />
+          <span>{displayType}</span>
         </StatusBadge>
       );
     }
 
     return (
       <StatusBadge $status="error">
-        <ErrorIcon sx={{ fontSize: 14 }} />
-        אין ערוצים
+        <img src={redAlertIcon} width={16} height={16} alt="" />
+        <span>אין ערוצים</span>
       </StatusBadge>
     );
   }, []);
@@ -536,117 +775,110 @@ export const AllocationsGrid = ({
       const data = params.data;
       if (!data) return null;
 
-      if (data.isSubAllocation) {
-        return null;
-      }
+      const context = params.context;
+      const onDeleteClick = context?.onDeleteClick;
 
       return (
         <ActionsCell>
-          <IconButton
-            size="small"
-            onClick={() => onDelete(data.id)}
-            sx={{
-              color: 'rgba(239, 68, 68, 0.7)',
-              padding: '4px',
-              '&:hover': { color: '#ef4444', background: 'rgba(239, 68, 68, 0.1)' },
+          <DeleteGridButton
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              if (onDeleteClick) onDeleteClick(data.id);
             }}
           >
-            <DeleteOutlineIcon sx={{ fontSize: 18 }} />
-          </IconButton>
-          <IconButton
-            size="small"
-            onClick={() => onEdit(data)}
-            sx={{
-              color: 'rgba(59, 130, 246, 0.7)',
-              padding: '4px',
-              '&:hover': { color: '#3b82f6', background: 'rgba(59, 130, 246, 0.1)' },
-            }}
-          >
-            <EditIcon sx={{ fontSize: 18 }} />
-          </IconButton>
+            <img src={deleteIcon} alt="מחיקה" style={{ width: '20px', height: '20px', pointerEvents: 'none' }} />
+          </DeleteGridButton>
         </ActionsCell>
       );
     },
-    [onEdit, onDelete]
+    []
   );
 
   const columnDefs = useMemo<ColDef<FlattenedAllocation>[]>(
     () => [
       {
-        headerName: '# מספר הקצאה',
         field: 'displayOrder',
-        width: 120,
-        pinned: 'right',
+        headerName: '# מספר הקצאה',
         cellRenderer: OrderCellRenderer,
-        rowDrag: true,
+        comparator: groupComparator('displayOrder'),
+        minWidth: 100,
       },
       {
         headerName: 'טרמינל מקור',
-        width: 130,
         cellRenderer: TerminalCellRenderer,
+        comparator: groupComparator('terminal'),
+        minWidth: 120,
       },
       {
         headerName: 'לוויין שידור',
-        valueGetter: (params) => params.data?.transmissionSatellite?.name || '',
-        width: 110,
+        valueGetter: (params: any) => params.data?.transmissionSatellite?.name || '',
         cellRenderer: SatelliteCellRenderer,
+        comparator: groupComparator('transmissionSatellite'),
+        minWidth: 100,
       },
       {
         headerName: 'אנטנת שידור',
-        valueGetter: (params) => {
+        valueGetter: (params: any) => {
           const antenna = params.data?.transmissionAntenna;
           if (!antenna) return '';
           const stationName = antenna.station?.name || '';
           return `${stationName} ${antenna.size}מ' ${(antenna.frequencyBand || '').toUpperCase()}`;
         },
-        width: 160,
         cellRenderer: AntennaCellRenderer,
+        comparator: groupComparator('transmissionAntenna'),
+        minWidth: 140,
+      },
+      {
+        headerName: 'תחום תדר',
+        valueGetter: (params: any) => String(params.data?.transmissionFrequency || ''),
+        comparator: groupComparator('frequencyRange'),
+        minWidth: 100,
       },
       {
         headerName: 'תדר שידור',
         field: 'transmissionFrequency',
-        width: 90,
-        valueFormatter: (params) => (params.value ? `${params.value}` : '-'),
+        valueFormatter: (params: any) => (params.value ? `${params.value}` : '-'),
+        minWidth: 90,
       },
       {
         headerName: 'לוויין קליטה',
-        valueGetter: (params) => params.data?.receptionSatellite?.name || '',
-        width: 110,
+        valueGetter: (params: any) => params.data?.receptionSatellite?.name || '',
         cellRenderer: SatelliteCellRenderer,
+        minWidth: 100,
       },
       {
         headerName: 'אנטנת קליטה',
-        valueGetter: (params) => {
+        valueGetter: (params: any) => {
           const antenna = params.data?.receptionAntenna;
           if (!antenna) return '';
           const stationName = antenna.station?.name || '';
           return `${stationName} ${antenna.size}מ' ${(antenna.frequencyBand || '').toUpperCase()}`;
         },
-        width: 160,
         cellRenderer: AntennaCellRenderer,
+        minWidth: 140,
       },
       {
         headerName: 'תדר קליטה',
         field: 'receptionFrequency',
-        width: 90,
-        valueFormatter: (params) => (params.value ? `${params.value}` : '-'),
+        valueFormatter: (params: any) => (params.value ? `${params.value}` : '-'),
+        minWidth: 90,
       },
       {
         headerName: 'מספרי זנב',
-        valueGetter: (params) => (params.data?.tailNumbers && params.data.tailNumbers.length > 0) ? params.data.tailNumbers.join(', ') : '-',
-        width: 110,
+        valueGetter: (params: any) => (params.data?.tailNumbers && params.data.tailNumbers.length > 0) ? params.data.tailNumbers.join(', ') : '-',
+        minWidth: 110,
       },
       {
         headerName: 'קישוריות',
-        flex: 1,
-        minWidth: 110,
         cellRenderer: ConnectivityCellRenderer,
         sortable: false,
-        filter: false,
+        filter: 'agTextColumnFilter',
+        minWidth: 130,
       },
       {
         headerName: 'פעולות',
-        width: 80,
+        width: 160,
         cellRenderer: ActionsCellRenderer,
         sortable: false,
         filter: false,
@@ -665,22 +897,30 @@ export const AllocationsGrid = ({
   const defaultColDef = useMemo<ColDef>(
     () => ({
       sortable: true,
-      filter: false,
+      filter: true,
       resizable: true,
       suppressMovable: true,
       editable: false,
+      floatingFilter: false, // Don't show the filter bar below the header
     }),
     []
   );
 
   const getRowClass = useCallback((params: { data?: FlattenedAllocation }) => {
-    if (params.data?.isSubAllocation) {
-      return 'sub-allocation-row';
-    }
-    return '';
+    const classes = ['allocation-group-row'];
+    if (params.data?.isSubAllocation) classes.push('sub-allocation-row');
+    if (params.data?.isFirstInGroup) classes.push('is-first-in-group');
+    if (params.data?.isLastInGroup) classes.push('is-last-in-group');
+    if (!params.data?.isSubAllocation && params.data?.hasChildren) classes.push('has-children-divider');
+    return classes;
   }, []);
 
-  const getRowHeight = useCallback(() => 48, []);
+  const getRowHeight = useCallback((params: { data?: FlattenedAllocation }) => {
+    if (params.data?.isLastInGroup) {
+      return 76; // 64 + 12 gap
+    }
+    return 64;
+  }, []);
 
   const gridKey = useMemo(() => {
     return Array.from(collapsedIds).sort().join(',');
@@ -697,8 +937,9 @@ export const AllocationsGrid = ({
             height: '100%',
             color: 'rgba(255, 255, 255, 0.4)',
             fontSize: '14px',
-            background: '#0a1628',
+            background: 'transparent',
             borderRadius: 8,
+            border: '1px dashed rgba(255, 255, 255, 0.1)',
           }}
         >
           אין הקצאות להצגה
@@ -708,13 +949,21 @@ export const AllocationsGrid = ({
   }
 
   return (
-    <GridContainer style={{ height: Math.min(500, 56 + flattenedData.length * 48) }}>
+    <GridContainer
+      className="ag-theme-alpine-dark"
+      style={{ height: Math.min(650, 64 + flattenedData.length * 64 + (allocations.length * 12)) }}
+    >
       <AgGridReact<FlattenedAllocation>
+        containerStyle={{ background: 'transparent' }}
         key={gridKey}
         rowData={flattenedData}
         columnDefs={columnDefs}
         defaultColDef={defaultColDef}
+        context={{
+          onDeleteClick: handleDeleteClick,
+        }}
         enableRtl={true}
+        localeText={AG_GRID_LOCALE_HE}
         animateRows={true}
         getRowClass={getRowClass}
         getRowHeight={getRowHeight}
@@ -724,6 +973,16 @@ export const AllocationsGrid = ({
         suppressCellFocus={true}
         rowDragManaged={false}
         onRowDragEnd={handleRowDragEnd}
+        autoSizeStrategy={{
+          type: 'fitCellContents'
+        }}
+      />
+      <ConfirmDialog
+        open={deleteConfirmation.open}
+        title="מחיקת הקצאה"
+        message="שים לב, מחיקת הקצאה תשפיע על הפ׳׳מ שהוספת."
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setDeleteConfirmation({ open: false, allocationId: null })}
       />
     </GridContainer>
   );

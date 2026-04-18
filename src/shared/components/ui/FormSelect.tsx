@@ -1,6 +1,5 @@
-import { FormControl, Select, MenuItem, FormHelperText, SxProps } from '@mui/material';
+import { FormControl, Select, MenuItem, FormHelperText, SxProps, Theme } from '@mui/material';
 import { Control, Controller, FieldValues, Path, FieldError } from 'react-hook-form';
-import { theme } from '../../../theme';
 import { FieldLabel } from './FormLayout';
 
 interface SelectOption {
@@ -24,22 +23,25 @@ interface FormSelectProps<T extends FieldValues> {
   };
 }
 
-const selectStyles: SxProps = {
-  backgroundColor: 'rgba(255,255,255,0.04)',
+const selectStyles: SxProps<Theme> = (theme) => ({
+  backgroundColor: theme.palette.action.hover,
   borderRadius: '4px',
   height: '36px',
-  fontFamily: 'Assistant, sans-serif',
+  fontFamily: 'inherit',
   '& .MuiOutlinedInput-notchedOutline': {
-    borderColor: '#666',
+    borderColor: theme.palette.divider,
   },
   '&:hover .MuiOutlinedInput-notchedOutline': {
-    borderColor: '#888',
+    borderColor: theme.palette.text.disabled,
   },
   '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-    borderColor: '#aaa',
+    borderColor: theme.palette.primary.main,
+  },
+  '&.Mui-error .MuiOutlinedInput-notchedOutline': {
+    borderColor: theme.palette.error.main,
   },
   '& .MuiSelect-select': {
-    color: '#bababa',
+    color: theme.palette.text.secondary,
     padding: '0 12px 0 32px !important',
     fontSize: '16px',
     fontWeight: 600,
@@ -51,11 +53,11 @@ const selectStyles: SxProps = {
     direction: 'rtl',
   },
   '& .MuiSelect-icon': {
-    color: '#bababa',
+    color: theme.palette.text.disabled,
     left: '7px',
     right: 'auto',
   },
-};
+});
 
 export const FormSelect = <T extends FieldValues>({
   name,
@@ -75,19 +77,20 @@ export const FormSelect = <T extends FieldValues>({
         name={name}
         control={control}
         rules={rules}
-        render={({ field: { value, onChange, ...field } }) => (
-          <FormControl fullWidth error={!!error}>
+        render={({ field: { value, onChange, ...field }, fieldState: { error: fieldError } }) => (
+          <FormControl fullWidth error={!!fieldError || !!error}>
             <Select
               {...field}
               value={transformValue ? transformValue.toField(value) : (value ?? '')}
               onChange={(e) => {
                 const newValue = transformValue 
-                  ? transformValue.toForm(e.target.value)
+                  ? transformValue.toForm(e.target.value as string)
                   : e.target.value;
                 onChange(newValue);
               }}
               displayEmpty
               sx={selectStyles}
+              error={!!fieldError || !!error}
               renderValue={(selected) => {
                 if (selected === '') {
                   return <span style={{ opacity: 0.6 }}>{placeholder}</span>;
@@ -117,7 +120,11 @@ export const FormSelect = <T extends FieldValues>({
                 </MenuItem>
               ))}
             </Select>
-            {error && <FormHelperText>{error.message}</FormHelperText>}
+            {(fieldError || error) && (
+              <FormHelperText sx={{ textAlign: 'right', direction: 'rtl', margin: '4px 0 0 0' }}>
+                {(fieldError?.message || error?.message) as string}
+              </FormHelperText>
+            )}
           </FormControl>
         )}
       />

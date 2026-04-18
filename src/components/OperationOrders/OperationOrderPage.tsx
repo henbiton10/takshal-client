@@ -1,6 +1,8 @@
 import { useCallback } from 'react';
+import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
 import ListAltIcon from '@mui/icons-material/ListAlt';
+import styled from 'styled-components';
 import { PageLayout } from '../../shared/components/PageLayout';
 import { OperationOrderCard } from './OperationOrderCard';
 import { OperationOrderDetails } from './OperationOrderDetails';
@@ -10,53 +12,113 @@ import { LoadingSpinner } from '../../shared/components/ui/LoadingSpinner';
 import { BigEmptyState } from '../../shared/components/ui/BigEmptyState';
 import { useOperationOrderPage } from './hooks/useOperationOrderPage';
 import { AddResourceButton } from '../ResourcesManagement/ResourcesManagement';
+import { ConfirmDialog } from '../../shared/components/ConfirmDialog/ConfirmDialog';
+
+const SearchContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #1c2439;
+  border: 1px solid #305088;
+  border-radius: 21px;
+  padding: 0 16px;
+  width: 190px;
+  height: 38px;
+  flex-shrink: 0;
+`;
+
+const SearchInput = styled.input`
+  background: none;
+  border: none;
+  color: #e1eaff;
+  outline: none;
+  font-size: 16px;
+  font-weight: 600;
+  width: 100%;
+  text-align: right;
+  direction: rtl;
+  &::placeholder { color: #e1eaff; font-weight: 600; }
+`;
 
 export const OperationOrderPage = () => {
   const {
-    orders, selectedOrder,
+    orders, filteredOrders, searchQuery, setSearchQuery,
+    selectedOrder, setSelectedOrder,
     loading, saving,
     viewMode, setViewMode,
     formMode, setFormMode,
+    expandedOrderId, setExpandedOrderId,
     headerData, setHeaderData,
-    headerErrors,
     editingAllocation, setEditingAllocation,
     parentAllocation, setParentAllocation,
     handleOrderClick,
+    handleDeleteOrder,
+    handleDeleteAllocation,
+    deleteDialogOpen,
+    openDeleteDialog,
+    closeDeleteDialog,
     handleSaveOrder,
     handleSaveAllocation,
     fetchOrders,
-    fetchOrderDetails
+    fetchOrderDetails,
+    targetAllocationId, setTargetAllocationId,
+    terminals,
+    satellites,
+    antennas
   } = useOperationOrderPage();
 
   const handleBackToList = useCallback(() => {
     setViewMode('list');
     setFormMode(null);
+    setExpandedOrderId(null);
+    setSelectedOrder(null);
     fetchOrders();
-  }, [fetchOrders, setViewMode, setFormMode]);
+  }, [fetchOrders, setViewMode, setFormMode, setExpandedOrderId, setSelectedOrder]);
 
   const handleCreateNew = useCallback(() => {
+    const now = new Date();
+    const future = new Date(now.getTime() + 10 * 60000);
+    
+    const formatDate = (d: Date) => {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+    
+    const formatTime = (d: Date) => {
+      const hours = String(d.getHours()).padStart(2, '0');
+      const minutes = String(d.getMinutes()).padStart(2, '0');
+      return `${hours}:${minutes}`;
+    };
+
     setViewMode('create');
     setFormMode('header');
-    setHeaderData({});
-  }, [setViewMode, setFormMode, setHeaderData]);
-
-  const handleAddAllocation = useCallback(() => {
-    setFormMode('allocation');
-    setEditingAllocation(undefined);
-    setParentAllocation(undefined);
-  }, [setFormMode, setEditingAllocation, setParentAllocation]);
+    setSelectedOrder(null);
+    setExpandedOrderId(null);
+    setHeaderData({
+      name: '',
+      startDate: formatDate(now),
+      startTime: formatTime(now),
+      endDate: formatDate(future),
+      endTime: formatTime(future),
+      allocations: []
+    });
+  }, [setViewMode, setFormMode, setHeaderData, setSelectedOrder, setExpandedOrderId]);
 
   const handleAddSubAllocation = useCallback((parent: any) => {
-    setParentAllocation(parent);
-    setFormMode('sub-allocation');
-    setEditingAllocation(undefined);
-  }, [setParentAllocation, setFormMode, setEditingAllocation]);
+    setViewMode('view');
+    setFormMode('header');
+    setTargetAllocationId(parent.id);
+  }, [setViewMode, setFormMode, setTargetAllocationId]);
 
   const handleEditAllocation = useCallback((allocation: any) => {
-    setEditingAllocation(allocation);
-    setParentAllocation(undefined);
-    setFormMode('allocation');
-  }, [setEditingAllocation, setParentAllocation, setFormMode]);
+    // Instead of opening the individual AllocationForm, 
+    // we go to the main order edit view and scroll to the specific allocation
+    setViewMode('view');
+    setFormMode('header');
+    setTargetAllocationId(allocation.id);
+  }, [setViewMode, setFormMode, setTargetAllocationId]);
 
   const renderContent = () => {
     if (loading && orders.length === 0) return <LoadingSpinner />;
@@ -72,10 +134,39 @@ export const OperationOrderPage = () => {
         );
       }
       return (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px', padding: '20px' }}>
-          {orders.map(order => (
-            <OperationOrderCard key={order.id} order={order} onClick={() => handleOrderClick(order.id)} />
-          ))}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', padding: '20px' }}>
+          {filteredOrders.map(order => {
+            const isExpanded = expandedOrderId === order.id;
+            return (
+              <OperationOrderCard 
+                key={order.id} 
+                order={order} 
+                onClick={() => handleOrderClick(order.id)}
+                onEdit={(order) => {
+                  fetchOrderDetails(order.id);
+                  setViewMode('view');
+                  setFormMode('header');
+                }}
+                onDelete={openDeleteDialog}
+                isExpanded={isExpanded && !!selectedOrder && selectedOrder.id === order.id}
+              >
+                {isExpanded && selectedOrder && selectedOrder.id === order.id ? (
+                  <OperationOrderDetails
+                    order={selectedOrder}
+                    onEditHeader={() => setFormMode('header')}
+                    onEditAllocation={handleEditAllocation}
+                    onAddSubAllocation={handleAddSubAllocation}
+                    onRefresh={() => fetchOrderDetails(selectedOrder.id)}
+                    onDelete={handleDeleteAllocation}
+                    options={{ terminals, satellites, antennas }}
+                    hideHeader={true}
+                  />
+                ) : isExpanded ? (
+                  <LoadingSpinner />
+                ) : null}
+              </OperationOrderCard>
+            );
+          })}
         </div>
       );
     }
@@ -85,11 +176,13 @@ export const OperationOrderPage = () => {
         <div style={{ padding: '0 20px' }}>
           <OperationOrderHeader
             data={headerData}
-            errors={headerErrors}
             onChange={setHeaderData}
             onSave={handleSaveOrder}
-            onCancel={viewMode === 'create' ? handleBackToList : () => setFormMode(null)}
+            onCancel={handleBackToList}
             saving={saving}
+            options={{ terminals, satellites, antennas }}
+            targetAllocationId={targetAllocationId}
+            onTargetAllocationReached={() => setTargetAllocationId(null)}
           />
         </div>
       );
@@ -118,10 +211,11 @@ export const OperationOrderPage = () => {
         <OperationOrderDetails
           order={selectedOrder}
           onEditHeader={() => setFormMode('header')}
-          onAddAllocation={handleAddAllocation}
           onEditAllocation={handleEditAllocation}
           onAddSubAllocation={handleAddSubAllocation}
           onRefresh={() => fetchOrderDetails(selectedOrder.id)}
+          onDelete={handleDeleteAllocation}
+          options={{ terminals, satellites, antennas }}
         />
       );
     }
@@ -132,7 +226,7 @@ export const OperationOrderPage = () => {
   const breadcrumbs = viewMode === 'list' ? undefined : {
     parent: 'פקודות מבצע',
     onParentClick: handleBackToList,
-    current: viewMode === 'create' ? 'פקודה חדשה' : selectedOrder?.name || 'טוען...',
+    current: selectedOrder ? selectedOrder.name : (viewMode === 'create' ? 'פקודה חדשה' : 'טוען...'),
     onBack: handleBackToList
   };
 
@@ -140,14 +234,37 @@ export const OperationOrderPage = () => {
     <PageLayout
       title={viewMode === 'list' ? "פקודות מבצע" : undefined}
       breadcrumbs={breadcrumbs}
-      actions={viewMode === 'list' ? (
-        <AddResourceButton onClick={handleCreateNew}>
-          פקודה חדשה
-          <AddIcon sx={{ fontSize: 24 }} />
-        </AddResourceButton>
-      ) : undefined}
+      actions={
+        <>
+          <SearchContainer>
+            <SearchInput
+              placeholder="חיפוש"
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                if (viewMode !== 'list') setViewMode('list');
+              }}
+            />
+            <SearchIcon sx={{ color: '#e1eaff', fontSize: 18 }} />
+          </SearchContainer>
+          {viewMode === 'list' && (
+            <AddResourceButton onClick={handleCreateNew}>
+              פקודה חדשה
+              <AddIcon sx={{ fontSize: 24 }} />
+            </AddResourceButton>
+          )}
+        </>
+      }
     >
       {renderContent()}
+      
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        title="מחיקת פקודת מבצע"
+        message="האם אתה בטוח שברצונך למחוק את פקודת המבצע? פעולה זו אינה ניתנת לביטול."
+        onConfirm={handleDeleteOrder}
+        onCancel={closeDeleteDialog}
+      />
     </PageLayout>
   );
 };

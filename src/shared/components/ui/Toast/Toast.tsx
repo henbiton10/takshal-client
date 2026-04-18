@@ -29,7 +29,7 @@ const slideOut = keyframes`
 const ToastWrapper = styled.div<{ $isExiting: boolean; $type: 'success' | 'error' }>`
   position: fixed;
   bottom: 32px;
-  right: 32px;
+  left: 32px;
   z-index: 10000;
   background: #283045;
   border: 1px solid ${props => props.$type === 'success' ? '#63ff6a' : '#ff4d4d'};
@@ -134,16 +134,7 @@ export const Toast: React.FC<ToastProps> = ({ title, subtitle, type = 'success',
 
   return (
     <ToastWrapper $isExiting={isExiting} $type={type}>
-      <CloseButton onClick={handleClose}>
-        <CloseIcon sx={{ fontSize: 16 }} />
-      </CloseButton>
-      
       <ContentWrapper>
-        <TextContainer>
-          <Title>{title}</Title>
-          <Subtitle>{subtitle}</Subtitle>
-        </TextContainer>
-        
         <IconContainer $type={type}>
           {type === 'success' ? (
             <CheckCircleOutlineIcon sx={{ fontSize: 24 }} />
@@ -151,7 +142,16 @@ export const Toast: React.FC<ToastProps> = ({ title, subtitle, type = 'success',
             <ErrorOutlineIcon sx={{ fontSize: 24 }} />
           )}
         </IconContainer>
+
+        <TextContainer>
+          <Title>{title}</Title>
+          <Subtitle>{subtitle}</Subtitle>
+        </TextContainer>
       </ContentWrapper>
+
+      <CloseButton onClick={handleClose}>
+        <CloseIcon sx={{ fontSize: 16 }} />
+      </CloseButton>
     </ToastWrapper>
   );
 };

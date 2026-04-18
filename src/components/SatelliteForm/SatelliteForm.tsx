@@ -1,7 +1,8 @@
 import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import deleteIcon from '../../assets/delete.svg';
 import SatelliteAltIcon from '@mui/icons-material/SatelliteAlt';
+import InfoIcon from '@mui/icons-material/Info';
 import { SatelliteFormProps, SatelliteFormData } from './types';
 import {
   AFFILIATION_OPTIONS,
@@ -35,10 +36,10 @@ export const SatelliteForm = ({ onSave, onDelete, editingSatelliteId, initialDat
     handleSubmit,
     watch,
     reset,
-    formState: { errors, isSubmitting, isValid, isDirty },
+    formState: { errors, isSubmitting, isDirty },
   } = useForm<SatelliteFormData>({
     defaultValues: initialData || INITIAL_FORM_DATA,
-    mode: 'onChange',
+    mode: 'onTouched',
   });
 
   // Update form when initialData changes
@@ -89,6 +90,7 @@ export const SatelliteForm = ({ onSave, onDelete, editingSatelliteId, initialDat
 
           <FormSection>
             <FormSectionHeader>
+              <InfoIcon sx={{ fontSize: 20, color: (theme) => theme.palette.text.secondary }} />
               <FormSectionTitle>פרטי הלווין</FormSectionTitle>
             </FormSectionHeader>
             <FormFieldRow>
@@ -133,8 +135,9 @@ export const SatelliteForm = ({ onSave, onDelete, editingSatelliteId, initialDat
                 placeholder="פרט על הסטטוס כאן..."
                 error={errors.notes}
                 rules={{
-                  validate: (value: string) => {
-                    if (readinessStatus && readinessStatus !== 'ready' && !value.trim()) {
+                  validate: (value: any) => {
+                    const strValue = value?.toString() || '';
+                    if (readinessStatus && readinessStatus !== 'ready' && !strValue.trim()) {
                       return 'הערות הינן שדה חובה כאשר סטטוס הכשירות אינו "כשיר"';
                     }
                     return true;
@@ -149,7 +152,7 @@ export const SatelliteForm = ({ onSave, onDelete, editingSatelliteId, initialDat
             {editingSatelliteId != null ? (
               <FormDeleteButton
                 onClick={onDelete}
-                startIcon={<DeleteOutlineIcon />}
+                startIcon={<img src={deleteIcon} alt="" style={{ width: '18px', height: '18px' }} />}
               >
                 מחק אמצעי
               </FormDeleteButton>
@@ -176,7 +179,7 @@ export const SatelliteForm = ({ onSave, onDelete, editingSatelliteId, initialDat
               <FormPrimaryButton
                 variant="contained"
                 type="submit"
-                disabled={!isValid || isSubmitting || !isDirty}
+                disabled={isSubmitting || (!!editingSatelliteId && !isDirty)}
                 startIcon={<SaveIcon />}
               >
                 {isSubmitting ? 'שומר...' : 'שמור שינויים'}

@@ -13,7 +13,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Chip from '@mui/material/Chip';
 import IconButton from '@mui/material/IconButton';
 import AddIcon from '@mui/icons-material/Add';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import deleteIcon from '../../assets/delete.svg';
 import { useForm, Controller } from 'react-hook-form';
 import {
   CreateAllocationDto,
@@ -468,7 +468,7 @@ const SubAllocationCardComponent = ({
           <SubAllocationNumber>#{subOrderNum}</SubAllocationNumber>
         </div>
         <DeleteSubButton onClick={() => onRemove(sub.id)}>
-          <DeleteOutlineIcon fontSize="small" />
+          <img src={deleteIcon} alt="מחיקה" style={{ width: '18px', height: '18px' }} />
         </DeleteSubButton>
       </SubAllocationCardHeader>
 

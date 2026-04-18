@@ -1,8 +1,11 @@
 import { useCallback, useEffect, useState, useMemo } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import deleteIcon from '../../assets/delete.svg';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
+import InfoIcon from '@mui/icons-material/Info';
+import LinkIcon from '@mui/icons-material/Link';
+import SatelliteAltIcon from '@mui/icons-material/SatelliteAlt';
 import styled from 'styled-components';
 import { StationFormProps, StationFormData } from './types';
 import {
@@ -72,10 +75,10 @@ export const StationForm = ({ onSave, onDelete, editingStationId, initialData, o
     handleSubmit,
     watch,
     reset,
-    formState: { errors, isSubmitting, isValid, isDirty },
+    formState: { errors, isSubmitting, isDirty },
   } = useForm<StationFormData>({
     defaultValues: initialData || INITIAL_FORM_DATA,
-    mode: 'onChange',
+    mode: 'onTouched',
   });
 
   const { fields: connectivityFields, append: appendConnectivity, remove: removeConnectivity } = useFieldArray({
@@ -190,6 +193,7 @@ export const StationForm = ({ onSave, onDelete, editingStationId, initialData, o
 
           <FormSection>
             <FormSectionHeader>
+              <InfoIcon sx={{ fontSize: 20, color: (theme) => theme.palette.text.secondary }} />
               <FormSectionTitle>פרטי התחנה</FormSectionTitle>
             </FormSectionHeader>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
@@ -222,8 +226,9 @@ export const StationForm = ({ onSave, onDelete, editingStationId, initialData, o
                 placeholder="פרט על הסטטוס כאן..."
                 error={errors.notes}
                 rules={{
-                  validate: (value: string) => {
-                    if (readinessStatus && readinessStatus !== 'ready' && (!value || !value.trim())) {
+                  validate: (value: any) => {
+                    const strValue = value?.toString() || '';
+                    if (readinessStatus && readinessStatus !== 'ready' && !strValue.trim()) {
                       return 'הערות הינן שדה חובה כאשר סטטוס הכשירות אינו "כשיר"';
                     }
                     return true;
@@ -236,6 +241,7 @@ export const StationForm = ({ onSave, onDelete, editingStationId, initialData, o
 
           <FormSection>
             <FormSectionHeader>
+              <LinkIcon sx={{ fontSize: 20, color: (theme) => theme.palette.text.secondary }} />
               <FormSectionTitle>קישוריות</FormSectionTitle>
             </FormSectionHeader>
             {connectivityFields.map((field, index) => (
@@ -338,6 +344,7 @@ export const StationForm = ({ onSave, onDelete, editingStationId, initialData, o
 
           <FormSection>
             <FormSectionHeader>
+              <SatelliteAltIcon sx={{ fontSize: 20, color: (theme) => theme.palette.text.secondary }} />
               <FormSectionTitle>אנטנות</FormSectionTitle>
             </FormSectionHeader>
 
@@ -404,7 +411,7 @@ export const StationForm = ({ onSave, onDelete, editingStationId, initialData, o
             {editingStationId != null ? (
               <FormDeleteButton
                 onClick={onDelete}
-                startIcon={<DeleteOutlineIcon />}
+                startIcon={<img src={deleteIcon} alt="" style={{ width: '18px', height: '18px' }} />}
               >
                 מחק אמצעי
               </FormDeleteButton>
@@ -431,7 +438,7 @@ export const StationForm = ({ onSave, onDelete, editingStationId, initialData, o
               <FormPrimaryButton
                 variant="contained"
                 type="submit"
-                disabled={!isValid || isSubmitting || !isDirty}
+                disabled={isSubmitting || (!!editingStationId && !isDirty)}
                 startIcon={<SaveIcon />}
               >
                 {isSubmitting ? 'שומר...' : 'שמור שינויים'}
