@@ -75,7 +75,7 @@ const NameFieldInput = styled.input`
   border: none;
   outline: none;
   color: #fafafa;
-  font-family: 'Assistant', sans-serif;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   font-size: 18px;
   font-weight: 700;
   flex: 1;
@@ -90,7 +90,7 @@ const NameFieldInput = styled.input`
 
 const NameFieldText = styled.div`
   color: #fafafa;
-  font-family: 'Assistant', sans-serif;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   font-size: 18px;
   font-weight: 700;
   flex: 1;

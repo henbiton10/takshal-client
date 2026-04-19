@@ -318,7 +318,7 @@ const GridActionButton = styled.button`
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-family: 'Assistant', sans-serif;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   font-weight: 600;
   font-size: 14px;
   padding: 0 12px;

@@ -248,7 +248,7 @@ export const StationForm = ({ onSave, onDelete, editingStationId, initialData, o
               <DynamicRow key={field.id} style={{ alignItems: 'flex-end', gap: '12px' }}>
                 <div style={{
                   color: '#e1eaff',
-                  fontFamily: 'Assistant, sans-serif',
+                  fontFamily: 'sans-serif',
                   fontWeight: 700,
                   fontSize: '16px',
                   paddingBottom: '6px'
@@ -352,7 +352,7 @@ export const StationForm = ({ onSave, onDelete, editingStationId, initialData, o
               <DynamicRow key={field.id} style={{ alignItems: 'flex-end', gap: '12px' }}>
                 <div style={{
                   color: '#e1eaff',
-                  fontFamily: 'Assistant, sans-serif',
+                  fontFamily: 'sans-serif',
                   fontWeight: 700,
                   fontSize: '16px',
                   paddingBottom: '6px'

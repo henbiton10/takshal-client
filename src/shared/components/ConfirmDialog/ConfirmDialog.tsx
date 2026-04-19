@@ -54,7 +54,7 @@ const IconWrapper = styled(Box)`
 const StyledDialogTitle = styled(DialogTitle)`
   && {
     color: #fafafa;
-    font-family: 'Assistant', sans-serif;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     font-size: 18px;
     font-weight: 700;
     padding: 0;
@@ -68,7 +68,7 @@ const StyledDialogContent = styled(DialogContent)`
   && {
     padding: 0;
     color: #cccccc;
-    font-family: 'Assistant', sans-serif;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     font-size: 14px;
     font-weight: 600;
     line-height: 16px;

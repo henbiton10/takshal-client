@@ -27,7 +27,7 @@ const CategoryHeader = styled.div`
 
 const CategoryTitle = styled.h2`
   color: #fafafa;
-  font-family: 'Assistant', sans-serif;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   font-size: 24px;
   font-weight: 700;
   margin: 0;
@@ -37,7 +37,7 @@ const CategoryTitle = styled.h2`
 const ShowAllButton = styled(Button)`
   && {
     color: #e1eaff;
-    font-family: 'Assistant', sans-serif;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     font-size: 16px;
     font-weight: 600;
     text-transform: none;

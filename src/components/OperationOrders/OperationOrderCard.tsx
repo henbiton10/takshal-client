@@ -173,7 +173,7 @@ export const OperationOrderCard = ({
               }
             }}
           >
-            <span style={{ fontSize: '14px', fontWeight: 600, fontFamily: 'Assistant, sans-serif' }}>עריכה</span>
+            <span style={{ fontSize: '14px', fontWeight: 600, fontFamily: 'sans-serif' }}>עריכה</span>
             <EditIcon sx={{ fontSize: 20 }} />
           </MenuItem>
           <MenuItem
@@ -188,7 +188,7 @@ export const OperationOrderCard = ({
               }
             }}
           >
-            <span style={{ fontSize: '14px', fontWeight: 600, color: '#f2f2f2', fontFamily: 'Assistant, sans-serif' }}>מחיקה</span>
+            <span style={{ fontSize: '14px', fontWeight: 600, color: '#f2f2f2', fontFamily: 'sans-serif' }}>מחיקה</span>
             <img src={deleteIcon} alt="מחיקה" style={{ width: '20px', height: '20px' }} />
           </MenuItem>
         </Menu>

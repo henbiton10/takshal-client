@@ -47,7 +47,7 @@ export const theme = createTheme({
     }
   },
   typography: {
-    fontFamily: 'Assistant, sans-serif',
+    fontFamily: "'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
   },
   // Inject custom tokens
   customColors: colors,
@@ -138,7 +138,7 @@ export const theme = createTheme({
         root: {
           textTransform: 'none',
           borderRadius: '10px',
-          fontFamily: 'Assistant, sans-serif',
+          fontFamily: "'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
           fontWeight: 600,
         }
       }

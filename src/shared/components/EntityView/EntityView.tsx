@@ -72,7 +72,7 @@ export const formatReadinessStatus = (status: string): { text: string; color: st
 // UI Components
 export const PageTitle = styled.h2`
   color: #FAFAFA;
-  font-family: 'Assistant', sans-serif;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   font-size: 24px;
   font-weight: 700;
   margin: 0;
@@ -81,7 +81,7 @@ export const PageTitle = styled.h2`
 
 export const PageSubtitle = styled.p`
   color: #E1EAFF;
-  font-family: 'Assistant', sans-serif;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   font-size: 18px;
   font-weight: 600;
   margin: 0;
@@ -139,7 +139,7 @@ export const IconCircle = styled.div`
 
 export const EntityNameText = styled.span`
   color: #FAFAFA;
-  font-family: 'Assistant', sans-serif;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   font-size: 24px;
   font-weight: 700;
   line-height: 1.1;
@@ -153,7 +153,7 @@ export const EditButton = styled(Button)`
     border-radius: 12px;
     padding: 10px 20px;
     text-transform: none;
-    font-family: 'Assistant', sans-serif;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     font-size: 16px;
     font-weight: 700;
     gap: 8px;
@@ -184,7 +184,7 @@ export const SectionLabelRow = styled.div`
 
 export const SectionLabelText = styled.span`
   color: #E1EAFF;
-  font-family: 'Assistant', sans-serif;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   font-size: 18px;
   font-weight: 700;
 `;
@@ -209,7 +209,7 @@ export const FieldColumn = styled.div<{ $flex?: number | string }>`
 
 export const FieldLabelText = styled.span`
   color: #E1EAFF;
-  font-family: 'Assistant', sans-serif;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   font-size: 16px;
   font-weight: 600;
   letter-spacing: 0.16px;
@@ -232,7 +232,7 @@ export const FieldValuePill = styled.div<{ $statusColor?: string }>`
   
   span {
     color: #FAFAFA;
-    font-family: 'Assistant', sans-serif;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     font-size: 18px;
     font-weight: 600;
     letter-spacing: 0.18px;
@@ -264,7 +264,7 @@ export const DataTag = styled.div`
   
   .tag-label {
     color: #FAFAFA;
-    font-family: 'Assistant', sans-serif;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     font-size: 18px;
     font-weight: 600;
     letter-spacing: 0.18px;
@@ -291,7 +291,7 @@ export const InlinePill = styled.div`
   
   span {
     color: #FAFAFA;
-    font-family: 'Assistant', sans-serif;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     font-size: 14px;
     font-weight: 600;
     letter-spacing: 0.16px;

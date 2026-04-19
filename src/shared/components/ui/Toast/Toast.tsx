@@ -61,7 +61,7 @@ const TextContainer = styled.div`
 
 const Title = styled.p`
   color: #e1eaff;
-  font-family: 'Assistant', sans-serif;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   font-weight: 700;
   font-size: 18px;
   margin: 0;
@@ -70,7 +70,7 @@ const Title = styled.p`
 
 const Subtitle = styled.p`
   color: #bababa;
-  font-family: 'Assistant', sans-serif;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   font-weight: 700;
   font-size: 14px;
   margin: 0;

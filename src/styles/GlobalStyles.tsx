@@ -8,7 +8,7 @@ const GlobalStyle = createGlobalStyle`
   }
 
   :root {
-    font-family: 'Assistant', sans-serif;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     line-height: 1.5;
     font-weight: 400;
     direction: rtl;

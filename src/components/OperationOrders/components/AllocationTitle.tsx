@@ -17,7 +17,7 @@ export const AllocationTitle = ({ title, type }: AllocationTitleProps) => (
       fontSize: '16px',
       fontWeight: 700,
       color: '#fafafa',
-      fontFamily: 'Assistant, sans-serif',
+      fontFamily: 'sans-serif',
       opacity: 0.9
     }}>
       {title}
@@ -29,7 +29,7 @@ export const AllocationTitle = ({ title, type }: AllocationTitleProps) => (
       borderRadius: '50px',
       fontSize: '14px',
       fontWeight: 700,
-      fontFamily: 'Assistant, sans-serif'
+      fontFamily: 'sans-serif'
     }}>
       {type === 'primary' ? 'ראשי' : 'משני'}
     </Box>

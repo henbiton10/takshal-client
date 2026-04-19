@@ -91,7 +91,7 @@ const BreadcrumbButton = styled.button<{ $clickable?: boolean }>`
   font-weight: 500;
   padding: 0;
   margin: 0;
-  font-family: 'Assistant', sans-serif;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   cursor: ${props => props.$clickable ? 'pointer' : 'default'};
   transition: all 0.2s ease;
   display: flex;
@@ -113,7 +113,7 @@ const BreadcrumbCurrent = styled.span`
   color: #e1eaff;
   font-size: 24px;
   font-weight: 700;
-  font-family: 'Assistant', sans-serif;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 `;
 
 const HeaderActions = styled.div`

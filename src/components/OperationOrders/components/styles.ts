@@ -145,7 +145,7 @@ export const AddSubButton = styled.button`
   margin-bottom: 20px;
   transition: all 0.2s;
   box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.1), 0px 1px 2px -1px rgba(0, 0, 0, 0.1);
-  font-family: 'Assistant', sans-serif;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   
   &:hover {
     background: #364669;
