@@ -1,6 +1,4 @@
-import { LocaleText } from 'ag-grid-community';
-
-export const AG_GRID_LOCALE_HE: LocaleText = {
+export const AG_GRID_LOCALE_HE = {
   // Set Filter
   selectAll: '(בחר הכל)',
   selectAllSearchResults: '(בחר כל תוצאות החיפוש)',
