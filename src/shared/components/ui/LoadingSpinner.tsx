@@ -14,7 +14,7 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ fullScreen = fal
       flexDirection="column"
       alignItems="center"
       justifyContent="center"
-      height={fullScreen ? '100vh' : '400px'}
+      height={fullScreen ? '100vh' : '100%'}
       width="100%"
       gap={2}
     >

@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useInitialization } from '../../../contexts/InitializationContext';
 import { operationOrdersApi, terminalsApi, satellitesApi } from '../../../services/api';
 import { OperationOrder, OperationOrderSummary, CreateOperationOrderDto, CreateAllocationDto, SubAllocationPayload, AllocationData, Terminal, SatelliteSummary, AntennaWithStation } from '../../../services/api/types';
 import { useToast } from '../../../shared/components/ui/Toast';
@@ -8,6 +9,7 @@ export type ViewMode = 'list' | 'create' | 'view';
 export type FormMode = 'header' | 'allocation' | 'sub-allocation' | null;
 
 export const useOperationOrderPage = () => {
+  const { setAppReady } = useInitialization();
   const { socket } = useSocket();
   const [orders, setOrders] = useState<OperationOrderSummary[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<OperationOrder | null>(null);
@@ -128,9 +130,12 @@ export const useOperationOrderPage = () => {
   }, [socket, selectedOrder, fetchOrders, fetchOrderDetails, fetchMetadata]);
 
   useEffect(() => {
-    fetchOrders();
-    fetchMetadata();
-  }, [fetchOrders, fetchMetadata]);
+    const init = async () => {
+      await Promise.all([fetchOrders(), fetchMetadata()]);
+      setAppReady(true);
+    };
+    init();
+  }, [fetchOrders, fetchMetadata, setAppReady]);
 
   const handleOrderClick = useCallback(async (id: number) => {
     if (expandedOrderId === id) {

@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
+import { useInitialization } from '../../../contexts/InitializationContext';
 import { ENTITY_CONFIGS } from '../entityConfig';
 import { useEntityManager } from './useEntityManager';
 import { useToast } from '../../../shared/components/ui/Toast';
@@ -11,6 +12,7 @@ interface DeleteDialogState {
 }
 
 export const useResourcesManagement = () => {
+  const { setAppReady } = useInitialization();
   const [searchQuery, setSearchQuery] = useState('');
   const [hasInitialized, setHasInitialized] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -48,6 +50,7 @@ export const useResourcesManagement = () => {
       networksManager.fetchItems(true),
     ]).finally(() => {
       setHasInitialized(true);
+      setAppReady(true);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

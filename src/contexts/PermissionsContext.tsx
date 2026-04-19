@@ -49,13 +49,25 @@ export const PermissionsProvider: React.FC<PermissionsProviderProps> = ({
   const [entities, setEntities] = useState<Record<string, AllowedActions>>({});
   const [isLoading, setIsLoading] = useState(true);
 
-  // Initial fetch for tags and entities
+  // Initial fetch for auth, tags and entities
   useEffect(() => {
     let isMounted = true;
 
     const fetchInitialPermissions = async () => {
       try {
-        // Fetch all tags in parallel
+        // Step 1: Check Auth
+        try {
+          await apiClient.get('/auth/login');
+        } catch (error: any) {
+          if (error?.response?.status === 401 && error?.response?.data?.redirectURL) {
+            console.log("Redirecting for auth...", error.response.data.redirectURL);
+            window.location.replace(error.response.data.redirectURL);
+            return; // Exit and wait for redirect
+          }
+          throw error;
+        }
+
+        // Step 2: Fetch all tags and entities in parallel
         const tagsPromises = NOTABLE_TAGS.map(async (tagName) => {
           try {
             const hasTag = await apiClient.get<boolean>(`/permissions/userPermissions/tags/${tagName}`);
@@ -66,7 +78,6 @@ export const PermissionsProvider: React.FC<PermissionsProviderProps> = ({
           }
         });
 
-        // initial entity fetch
         const entityIdsStr = requiredEntities.join(',');
         const entitiesPromise = apiClient.get<Record<string, AllowedActions>>(
           `/permissions/userPermissions/entities?entityIds=${entityIdsStr}`
@@ -92,7 +103,7 @@ export const PermissionsProvider: React.FC<PermissionsProviderProps> = ({
         }
       } catch (error) {
         console.error("Failed initializing permissions:", error);
-        if (isMounted) setIsLoading(false); // Make sure we don't block forever
+        if (isMounted) setIsLoading(false);
       }
     };
 

@@ -91,6 +91,19 @@ export const FormSelect = <T extends FieldValues>({
               displayEmpty
               sx={selectStyles}
               error={!!fieldError || !!error}
+              MenuProps={{
+                PaperProps: {
+                  sx: {
+                    maxHeight: 300,
+                    backgroundColor: 'rgba(28, 40, 78, 0.95)',
+                    backdropFilter: 'blur(10px)',
+                    border: '1px solid rgba(174, 199, 255, 0.15)',
+                    '& .MuiMenuItem-root': {
+                      padding: '8px 16px',
+                    }
+                  }
+                }
+              }}
               renderValue={(selected) => {
                 if (selected === '') {
                   return <span style={{ opacity: 0.6 }}>{placeholder}</span>;

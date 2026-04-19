@@ -17,6 +17,7 @@ import {
 } from './types';
 import { dashboardApi } from '../../services/api';
 import { PageLayout } from '../../shared/components/PageLayout';
+import { useInitialization } from '../../contexts/InitializationContext';
 
 const HeaderLeft = styled.div`
   display: flex;
@@ -149,7 +150,7 @@ const LoadingContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 200px;
+  height: 100%;
   color: rgba(255, 255, 255, 0.5);
 `;
 
@@ -206,6 +207,7 @@ export const DashboardPage = () => {
   const [timeRange, setTimeRange] = useState<TimeRange | null>(() => loadTimeRangeFromStorage());
   const [lastUpdated, setLastUpdated] = useState<string>(new Date().toLocaleString('he-IL'));
   const [fullscreenSection, setFullscreenSection] = useState<DashboardSection | null>(null);
+  const { setAppReady } = useInitialization();
 
   const fetchDashboardData = useCallback(async () => {
     try {
@@ -227,12 +229,13 @@ export const DashboardPage = () => {
 
       setDashboardData(data);
       setLastUpdated(new Date().toLocaleString('he-IL'));
+      setAppReady(true);
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error);
     } finally {
       setLoading(false);
     }
-  }, [timeRange]);
+  }, [timeRange, setAppReady]);
 
   useEffect(() => {
     fetchDashboardData();

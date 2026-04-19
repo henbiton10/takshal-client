@@ -136,6 +136,16 @@ export const FormAutocomplete = <T extends FieldValues>({
                     onKeyDown={handleKeyDown}
                   />
                 )}
+                slotProps={{
+                  paper: {
+                    sx: {
+                      maxHeight: 300,
+                      backgroundColor: 'rgba(28, 40, 78, 0.95)',
+                      backdropFilter: 'blur(10px)',
+                      border: '1px solid rgba(174, 199, 255, 0.15)',
+                    }
+                  }
+                }}
               />
               {(fieldError || error) && (
                 <FormHelperText sx={(theme) => ({ textAlign: 'right', direction: 'rtl', color: theme.palette.error.main })}>

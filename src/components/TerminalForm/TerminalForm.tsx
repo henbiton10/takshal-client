@@ -244,13 +244,41 @@ export const TerminalForm = ({ onSave, onDelete, editingTerminalId, initialData,
                           sx={{
                             '& .MuiInputBase-root': {
                               direction: 'rtl',
+                              height: '36px',
+                              backgroundColor: (theme) => theme.palette.action.hover,
+                              borderRadius: '4px',
+                              padding: '0 12px !important',
+                              '& fieldset': {
+                                borderColor: (theme) => theme.palette.divider,
+                              },
+                              '&:hover fieldset': {
+                                borderColor: (theme) => theme.palette.text.disabled,
+                              },
+                              '&.Mui-focused fieldset': {
+                                borderColor: (theme) => theme.palette.primary.main,
+                              },
                             },
+                            '& .MuiInputBase-input': {
+                              color: (theme) => theme.palette.text.secondary,
+                              fontSize: '16px',
+                              fontWeight: 600,
+                              height: '36px',
+                              boxSizing: 'border-box',
+                            },
+                            '& .MuiAutocomplete-endAdornment': {
+                              top: 'calc(50% - 13px)', /* Center the dropdown arrow */
+                              direction: 'rtl',
+                              left: '8px',
+                              right: 'auto',
+                            }
                           }}
                         />
                       )}
                       slotProps={{
                         paper: {
                           sx: {
+                            maxHeight: 300,
+                            overflow: 'auto',
                             background: 'rgba(20, 40, 80, 0.95)',
                             backdropFilter: 'blur(10px)',
                             border: '1px solid rgba(174, 199, 255, 0.15)',
