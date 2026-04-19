@@ -11,6 +11,7 @@ import { ResourcesManagement } from './components/ResourcesManagement';
 import { OperationOrderPage } from './components/OperationOrders';
 import { DashboardPage } from './components/Dashboard';
 import { ToastProvider } from './shared/components/ui/Toast';
+import { SocketProvider } from './contexts/SocketContext';
 
 const STORAGE_KEY = 'takshal_selected_menu';
 
@@ -46,17 +47,19 @@ function App() {
         <CssBaseline />
         <GlobalStyle />
         <ToastProvider>
-          <Authorization>
-            <AppLayout>
-              <MainContent>
-                {renderContent()}
-              </MainContent>
-              <Sidebar 
-                selectedItem={selectedMenuItem}
-                onItemSelect={handleMenuItemSelect}
-              />
-            </AppLayout>
-          </Authorization>
+          <SocketProvider>
+            <Authorization>
+              <AppLayout>
+                <MainContent>
+                  {renderContent()}
+                </MainContent>
+                <Sidebar 
+                  selectedItem={selectedMenuItem}
+                  onItemSelect={handleMenuItemSelect}
+                />
+              </AppLayout>
+            </Authorization>
+          </SocketProvider>
         </ToastProvider>
       </StyledThemeProvider>
     </ThemeProvider>

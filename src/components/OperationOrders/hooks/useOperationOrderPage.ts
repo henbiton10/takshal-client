@@ -1,22 +1,14 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import { operationOrdersApi, terminalsApi, satellitesApi } from '../../../services/api';
-import {
-  OperationOrder,
-  OperationOrderSummary,
-  CreateOperationOrderDto,
-  CreateAllocationDto,
-  SubAllocationPayload,
-  AllocationData,
-  Terminal,
-  SatelliteSummary,
-  AntennaWithStation
-} from '../../../services/api/types';
+import { OperationOrder, OperationOrderSummary, CreateOperationOrderDto, CreateAllocationDto, SubAllocationPayload, AllocationData, Terminal, SatelliteSummary, AntennaWithStation } from '../../../services/api/types';
 import { useToast } from '../../../shared/components/ui/Toast';
+import { useSocket } from '../../../contexts/SocketContext';
 
 export type ViewMode = 'list' | 'create' | 'view';
 export type FormMode = 'header' | 'allocation' | 'sub-allocation' | null;
 
 export const useOperationOrderPage = () => {
+  const { socket } = useSocket();
   const [orders, setOrders] = useState<OperationOrderSummary[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<OperationOrder | null>(null);
   const [loading, setLoading] = useState(true);
@@ -106,6 +98,34 @@ export const useOperationOrderPage = () => {
       setLoading(false);
     }
   }, [showError]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleRemoteUpdate = (payload: { entity: string; id: number | string }) => {
+      // If an operation order was modified, refresh the list and potentially current order
+      if (payload.entity === 'operation-order') {
+        fetchOrders();
+        if (selectedOrder && Number(payload.id) === selectedOrder.id) {
+          fetchOrderDetails(selectedOrder.id);
+        }
+      } 
+      // If related metadata changed, refresh it
+      else if (['terminal', 'satellite', 'station', 'network'].includes(payload.entity)) {
+        fetchMetadata();
+      }
+    };
+
+    socket.on('entity_created', handleRemoteUpdate);
+    socket.on('entity_updated', handleRemoteUpdate);
+    socket.on('entity_deleted', handleRemoteUpdate);
+
+    return () => {
+      socket.off('entity_created', handleRemoteUpdate);
+      socket.off('entity_updated', handleRemoteUpdate);
+      socket.off('entity_deleted', handleRemoteUpdate);
+    };
+  }, [socket, selectedOrder, fetchOrders, fetchOrderDetails, fetchMetadata]);
 
   useEffect(() => {
     fetchOrders();

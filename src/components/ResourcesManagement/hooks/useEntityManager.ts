@@ -1,5 +1,6 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { EntityConfig } from '../entityConfig';
+import { useSocket } from '../../../contexts/SocketContext';
 
 export type ViewMode = 'list' | 'view' | 'edit';
 
@@ -12,6 +13,7 @@ interface EntityState {
 }
 
 export const useEntityManager = (entityConfig: EntityConfig) => {
+  const { socket } = useSocket();
   const [state, setState] = useState<EntityState>({
     items: [],
     loading: false,
@@ -59,6 +61,40 @@ export const useEntityManager = (entityConfig: EntityConfig) => {
       console.error(`Failed to fetch ${entityConfig.title} item:`, error);
     }
   }, [entityConfig, state.selectedId]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleRemoteUpdate = (payload: { entity: string; id: number | string }) => {
+      const targetId = entityConfig.id;
+      const singularTargetId = targetId.replace(/s$/, '');
+      
+      if (payload.entity === singularTargetId || payload.entity === targetId) {
+        // Trigger silent refresh of the list
+        fetchItems(true);
+        
+        // If the selected item was updated, refresh its details if we are in view/edit mode
+        if (state.selectedId && Number(payload.id) === state.selectedId) {
+          entityConfig.api.getOne(state.selectedId).then(item => {
+            setState(prev => ({
+              ...prev,
+              selectedData: item,
+            }));
+          }).catch(console.error);
+        }
+      }
+    };
+
+    socket.on('entity_created', handleRemoteUpdate);
+    socket.on('entity_updated', handleRemoteUpdate);
+    socket.on('entity_deleted', handleRemoteUpdate);
+
+    return () => {
+      socket.off('entity_created', handleRemoteUpdate);
+      socket.off('entity_updated', handleRemoteUpdate);
+      socket.off('entity_deleted', handleRemoteUpdate);
+    };
+  }, [socket, entityConfig, fetchItems, state.selectedId]);
 
   const switchToEditMode = useCallback(() => {
     if (state.selectedData) {
