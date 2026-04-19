@@ -251,7 +251,7 @@ export const TerminalForm = ({ onSave, onDelete, editingTerminalId, initialData,
                               height: '36px',
                               backgroundColor: (theme) => theme.palette.action.hover,
                               borderRadius: '4px',
-                              padding: '0 12px !important',
+                              padding: '0 12px 0 36px !important',
                               '& fieldset': {
                                 borderColor: (theme) => theme.palette.divider,
                               },
@@ -270,9 +270,10 @@ export const TerminalForm = ({ onSave, onDelete, editingTerminalId, initialData,
                               boxSizing: 'border-box',
                             },
                             '& .MuiAutocomplete-endAdornment': {
-                              top: 'calc(50% - 13px)', /* Center the dropdown arrow */
+                              top: '50%',
+                              transform: 'translateY(-50%)',
                               direction: 'rtl',
-                              left: '8px',
+                              left: '12px',
                               right: 'auto',
                             }
                           }}
