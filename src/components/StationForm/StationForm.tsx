@@ -294,9 +294,14 @@ export const StationForm = ({ onSave, onDelete, editingStationId, initialData, o
                       error={errors.connectivities?.[index]?.channelCount}
                       rules={{
                         required: 'מספר ערוצים הינה שדה חובה',
-                        min: { value: 1, message: 'מספר ערוצים חייב להיות חיובי' },
+                        min: { value: 1, message: 'מספר ערוצים חייב להיות גדול מ-0' },
+                        validate: (value) => Number.isInteger(Number(value)) || 'יש להזין מספר שלם',
                       }}
                       required
+                      transformValue={{
+                        toField: (value) => (value === '' || value === null || value === 0 ? '' : value.toString()),
+                        toForm: (value) => value === '' ? '' : Number(value),
+                      }}
                     />
                   </div>
                 </div>
