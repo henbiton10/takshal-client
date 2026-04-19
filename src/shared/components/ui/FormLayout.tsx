@@ -257,7 +257,8 @@ export const FormPrimaryButton = styled(Button)`
     color: ${({ theme }) => theme.palette.text.primary};
     border-radius: 12px;
     padding: 12px 24px;
-    width: 160px;
+    min-width: 160px;
+    white-space: nowrap;
     font-family: inherit;
     font-size: 16px;
     font-weight: 700;
@@ -286,7 +287,8 @@ export const FormSecondaryButton = styled(Button)`
   && {
     color: ${({ theme }) => theme.palette.text.secondary};
     padding: 12px 20px;
-    width: 102px;
+    min-width: 102px;
+    white-space: nowrap;
     font-family: inherit;
     font-size: 16px;
     font-weight: 700;
@@ -307,7 +309,8 @@ export const FormDeleteButton = styled(Button)`
     color: ${({ theme }) => theme.palette.error.main};
     border-radius: 12px;
     padding: 12px 20px;
-    width: 149px;
+    min-width: 149px;
+    white-space: nowrap;
     height: 48px;
     font-family: inherit;
     font-size: 16px;
