@@ -28,6 +28,9 @@ src/
 │   └── constants/          # Shared constants and enums
 │       └── status.ts       # Shared readiness status options with icons
 │
+├── contexts/           # Global application contexts
+│   └── SocketContext.tsx   # WebSocket connection and management
+│
 └── components/         # Feature-specific components
     ├── ResourcesManagement/ # Entity management system (Stations, Satellites, etc.)
     │   ├── components/      # Sub-components (Dashboard, AddModal, Section)
@@ -298,6 +301,22 @@ import { READINESS_STATUS_OPTIONS } from '../../shared/constants/status';
 // In forms
 <FormSelect options={READINESS_STATUS_OPTIONS} ... />
 ```
+
+## Real-time Synchronization System
+
+The application utilizes a **Signal-based Update** pattern to keep data synchronized across multiple clients and windows without manual refreshes.
+
+### How it Works
+1. **Server Broadcast**: When an entity is created, updated, or deleted, the backend emits an internal event via `EventEmitter2`.
+2. **WebSocket Gateway**: The `EventsGateway` listens to these internal events and broadcasts them to all connected clients via Socket.io.
+3. **Client Reception**: The `SocketContext` maintains the persistent connection and provides access to the socket instance.
+4. **Reactive Hooks**: Hooks like `useEntityManager` and `useOperationOrderPage` subscribe to specific synchronization events (e.g., `entity_updated`).
+5. **Silent Refresh**: Upon receiving a signal, the hooks trigger a re-fetch of the relevant data in the background, ensuring the UI stays consistent with the database state.
+
+### Implementation Details
+- `SocketContext.tsx`: Manages the lifecycle of the `socket.io-client` connection.
+- `useSocket` hook: Provides easy access to the socket instance for any component.
+- `useEffect` listeners: Used within domain hooks to handle incoming signals and refresh state.
 
 ## Visibility & Logic Patterns
 

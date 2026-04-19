@@ -8,6 +8,7 @@ A premium, state-of-the-art resource management and operation planning platform.
 - **Unified Editing Experience**: Real-time allocation management within a unified header view, featuring automatic expansion and focus for sub-allocations.
 - **Resource Management**: Comprehensive tracking of Stations, Satellites, Terminals, and Networks.
 - **Premium UI/UX**: State-of-the-art dark mode design based on Figma specifications, featuring glassmorphism, red glow shadows, and smooth micro-animations.
+- **Real-time Background Synchronization**: Seamless data updates across multiple clients via WebSockets, eliminating the need for manual refreshes.
 - **Global Notifications**: Real-time success and error toasts for all operations.
 
 ## Technology Stack
@@ -17,7 +18,8 @@ A premium, state-of-the-art resource management and operation planning platform.
 - **Styling**: Styled-components for theme-aware, isolated styles
 - **UI Components**: Material UI (MUI) icons and layout primitives
 - **Forms**: React Hook Form for performant, type-safe forms
-- **State**: React Context for global systems (Toast, etc.)
+- **Real-time**: Socket.io-client for event-driven synchronization
+- **State**: React Context for global systems (Toast, Sockets, etc.)
 
 ## Project Structure
 
