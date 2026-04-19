@@ -164,8 +164,12 @@ export const TerminalForm = ({ onSave, onDelete, editingTerminalId, initialData,
                 rules={{ required: 'תחנה קרקעית הינה שדה חובה' }}
                 required
                 transformValue={{
-                  toField: (value) => (value === '' || value === null ? '' : value.toString()),
-                  toForm: (value) => value === '' ? '' : Number(value),
+                  toField: (value) => (value === '' || value === null || (typeof value === 'number' && isNaN(value)) ? '' : value.toString()),
+                  toForm: (value) => {
+                    if (value === '') return '';
+                    const num = Number(value);
+                    return isNaN(num) ? value : num;
+                  },
                 }}
               />
 

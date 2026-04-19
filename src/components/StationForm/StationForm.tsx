@@ -299,8 +299,12 @@ export const StationForm = ({ onSave, onDelete, editingStationId, initialData, o
                       }}
                       required
                       transformValue={{
-                        toField: (value) => (value === '' || value === null || value === 0 ? '' : value.toString()),
-                        toForm: (value) => value === '' ? '' : Number(value),
+                        toField: (value) => (value === '' || value === null || (typeof value === 'number' && isNaN(value)) || value === 0 ? '' : value.toString()),
+                        toForm: (value) => {
+                          if (value === '') return '';
+                          const num = Number(value);
+                          return isNaN(num) ? value : num;
+                        },
                       }}
                     />
                   </div>
@@ -379,8 +383,12 @@ export const StationForm = ({ onSave, onDelete, editingStationId, initialData, o
                       }}
                       required
                       transformValue={{
-                        toField: (value) => (value === 0 ? '' : value.toString()),
-                        toForm: (value) => value === '' ? 0 : Number(value),
+                        toField: (value) => (value === '' || value === null || (typeof value === 'number' && isNaN(value)) || value === 0 ? '' : value.toString()),
+                        toForm: (value) => {
+                          if (value === '') return '';
+                          const num = Number(value);
+                          return isNaN(num) ? value : num;
+                        },
                       }}
                     />
                   </div>
