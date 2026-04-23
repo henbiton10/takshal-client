@@ -9,8 +9,8 @@ A collapsible sidebar component built with React, MUI, and styled-components tha
 - **Folded State**: 76px wide showing icons and compact labels
 - **Hover Expansion**: Expands to 220px with smooth 300ms animation
 - **Three Menu Items**:
-  - דאשבורד (Dashboard) with DashboardIcon
-  - פמ״ים (Operations) with TableViewIcon
+  - סטטוס (Dashboard) with DashboardIcon
+  - פ״מים (Operations) with TableViewIcon
   - אמצעים (Resources) with CellTowerIcon
 - **Glass Morphism**: Backdrop blur effect
 - **RTL Support**: Right-to-left layout for Hebrew text

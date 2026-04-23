@@ -12,8 +12,18 @@ import { OperationOrderPage } from './components/OperationOrders';
 import { DashboardPage } from './components/Dashboard';
 import { ToastProvider } from './shared/components/ui/Toast';
 import { SocketProvider } from './contexts/SocketContext';
+import { PageStatusProvider } from './contexts/PageStatusContext';
+import styled from 'styled-components';
 
 const STORAGE_KEY = 'takshal_selected_menu';
+
+const PageWrapper = styled.div<{ $isVisible: boolean }>`
+  display: ${props => props.$isVisible ? 'flex' : 'none'};
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+`;
 
 function App() {
   const [selectedMenuItem, setSelectedMenuItem] = useState(() => {
@@ -28,38 +38,35 @@ function App() {
     setSelectedMenuItem(itemId);
   };
 
-  const renderContent = () => {
-    switch (selectedMenuItem) {
-      case 'dashboard':
-        return <DashboardPage />;
-      case 'operations':
-        return <OperationOrderPage />;
-      case 'resources':
-        return <ResourcesManagement />;
-      default:
-        return null;
-    }
-  };
-
   return (
     <ThemeProvider theme={theme}>
       <StyledThemeProvider theme={theme}>
         <CssBaseline />
         <GlobalStyle />
         <ToastProvider>
-          <SocketProvider>
-            <Authorization>
-              <AppLayout>
-                <MainContent>
-                  {renderContent()}
-                </MainContent>
-                <Sidebar 
-                  selectedItem={selectedMenuItem}
-                  onItemSelect={handleMenuItemSelect}
-                />
-              </AppLayout>
-            </Authorization>
-          </SocketProvider>
+          <PageStatusProvider>
+            <SocketProvider>
+              <Authorization>
+                <AppLayout>
+                  <MainContent>
+                    <PageWrapper $isVisible={selectedMenuItem === 'dashboard'}>
+                      <DashboardPage />
+                    </PageWrapper>
+                    <PageWrapper $isVisible={selectedMenuItem === 'operations'}>
+                      <OperationOrderPage />
+                    </PageWrapper>
+                    <PageWrapper $isVisible={selectedMenuItem === 'resources'}>
+                      <ResourcesManagement />
+                    </PageWrapper>
+                  </MainContent>
+                  <Sidebar 
+                    selectedItem={selectedMenuItem}
+                    onItemSelect={handleMenuItemSelect}
+                  />
+                </AppLayout>
+              </Authorization>
+            </SocketProvider>
+          </PageStatusProvider>
         </ToastProvider>
       </StyledThemeProvider>
     </ThemeProvider>

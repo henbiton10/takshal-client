@@ -6,7 +6,7 @@ import { MenuItem } from './types';
 export const MENU_ITEMS: MenuItem[] = [
   {
     id: 'dashboard',
-    label: 'דאשבורד',
+    label: 'סטטוס',
     icon: <DashboardIcon />,
   },
   {
@@ -16,7 +16,7 @@ export const MENU_ITEMS: MenuItem[] = [
   },
   {
     id: 'operations',
-    label: 'פמ״ים',
+    label: 'פ״מים',
     icon: <TableViewIcon />,
   },
 ];

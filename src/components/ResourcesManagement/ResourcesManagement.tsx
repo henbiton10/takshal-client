@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
 import CellTowerIcon from '@mui/icons-material/CellTower';
@@ -9,6 +10,7 @@ import { ConfirmDialog } from '../../shared/components/ConfirmDialog';
 import { PageLayout } from '../../shared/components/PageLayout';
 import { LoadingSpinner } from '../../shared/components/ui/LoadingSpinner';
 import { BigEmptyState } from '../../shared/components/ui/BigEmptyState';
+import { usePageStatus } from '../../contexts/PageStatusContext';
 
 const SearchContainer = styled.div`
   display: flex;
@@ -53,6 +55,7 @@ export const AddResourceButton = styled.button`
 `;
 
 export const ResourcesManagement = () => {
+  const { setPageStatus } = usePageStatus();
   const {
     searchQuery, setSearchQuery,
     hasInitialized,
@@ -78,6 +81,10 @@ export const ResourcesManagement = () => {
 
   const activeManagerEntry = Object.entries(entityManagers).find(([_, m]) => m.viewMode === 'edit');
   const activeEntityId = activeManagerEntry ? activeManagerEntry[0] : null;
+
+  useEffect(() => {
+    setPageStatus('resources', !!activeEntityId);
+  }, [activeEntityId, setPageStatus]);
   const activeManager = activeManagerEntry ? activeManagerEntry[1] : null;
 
   const viewManagerEntry = Object.entries(entityManagers).find(([_, m]) => m.viewMode === 'view');

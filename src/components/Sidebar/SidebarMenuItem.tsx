@@ -5,6 +5,7 @@ interface MenuItemProps {
   icon: React.ReactNode;
   isSelected: boolean;
   isExpanded: boolean;
+  hasWaitingForm?: boolean;
   onClick: () => void;
 }
 
@@ -24,8 +25,6 @@ const MenuItemContainer = styled(Box, {
   borderRadius: '12px',
 }));
 
-
-
 const IconWrapper = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'isSelected',
 })<{ isSelected: boolean }>(({ isSelected, theme }) => ({
@@ -35,6 +34,7 @@ const IconWrapper = styled(Box, {
   width: '36px',
   height: '36px',
   flexShrink: 0,
+  position: 'relative',
   color: isSelected ? '#ffffff' : theme.palette.text.primary,
   backgroundColor: isSelected ? 'rgba(174, 199, 255, 0.25)' : 'transparent',
   borderRadius: '10px',
@@ -49,7 +49,18 @@ const IconWrapper = styled(Box, {
   },
 }));
 
-
+const NotificationDot = styled(Box)(({ theme }) => ({
+  position: 'absolute',
+  top: '-2px',
+  right: '-2px',
+  width: '10px',
+  height: '10px',
+  backgroundColor: '#3d82f6', // Premium blue
+  borderRadius: '50%',
+  border: `2px solid #112145`, // Dark background border for contrast
+  boxShadow: '0 0 6px rgba(61, 130, 246, 0.5)',
+  zIndex: 1,
+}));
 
 const LabelText = styled(Typography, {
   shouldForwardProp: (prop) => prop !== 'isExpanded' && prop !== 'isSelected',
@@ -65,11 +76,12 @@ const LabelText = styled(Typography, {
   transition: 'all 0.3s ease',
 }));
 
-export default function SidebarMenuItem({ label, icon, isSelected, isExpanded, onClick }: MenuItemProps) {
+export default function SidebarMenuItem({ label, icon, isSelected, isExpanded, hasWaitingForm, onClick }: MenuItemProps) {
   return (
     <MenuItemContainer isSelected={isSelected} isExpanded={isExpanded} onClick={onClick}>
       <IconWrapper isSelected={isSelected}>
         {icon}
+        {hasWaitingForm && !isSelected && <NotificationDot />}
       </IconWrapper>
 
       <LabelText isExpanded={isExpanded} isSelected={isSelected}>

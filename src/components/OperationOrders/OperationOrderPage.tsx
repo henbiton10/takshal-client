@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
 import ListAltIcon from '@mui/icons-material/ListAlt';
@@ -13,6 +13,7 @@ import { BigEmptyState } from '../../shared/components/ui/BigEmptyState';
 import { useOperationOrderPage } from './hooks/useOperationOrderPage';
 import { AddResourceButton } from '../ResourcesManagement/ResourcesManagement';
 import { ConfirmDialog } from '../../shared/components/ConfirmDialog/ConfirmDialog';
+import { usePageStatus } from '../../contexts/PageStatusContext';
 
 const SearchContainer = styled.div`
   display: flex;
@@ -41,6 +42,7 @@ const SearchInput = styled.input`
 `;
 
 export const OperationOrderPage = () => {
+  const { setPageStatus } = usePageStatus();
   const {
     orders, filteredOrders, searchQuery, setSearchQuery,
     selectedOrder, setSelectedOrder,
@@ -66,6 +68,11 @@ export const OperationOrderPage = () => {
     satellites,
     antennas
   } = useOperationOrderPage();
+
+  useEffect(() => {
+    const isFormActive = viewMode === 'create' || formMode !== null;
+    setPageStatus('operations', isFormActive);
+  }, [viewMode, formMode, setPageStatus]);
 
   const handleBackToList = useCallback(() => {
     setViewMode('list');

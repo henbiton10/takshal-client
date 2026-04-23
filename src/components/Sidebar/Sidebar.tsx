@@ -11,6 +11,7 @@ import {
   SIDEBAR_BACKDROP_BLUR,
 } from './constants';
 import { SidebarProps } from './types';
+import { usePageStatus } from '../../contexts/PageStatusContext';
 
 const SidebarContainer = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'isExpanded',
@@ -46,6 +47,7 @@ const MenuContainer = styled(Box)({
 
 export default function Sidebar({ selectedItem = 'operations', onItemSelect }: SidebarProps) {
   const { isExpanded, isPinned, togglePin } = useSidebarHover();
+  const { statuses } = usePageStatus();
 
   const handleItemClick = (itemId: string) => {
     onItemSelect?.(itemId);
@@ -67,6 +69,7 @@ export default function Sidebar({ selectedItem = 'operations', onItemSelect }: S
             icon={item.icon}
             isSelected={selectedItem === item.id}
             isExpanded={isExpanded}
+            hasWaitingForm={statuses[item.id]?.hasActiveForm}
             onClick={() => handleItemClick(item.id)}
           />
         ))}

@@ -388,9 +388,9 @@ export const DashboardPage = () => {
 
   return (
     <PageLayout
-      title={fullscreenSection ? undefined : "דאשבורד"}
+      title={fullscreenSection ? undefined : "סטטוס מערך התקש״ל"}
       breadcrumbs={fullscreenSection ? {
-        parent: 'דאשבורד',
+        parent: 'סטטוס מערך התקש״ל',
         onParentClick: () => setFullscreenSection(null),
         current: getSectionTitle(fullscreenSection),
         onBack: () => setFullscreenSection(null)
