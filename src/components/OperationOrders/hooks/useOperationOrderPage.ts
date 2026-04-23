@@ -365,8 +365,15 @@ export const useOperationOrderPage = () => {
 
   const filteredOrders = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
-    if (!query) return orders;
-    return orders.filter(order => order.name?.toLowerCase().includes(query));
+    const list = query 
+      ? orders.filter(order => order.name?.toLowerCase().includes(query))
+      : [...orders];
+
+    return list.sort((a, b) => {
+      const dateTimeA = `${a.startDate}T${a.startTime}`;
+      const dateTimeB = `${b.startDate}T${b.startTime}`;
+      return dateTimeA.localeCompare(dateTimeB);
+    });
   }, [searchQuery, orders]);
 
   return {
