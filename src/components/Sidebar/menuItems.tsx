@@ -10,13 +10,13 @@ export const MENU_ITEMS: MenuItem[] = [
     icon: <DashboardIcon />,
   },
   {
-    id: 'operations',
-    label: 'פמ״ים',
-    icon: <TableViewIcon />,
-  },
-  {
     id: 'resources',
     label: 'אמצעים',
     icon: <CellTowerIcon />,
+  },
+  {
+    id: 'operations',
+    label: 'פמ״ים',
+    icon: <TableViewIcon />,
   },
 ];

@@ -29,6 +29,7 @@ import {
   FormSecondaryButton,
   FormDeleteButton,
   FieldLabel,
+  FormScrollContainer,
 } from '../../shared/components/ui';
 import { EditableNameField } from '../../shared/components/EditableNameField';
 import { TerminalIcon } from '../ResourcesManagement/icons/TerminalIcon';
@@ -122,14 +123,15 @@ export const TerminalForm = ({ onSave, onDelete, editingTerminalId, initialData,
   }, [reset]);
 
   return (
-    <div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', flex: '0 1 auto', maxHeight: '100%', minHeight: 0, overflow: 'hidden' }}>
       <FormHeaderTop>
         <FormTitleLarge>{editingTerminalId ? 'עריכת טרמינל' : 'הוספת טרמינל חדש'}</FormTitleLarge>
         <FormSubtitle>מלא את הפרטים הנדרשים בטופס</FormSubtitle>
       </FormHeaderTop>
       <FormMainContainer>
-        <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          <FormSection style={{ padding: '8px 24px' }}>
+        <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+          <FormScrollContainer style={{ gap: '24px' }}>
+            <FormSection style={{ padding: '8px 24px' }}>
             <EditableNameField
               name="name"
               control={control}
@@ -342,8 +344,9 @@ export const TerminalForm = ({ onSave, onDelete, editingTerminalId, initialData,
               />
             </FormFieldRow>
           </FormSection>
+        </FormScrollContainer>
 
-          <FormBottomActions>
+        <FormBottomActions>
             {editingTerminalId != null ? (
               <FormDeleteButton
                 onClick={onDelete}

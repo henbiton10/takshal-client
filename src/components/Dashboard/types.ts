@@ -37,7 +37,8 @@ export interface TerminalAllocationInfo {
 export interface DashboardStation {
   id: number;
   name: string;
-  organizationalAffiliation: 'airforce' | 'navy' | 'ground' | 'intelligence' | 'other';
+  organizationalAffiliation: 'airforce' | 'navy' | 'ground' | 'intelligence' | 'tikshuv' | 'other';
+
   readinessStatus: 'ready' | 'partly_ready' | 'damaged';
   terminals: DashboardTerminal[];
   antennas: DashboardAntenna[];

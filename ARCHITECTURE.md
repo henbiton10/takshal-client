@@ -365,3 +365,39 @@ The `ConfirmDialog` system has been completely redesigned to match Figma specifi
 - **Red Glow Shadows**: Indicates destructive actions.
 - **Glassmorphism**: Transparent, frosted backgrounds (`rgba(28, 36, 57, 0.95)`).
 - **Premium Separators**: Using MUI `Divider` for sub-pixel precision instead of custom borders.
+
+## Dashboard Matrix Patterns
+
+The dashboard utilizes specialized matrix components for real-time monitoring of Stations, Terminals, Satellites, and Connectivity.
+
+### Differentiated Iconography
+To maintain visual hierarchy, the system uses specific SVG sets:
+- **SatelliteHeaderIcon**: Used in column headers for satellite identification.
+- **SatelliteCustomIcon**: Used within individual cell badges (chips) for status indicators.
+
+### Status Indicator Glows
+All status dots (`StatusDot`) implement situational glow effects (`box-shadow`) to enhance visibility in the dark-themed dashboard:
+- **Ready**: Green glow.
+- **Partly Ready**: Orange/Yellow glow.
+- **Damaged**: Red glow.
+
+## Sticky Button & Scroll Architecture
+
+To ensure action buttons are always accessible while forms or views remain scrollable, the application follows a strict container-overflow hierarchy.
+
+### Pattern for Forms
+1. **Parent Container**: Set to `overflow-y: hidden` when a form is active (in `ResourcesManagement.tsx`).
+2. **FormMainContainer**: A flex container that fills 100% of the available height.
+3. **FormScrollContainer**: A middle container with `flex: 1` and `overflow-y: auto`. This container uses `direction: ltr` to force the scrollbar to the right side, while its children are reset to `direction: rtl`.
+4. **FormBottomActions**: A sticky footer component that remains outside the scrollable area, ensuring "Save" and "Cancel" buttons never scroll away.
+
+### Pattern for Resource Viewing
+Resource views (`EntityView`) utilize the `ViewScrollContainer`, which mirrors the `FormScrollContainer` pattern, providing a premium scrolling experience with a custom-styled scrollbar on the right side.
+
+## RTL-Optimized Terminal Popup Pattern
+
+The Terminal Popup follows a specific high-fidelity mirroring pattern for RTL (Hebrew) contexts:
+- **Visual Indicators**: Status-colored borders (white/orange/red) are positioned on the **right border** of allocation cards.
+- **Mirrored Metadata**: Frequency and Direction info is aligned to the right of the card header, while the Band Badge (KU/KA) is on the left.
+- **Icon Alignment**: Icons within technical sections are positioned "first" (on the right) relative to their text labels for natural RTL reading.
+- **Design System Sync**: Band chips (KU/KA) are synchronized with the global `EquipmentCard` tag system, ensuring consistent visual language between the matrix views and the detailed popups.

@@ -19,24 +19,32 @@ const Overlay = styled.div`
 `;
 
 const PopupContainer = styled.div`
-  background: #0f1d32;
-  border: 1px solid rgba(174, 199, 255, 0.15);
-  border-radius: 12px;
-  min-width: 400px;
-  max-width: 500px;
-  max-height: 80vh;
+  background: #1c2439;
+  border: 1px solid #305088;
+  border-radius: 16px;
+  width: 820px;
+  max-width: 95vw;
+  max-height: 85vh;
+
   overflow: hidden;
   direction: rtl;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0px 0px 12px 0px rgba(36, 52, 96, 0.25);
+  padding: 24px 32px;
+  gap: 24px;
 `;
+
 
 const PopupHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 16px;
-  background: rgba(30, 45, 80, 0.5);
-  border-bottom: 1px solid rgba(174, 199, 255, 0.1);
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  width: 100%;
 `;
+
 
 const HeaderLeft = styled.div`
   display: flex;
@@ -84,28 +92,27 @@ const CloseButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   border: none;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
-  color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 100px;
+  color: white;
   cursor: pointer;
   transition: all 0.2s;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.15);
-    color: white;
+    background: rgba(255, 255, 255, 0.2);
   }
 `;
 
+
 const PopupContent = styled.div`
-  padding: 16px;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  max-height: 60vh;
   overflow-y: auto;
+  padding-right: 4px;
   
   /* Force scrollbar to the right */
   direction: ltr;
@@ -114,31 +121,73 @@ const PopupContent = styled.div`
     /* Set content back to RTL */
     direction: rtl;
   }
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(174, 199, 255, 0.2);
+    border-radius: 10px;
+  }
 `;
+
 
 const AllocationCard = styled.div`
-  background: rgba(20, 35, 65, 0.5);
-  border: 1px solid rgba(174, 199, 255, 0.1);
-  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-right: none;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
 `;
 
-const AllocationHeader = styled.div<{ $direction: 'transmission' | 'reception' }>`
+
+const CardInner = styled.div<{ $status: string }>`
+  background: rgba(255, 255, 255, 0.04);
+  border-right: 2px solid ${props => {
+    switch (props.$status) {
+      case 'ready': return 'rgba(255, 255, 255, 0.8)';
+      case 'partly_ready': return '#ff8800';
+      case 'damaged': return '#ef4444';
+      default: return 'rgba(255, 255, 255, 0.8)';
+    }
+  }};
+
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+`;
+
+
+
+const AllocationHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 14px;
-  background: ${props => props.$direction === 'transmission' ? 'rgba(249, 115, 22, 0.15)' : 'rgba(59, 130, 246, 0.15)'};
-  border-bottom: 1px solid rgba(174, 199, 255, 0.08);
+  width: 100%;
 `;
 
+
 const BandBadge = styled.div<{ $band: 'ka' | 'ku' }>`
-  padding: 4px 10px;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: 600;
-  background: ${props => props.$band === 'ku' ? '#22c55e' : '#f97316'};
-  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  
+  ${props => {
+    if (props.$band === 'ka') return `background: rgba(255, 179, 0, 0.2); color: #ffb300; border: 1px solid rgba(255, 179, 0, 0.2);`;
+    if (props.$band === 'ku') return `background: rgba(255, 255, 255, 0.6); color: #2c2c2c; border: 1px solid rgba(255, 255, 255, 0.4);`;
+    return `background: rgba(225, 234, 255, 0.1); color: #e1eaff;`;
+  }}
 `;
+
 
 const FrequencyInfo = styled.div`
   display: flex;
@@ -154,33 +203,56 @@ const DirectionLabel = styled.span<{ $direction: 'transmission' | 'reception' }>
 `;
 
 const AllocationDetails = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  padding: 12px 14px;
+  display: flex;
+  gap: 12px;
+  width: 100%;
+`;
+
+const DetailColumn = styled.div`
+  background: rgba(255, 255, 255, 0.04);
+  flex: 1;
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-end;
 `;
 
 const DetailItem = styled.div`
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 8px;
+  padding: 6px 10px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: 8px;
-  background: rgba(30, 45, 80, 0.4);
-  border-radius: 6px;
+  gap: 2px;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
 `;
 
+
+
+
+
 const DetailLabel = styled.div`
-  font-size: 10px;
-  color: rgba(255, 255, 255, 0.5);
+  font-size: 12px;
+  color: #ccc;
+  font-weight: 600;
+  white-space: nowrap;
 `;
+
 
 const DetailValue = styled.div`
   display: flex;
   align-items: center;
   gap: 4px;
-  font-size: 11px;
-  color: white;
-  font-weight: 500;
+  font-size: 16px;
+  color: #e1eaff;
+  font-weight: 700;
+  white-space: nowrap;
+
 
   svg {
     font-size: 14px;
@@ -249,59 +321,68 @@ export const TerminalPopup = ({ terminal, onClose }: Props) => {
           {terminal.allocations.length > 0 ? (
             terminal.allocations.map((alloc, idx) => (
               <AllocationCard key={idx}>
-                <AllocationHeader $direction={alloc.direction}>
-                  <BandBadge $band={alloc.frequencyBand}>
-                    {alloc.frequencyBand.toUpperCase()}
-                  </BandBadge>
-                  <FrequencyInfo>
-                    {alloc.frequency.toFixed(2)} MHz |{' '}
-                    <DirectionLabel $direction={alloc.direction}>
-                      {getDirectionLabel(alloc.direction)}
-                    </DirectionLabel>
-                  </FrequencyInfo>
-                </AllocationHeader>
-
-                <AllocationDetails>
-                  <DetailItem>
-                    <DetailLabel>לוויין</DetailLabel>
-                    <DetailValue>
-                      <SatelliteAltIcon />
-                      {alloc.satellite || 'לא קיים'}
-                    </DetailValue>
-                  </DetailItem>
-                  <DetailItem>
-                    <DetailLabel>אנטנה</DetailLabel>
-                    <DetailValue>
-                      <SettingsInputAntennaIcon />
-                      {alloc.antenna || 'לא קיים'}
-                    </DetailValue>
-                  </DetailItem>
-                  <DetailItem>
-                    <DetailLabel>גודל אנטנה</DetailLabel>
-                    <DetailValue>
-                      {alloc.antennaSize || 'N/A'} מ'
-                    </DetailValue>
-                  </DetailItem>
-                  <DetailItem>
-                    <DetailLabel>ערוץ</DetailLabel>
-                    <DetailValue>
-                      {alloc.channel || 'לא קיים'}
-                    </DetailValue>
-                  </DetailItem>
-                  <DetailItem>
-                    <DetailLabel>תחום תדר</DetailLabel>
-                    <DetailValue>
+                <CardInner $status={terminal.readinessStatus}>
+                  <AllocationHeader>
+                    <FrequencyInfo>
+                      <DirectionLabel $direction={alloc.direction}>
+                        {getDirectionLabel(alloc.direction)}
+                      </DirectionLabel>
+                      {' '}| {alloc.frequency.toFixed(2)} MHz
+                    </FrequencyInfo>
+                    <BandBadge $band={alloc.frequencyBand}>
                       {alloc.frequencyBand.toUpperCase()}
-                    </DetailValue>
-                  </DetailItem>
-                  <DetailItem>
-                    <DetailLabel>קישוריות</DetailLabel>
-                    <DetailValue>
-                      {alloc.connectivity || 'ענותות'}
-                    </DetailValue>
-                  </DetailItem>
-                </AllocationDetails>
+                    </BandBadge>
+                  </AllocationHeader>
+
+                  <AllocationDetails>
+                    <DetailColumn>
+                      <div style={{ display: 'flex', gap: '4px', alignItems: 'center', marginBottom: '4px', justifyContent: 'flex-start', width: '100%' }}>
+                        <SettingsInputAntennaIcon sx={{ fontSize: 16, color: 'white' }} />
+                        <DetailLabel>אנטנה</DetailLabel>
+                      </div>
+                      <div style={{ display: 'flex', gap: '8px', width: '100%' }}>
+                        <DetailItem>
+                          <DetailLabel>תחנה</DetailLabel>
+                          <DetailValue>{alloc.connectivity || 'ענתות'}</DetailValue>
+                        </DetailItem>
+                        <DetailItem>
+                          <DetailLabel>תחום תדר</DetailLabel>
+                          <DetailValue>{alloc.frequencyBand.toUpperCase()}</DetailValue>
+                        </DetailItem>
+                        <DetailItem>
+                          <DetailLabel>קוטר</DetailLabel>
+                          <DetailValue>
+                            {alloc.antennaSize || '15'} <span style={{ fontSize: '12px', color: '#ccc', fontWeight: 600 }}>מטר</span>
+                          </DetailValue>
+                        </DetailItem>
+                      </div>
+                    </DetailColumn>
+
+                    <DetailColumn>
+                      <div style={{ display: 'flex', gap: '4px', alignItems: 'center', marginBottom: '4px', justifyContent: 'flex-start', width: '100%' }}>
+                        <SatelliteAltIcon sx={{ fontSize: 16, color: 'white' }} />
+                        <DetailLabel>לוויין</DetailLabel>
+                      </div>
+                      <div style={{ display: 'flex', gap: '8px', width: '100%' }}>
+                        <DetailItem>
+                          <DetailLabel>שם לווין</DetailLabel>
+                          <DetailValue>{alloc.satellite || 'sat 2'}</DetailValue>
+                        </DetailItem>
+                        <DetailItem>
+                          <DetailLabel>מספר משיב</DetailLabel>
+                          <DetailValue>{alloc.channel || 'ba24-analog'}</DetailValue>
+                        </DetailItem>
+                        <DetailItem>
+                          <DetailLabel>ממיר תדר</DetailLabel>
+                          <DetailValue>לא קיים</DetailValue>
+                        </DetailItem>
+                      </div>
+                    </DetailColumn>
+                  </AllocationDetails>
+                </CardInner>
+
               </AllocationCard>
+
             ))
           ) : (
             <NoAllocations>

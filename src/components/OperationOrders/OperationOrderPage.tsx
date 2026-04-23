@@ -78,14 +78,14 @@ export const OperationOrderPage = () => {
   const handleCreateNew = useCallback(() => {
     const now = new Date();
     const future = new Date(now.getTime() + 10 * 60000);
-    
+
     const formatDate = (d: Date) => {
       const year = d.getFullYear();
       const month = String(d.getMonth() + 1).padStart(2, '0');
       const day = String(d.getDate()).padStart(2, '0');
       return `${year}-${month}-${day}`;
     };
-    
+
     const formatTime = (d: Date) => {
       const hours = String(d.getHours()).padStart(2, '0');
       const minutes = String(d.getMinutes()).padStart(2, '0');
@@ -134,46 +134,48 @@ export const OperationOrderPage = () => {
         );
       }
       return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', padding: '20px' }}>
-          {filteredOrders.map(order => {
-            const isExpanded = expandedOrderId === order.id;
-            return (
-              <OperationOrderCard 
-                key={order.id} 
-                order={order} 
-                onClick={() => handleOrderClick(order.id)}
-                onEdit={(order) => {
-                  fetchOrderDetails(order.id);
-                  setViewMode('view');
-                  setFormMode('header');
-                }}
-                onDelete={openDeleteDialog}
-                isExpanded={isExpanded && !!selectedOrder && selectedOrder.id === order.id}
-              >
-                {isExpanded && selectedOrder && selectedOrder.id === order.id ? (
-                  <OperationOrderDetails
-                    order={selectedOrder}
-                    onEditHeader={() => setFormMode('header')}
-                    onEditAllocation={handleEditAllocation}
-                    onAddSubAllocation={handleAddSubAllocation}
-                    onRefresh={() => fetchOrderDetails(selectedOrder.id)}
-                    onDelete={handleDeleteAllocation}
-                    options={{ terminals, satellites, antennas }}
-                    hideHeader={true}
-                  />
-                ) : isExpanded ? (
-                  <LoadingSpinner />
-                ) : null}
-              </OperationOrderCard>
-            );
-          })}
+        <div style={{ display: 'flex', flexDirection: 'column', height: '100%', flex: 1, overflowY: 'auto', direction: 'ltr' }}>
+          <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '24px', direction: 'rtl' }}>
+            {filteredOrders.map(order => {
+              const isExpanded = expandedOrderId === order.id;
+              return (
+                <OperationOrderCard
+                  key={order.id}
+                  order={order}
+                  onClick={() => handleOrderClick(order.id)}
+                  onEdit={(order) => {
+                    fetchOrderDetails(order.id);
+                    setViewMode('view');
+                    setFormMode('header');
+                  }}
+                  onDelete={openDeleteDialog}
+                  isExpanded={isExpanded && !!selectedOrder && selectedOrder.id === order.id}
+                >
+                  {isExpanded && selectedOrder && selectedOrder.id === order.id ? (
+                    <OperationOrderDetails
+                      order={selectedOrder}
+                      onEditHeader={() => setFormMode('header')}
+                      onEditAllocation={handleEditAllocation}
+                      onAddSubAllocation={handleAddSubAllocation}
+                      onRefresh={() => fetchOrderDetails(selectedOrder.id)}
+                      onDelete={handleDeleteAllocation}
+                      options={{ terminals, satellites, antennas }}
+                      hideHeader={true}
+                    />
+                  ) : isExpanded ? (
+                    <LoadingSpinner />
+                  ) : null}
+                </OperationOrderCard>
+              );
+            })}
+          </div>
         </div>
       );
     }
 
     if (viewMode === 'create' || formMode === 'header') {
       return (
-        <div style={{ padding: '0 20px' }}>
+        <div style={{ padding: '0 20px', flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
           <OperationOrderHeader
             data={headerData}
             onChange={setHeaderData}
@@ -234,6 +236,7 @@ export const OperationOrderPage = () => {
     <PageLayout
       title={viewMode === 'list' ? "פקודות מבצע" : undefined}
       breadcrumbs={breadcrumbs}
+      fullHeight={viewMode !== 'list'}
       actions={
         <>
           <SearchContainer>
@@ -249,15 +252,15 @@ export const OperationOrderPage = () => {
           </SearchContainer>
           {viewMode === 'list' && (
             <AddResourceButton onClick={handleCreateNew}>
-              פקודה חדשה
               <AddIcon sx={{ fontSize: 24 }} />
+              פקודה חדשה
             </AddResourceButton>
           )}
         </>
       }
     >
       {renderContent()}
-      
+
       <ConfirmDialog
         open={deleteDialogOpen}
         title="מחיקת פקודת מבצע"

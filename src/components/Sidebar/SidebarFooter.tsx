@@ -1,5 +1,6 @@
-import { Box, styled } from '@mui/material';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import { Box, Typography, styled } from '@mui/material';
+import FirstPageIcon from '@mui/icons-material/FirstPage';
+
 
 interface SidebarFooterProps {
   isExpanded: boolean;
@@ -26,7 +27,7 @@ const CollapseButton = styled(Box, {
 })<{ isExpanded: boolean; isPinned: boolean }>(({ isExpanded, isPinned, theme }) => ({
   display: 'flex',
   alignItems: 'center',
-  justifyContent: isExpanded ? 'flex-end' : 'center',
+  justifyContent: isExpanded ? 'space-between' : 'center',
   height: '48px',
   padding: '8px 12px',
   borderRadius: theme.customBorderRadius.xl,
@@ -37,6 +38,20 @@ const CollapseButton = styled(Box, {
   '&:hover': {
     backgroundColor: 'rgba(174, 199, 255, 0.15)',
   },
+}));
+
+const CollapseLabel = styled(Typography, {
+  shouldForwardProp: (prop) => prop !== 'isExpanded',
+})<{ isExpanded: boolean }>(({ isExpanded, theme }) => ({
+  fontFamily: 'inherit',
+  fontWeight: 600,
+  fontSize: '14px',
+  color: theme.palette.text.primary,
+  whiteSpace: 'nowrap',
+  opacity: isExpanded ? 1 : 0,
+  maxWidth: isExpanded ? '150px' : '0',
+  overflow: 'hidden',
+  transition: 'all 0.3s ease',
 }));
 
 const IconWrapper = styled(Box)(({ theme }) => ({
@@ -58,14 +73,18 @@ export default function SidebarFooter({ isExpanded, isPinned, onTogglePin }: Sid
     <FooterContainer>
       <Separator />
       <CollapseButton isExpanded={isExpanded} isPinned={isPinned} onClick={onTogglePin}>
+        <CollapseLabel isExpanded={isExpanded}>
+          קפל תפריט
+        </CollapseLabel>
         <IconWrapper>
-          <ChevronLeftIcon 
+          <FirstPageIcon 
             sx={{ 
               transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)', 
               transition: 'transform 0.3s ease',
             }} 
           />
         </IconWrapper>
+
       </CollapseButton>
     </FooterContainer>
   );

@@ -133,7 +133,21 @@ export const FormTextField = <T extends FieldValues>({
               sx={textFieldStyles}
               InputProps={{
                 endAdornment: isPickerField ? (
-                  <InputAdornment position="end">
+                  <InputAdornment 
+                    position="end" 
+                    sx={{ cursor: 'pointer' }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const input = document.getElementById(`input-${name}`) as HTMLInputElement;
+                      if (input && input.showPicker) {
+                        try {
+                          input.showPicker();
+                        } catch (err) {
+                          console.error('Failed to show picker:', err);
+                        }
+                      }
+                    }}
+                  >
                     {isDateField ? (
                       <CalendarMonthIcon sx={{ color: '#bababa', fontSize: 20 }} />
                     ) : (

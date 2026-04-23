@@ -45,7 +45,7 @@ const MenuContainer = styled(Box)({
 });
 
 export default function Sidebar({ selectedItem = 'operations', onItemSelect }: SidebarProps) {
-  const { isExpanded, isPinned, handleMouseEnter, handleMouseLeave, togglePin } = useSidebarHover();
+  const { isExpanded, isPinned, togglePin } = useSidebarHover();
 
   const handleItemClick = (itemId: string) => {
     onItemSelect?.(itemId);
@@ -54,8 +54,6 @@ export default function Sidebar({ selectedItem = 'operations', onItemSelect }: S
   return (
     <SidebarContainer
       isExpanded={isExpanded}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
     >
       <SidebarHeader isExpanded={isExpanded} />
 
@@ -73,8 +71,6 @@ export default function Sidebar({ selectedItem = 'operations', onItemSelect }: S
           />
         ))}
       </MenuContainer>
-
-      <MenuSeparator />
 
       <SidebarFooter isExpanded={isExpanded} isPinned={isPinned} onTogglePin={togglePin} />
     </SidebarContainer>

@@ -109,9 +109,45 @@ export const Card = styled.div`
   box-shadow: 0px 1px 3px rgba(0,0,0,0.1), 0px 1px 2px -1px rgba(0,0,0,0.1);
   display: flex;
   flex-direction: column;
-  gap: 18px;
   direction: rtl;
+  max-height: calc(100vh - 250px);
+  min-height: 0;
+  overflow: hidden;
 `;
+
+export const ViewScrollContainer = styled.div`
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 10px;
+  
+  /* Keep scrollbar on the right side */
+  direction: ltr;
+  
+  & > * {
+    direction: rtl;
+  }
+
+  /* Custom Scrollbar for Premium Feel */
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(174, 199, 255, 0.2);
+    border-radius: 10px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: rgba(174, 199, 255, 0.3);
+  }
+`;
+
 
 export const CardHeader = styled.div`
   display: flex;
@@ -383,10 +419,13 @@ export const EntityView = ({
           </EditButton>
         </CardHeader>
 
-        {sections.map((section, idx) => (
-          <RenderSection key={idx} {...section} />
-        ))}
+        <ViewScrollContainer>
+          {sections.map((section, idx) => (
+            <RenderSection key={idx} {...section} />
+          ))}
+        </ViewScrollContainer>
       </Card>
+
     </div>
   );
 };

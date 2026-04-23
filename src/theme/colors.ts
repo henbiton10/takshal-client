@@ -31,4 +31,15 @@ export const colors = {
   error: {
     main: '#ff4d4d',
   },
+  status: {
+    ready: 'linear-gradient(180deg, rgba(99, 255, 106, 0.4) 0%, rgba(66, 228, 73, 0.4) 100%)',
+    partlyReady: 'rgba(255, 179, 0, 0.7)',
+    damaged: 'rgba(255, 77, 77, 0.5)',
+    allocated: 'linear-gradient(180deg, rgba(99, 255, 106, 0.4) 0%, rgba(66, 228, 73, 0.4) 100%)',
+    ku: '#ffffff',
+    ka: 'linear-gradient(180deg, #ff9900 0%, #cc7a00 100%)',
+    x: 'linear-gradient(180deg, #4caf50 0%, #388e3c 100%)',
+
+  }
 } as const;
+

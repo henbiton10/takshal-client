@@ -131,9 +131,10 @@ export const ResourcesManagement = () => {
           <>
             {searchAction}
             <AddResourceButton onClick={() => handleAddClick(selectedCategoryId)}>
-              הוסף {config.singularTitle}
               <AddIcon sx={{ fontSize: 24 }} />
+              הוסף {config.singularTitle}
             </AddResourceButton>
+
           </>
         )
       };
@@ -144,9 +145,10 @@ export const ResourcesManagement = () => {
         <>
           {searchAction}
           <AddResourceButton onClick={() => setShowAddModal(true)}>
-            הוסף אמצעי
             <AddIcon sx={{ fontSize: 24 }} />
+            הוסף אמצעי
           </AddResourceButton>
+
         </>
       )
     };
@@ -221,9 +223,21 @@ export const ResourcesManagement = () => {
 
   return (
     <>
-      <PageLayout {...getPageConfig()}>
-        {renderContent()}
+      <PageLayout {...getPageConfig()} fullHeight={!!activeEntityId || !!viewEntityId}>
+        <div style={{ 
+          flex: 1, 
+          display: 'flex', 
+          flexDirection: 'column', 
+          overflowY: activeEntityId ? 'hidden' : 'auto', 
+          direction: 'ltr' 
+        }}>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', direction: 'rtl', minHeight: 0 }}>
+            {renderContent()}
+          </div>
+        </div>
       </PageLayout>
+
+
 
       <ConfirmDialog
         open={deleteDialog.open}

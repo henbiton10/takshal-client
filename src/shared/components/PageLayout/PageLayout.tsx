@@ -19,6 +19,7 @@ export interface PageLayoutProps {
   actions?: React.ReactNode;
   children: React.ReactNode;
   contentPadding?: string;
+  fullHeight?: boolean;
 }
 
 const PageContainer = styled.div`
@@ -122,13 +123,15 @@ const HeaderActions = styled.div`
   gap: 12px;
 `;
 
-const ContentSection = styled.div<{ $contentPadding?: string }>`
+const ContentSection = styled.div<{ $contentPadding?: string; $fullHeight?: boolean }>`
   display: flex;
   flex-direction: column;
   gap: 20px;
   flex: 1;
+  min-height: 0;
+  box-sizing: border-box;
   padding: ${(props) => props.$contentPadding || '24px'};
-  overflow-y: auto;
+  overflow-y: ${(props) => props.$fullHeight ? 'hidden' : 'auto'};
   
   /* Force scrollbar to the right */
   direction: ltr;
@@ -147,48 +150,51 @@ export const PageLayout = ({
   actions,
   children,
   contentPadding,
+  fullHeight = false,
 }: PageLayoutProps) => {
   return (
     <PageContainer>
-      <PageHeader>
-        {breadcrumbs ? (
-          <BreadcrumbsContainer>
-            <BackIconButton onClick={breadcrumbs.onBack}>
-              <ArrowForwardIcon sx={{ fontSize: 24 }} />
-            </BackIconButton>
-            <BreadcrumbButton 
-              $clickable={!!breadcrumbs.onParentClick} 
-              onClick={breadcrumbs.onParentClick}
-              type="button"
-            >
-              {breadcrumbs.parent}
-            </BreadcrumbButton>
-            <ChevronLeftIcon sx={{ color: 'rgba(255, 255, 255, 0.3)', fontSize: 24 }} />
-            {breadcrumbs.middle && (
-              <>
-                <BreadcrumbButton 
-                  $clickable={!!breadcrumbs.onMiddleClick} 
-                  onClick={breadcrumbs.onMiddleClick}
-                  type="button"
-                >
-                  {breadcrumbs.middle}
-                </BreadcrumbButton>
-                <ChevronLeftIcon sx={{ color: 'rgba(255, 255, 255, 0.3)', fontSize: 24 }} />
-              </>
-            )}
-            <BreadcrumbCurrent>{breadcrumbs.current}</BreadcrumbCurrent>
-          </BreadcrumbsContainer>
-        ) : (
-          <TitleContainer>
-            {title && <Title>{title}</Title>}
-            {subtitle && <SubtitleWrapper>{subtitle}</SubtitleWrapper>}
-          </TitleContainer>
-        )}
-        
-        {actions && <HeaderActions>{actions}</HeaderActions>}
-      </PageHeader>
+      {(breadcrumbs || title || subtitle || actions) && (
+        <PageHeader>
+          {breadcrumbs ? (
+            <BreadcrumbsContainer>
+              <BackIconButton onClick={breadcrumbs.onBack}>
+                <ArrowForwardIcon sx={{ fontSize: 24 }} />
+              </BackIconButton>
+              <BreadcrumbButton 
+                $clickable={!!breadcrumbs.onParentClick} 
+                onClick={breadcrumbs.onParentClick}
+                type="button"
+              >
+                {breadcrumbs.parent}
+              </BreadcrumbButton>
+              <ChevronLeftIcon sx={{ color: 'rgba(255, 255, 255, 0.3)', fontSize: 24 }} />
+              {breadcrumbs.middle && (
+                <>
+                  <BreadcrumbButton 
+                    $clickable={!!breadcrumbs.onMiddleClick} 
+                    onClick={breadcrumbs.onMiddleClick}
+                    type="button"
+                  >
+                    {breadcrumbs.middle}
+                  </BreadcrumbButton>
+                  <ChevronLeftIcon sx={{ color: 'rgba(255, 255, 255, 0.3)', fontSize: 24 }} />
+                </>
+              )}
+              <BreadcrumbCurrent>{breadcrumbs.current}</BreadcrumbCurrent>
+            </BreadcrumbsContainer>
+          ) : (
+            <TitleContainer>
+              {title && <Title>{title}</Title>}
+              {subtitle && <SubtitleWrapper>{subtitle}</SubtitleWrapper>}
+            </TitleContainer>
+          )}
+          
+          {actions && <HeaderActions>{actions}</HeaderActions>}
+        </PageHeader>
+      )}
       
-      <ContentSection $contentPadding={contentPadding}>
+      <ContentSection $contentPadding={contentPadding} $fullHeight={fullHeight}>
         {children}
       </ContentSection>
     </PageContainer>

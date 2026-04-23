@@ -78,8 +78,8 @@ export default function SidebarHeader({ isExpanded }: SidebarHeaderProps) {
       </LogoBackground>
       <HeaderContent isExpanded={isExpanded}>
         <TextContainer>
-          <Title>תכנון תקש׳׳ל</Title>
-          <Subtitle>מרכז בקרה ושליטה</Subtitle>
+          <Title>מטאור</Title>
+          <Subtitle>תכנון תקש״ל</Subtitle>
         </TextContainer>
       </HeaderContent>
     </HeaderContainer>

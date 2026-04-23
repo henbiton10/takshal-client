@@ -1,132 +1,136 @@
-import { useMemo } from 'react';
 import styled from 'styled-components';
-import SettingsIcon from '@mui/icons-material/Settings';
+import Tooltip from '@mui/material/Tooltip';
 import { DashboardStation, DashboardTerminal } from './types';
 
+
+// Asset imports
+const IAF_ICON = '/src/assets/IAF.png';
+const C4I_ICON = '/src/assets/C4I.svg';
+
 const MatrixContainer = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
   direction: rtl;
+  background: #1c2439;
 `;
 
-const StationColumn = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+const Table = styled.table`
+  width: 100%;
+  border-collapse: collapse;
 `;
 
-const StationCard = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  background: rgba(20, 35, 65, 0.3);
-  border-radius: 8px;
-  padding: 12px;
+const HeaderCell = styled.th`
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(28, 36, 57, 0.95);
+  backdrop-filter: blur(8px);
+  border: 1px solid #305088;
+  padding: 10px;
+  height: 56px;
+  color: #fafafa;
+  font-size: 18px;
+  font-weight: 700;
+  text-align: center;
 `;
 
-const StationHeader = styled.div<{ $affiliation: string }>`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  border-radius: 6px;
-  background: ${props => {
-    switch (props.$affiliation) {
-      case 'airforce': return 'rgba(59, 130, 246, 0.2)';
-      case 'tikshuv': return 'rgba(20, 184, 166, 0.2)';
-      case 'ground': return 'rgba(34, 197, 94, 0.2)';
-      case 'intelligence': return 'rgba(168, 85, 247, 0.2)';
-      default: return 'rgba(107, 114, 128, 0.2)';
-    }
-  }};
-  border: 1px solid ${props => {
-    switch (props.$affiliation) {
-      case 'airforce': return 'rgba(59, 130, 246, 0.3)';
-      case 'tikshuv': return 'rgba(20, 184, 166, 0.3)';
-      case 'ground': return 'rgba(34, 197, 94, 0.3)';
-      case 'intelligence': return 'rgba(168, 85, 247, 0.3)';
-      default: return 'rgba(107, 114, 128, 0.3)';
-    }
-  }};
+const StationHeaderCell = styled.th`
+  position: sticky;
+  top: 0;
+  right: 0;
+  z-index: 20;
+  background: #1c2439;
+  width: 320px;
+  min-width: 320px;
+`;
 
-  .station-icon {
-    font-size: 20px;
-    color: ${props => {
-      switch (props.$affiliation) {
-        case 'airforce': return '#3b82f6';
-        case 'tikshuv': return '#14b8a6';
-        case 'ground': return '#22c55e';
-        case 'intelligence': return '#a855f7';
-        default: return '#6b7280';
-      }
-    }};
-  }
-
-  .station-name {
-    font-size: 12px;
-    font-weight: 500;
-    color: white;
-    line-height: 1.3;
+const DataRow = styled.tr`
+  min-height: 56px;
+  border-bottom: 1px solid #305088;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.05);
   }
 `;
 
-const TerminalsGrid = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  min-height: 40px;
+const StationCell = styled.td`
+  position: sticky;
+  right: 0;
+  z-index: 5;
+  background: rgba(41, 121, 255);
+  backdrop-filter: blur(8px);
+  border: 1px solid #305088;
+  padding: 0 16px;
+  text-align: right;
+  width: 320px;
+  min-width: 320px;
+
+  .content {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    color: #fafafa;
+    font-size: 18px;
+    font-weight: 700;
+  }
+`;
+
+const TerminalsGridCell = styled.td`
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  width: 100%;
 `;
 
 const TerminalCell = styled.button<{ $status: string; $isAllocated: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 6px 12px;
-  min-width: 70px;
-  border-radius: 6px;
-  border: none;
-  font-size: 11px;
-  font-weight: 500;
+  gap: 10px;
+  height: 56px;
+  padding: 0 16px;
+  border: 1px solid #305088;
+  font-size: 16px;
+  font-weight: 700;
   cursor: pointer;
   transition: all 0.2s;
+  color: #fafafa;
+  white-space: nowrap;
   
   background: ${props => {
-    if (props.$status === 'damaged') return '#dc2626';
-    if (props.$status === 'partly_ready') return '#eab308';
-    if (props.$isAllocated) return '#22c55e';
-    return '#4b5563';
-  }};
-  
-  color: ${props => {
-    if (props.$status === 'partly_ready') return '#1f2937';
-    return 'white';
+    const statusColors = props.theme.customColors.status;
+    if (props.$status === 'damaged') return statusColors.damaged;
+    if (props.$status === 'partly_ready') return statusColors.partlyReady;
+    if (props.$isAllocated) return statusColors.allocated;
+    return 'transparent';
   }};
 
   &:hover {
-    opacity: 0.85;
-    transform: scale(1.02);
+    opacity: 0.8;
+    background: ${props => props.$isAllocated ? '' : 'rgba(255, 255, 255, 0.1)'};
   }
 
-  .allocation-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 2px;
-    margin-right: 4px;
-    padding: 1px 4px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 4px;
-    font-size: 9px;
+
+  svg {
+    font-size: 18px;
+    color: ${props => props.$isAllocated ? '#75eca6' : '#e1eaff'};
   }
 `;
 
-const EmptyTerminals = styled.div`
+const BattalionBadge = styled.div`
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 12px;
-  color: rgba(255, 255, 255, 0.3);
-  font-size: 11px;
+  
+  img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+  }
 `;
 
 interface Props {
@@ -135,77 +139,70 @@ interface Props {
 }
 
 export const StationsTerminalsMatrix = ({ stations, onTerminalClick }: Props) => {
-  const sortedStations = useMemo(() => {
-    return [...stations].sort((a, b) => {
-      const order = ['airforce', 'tikshuv', 'ground', 'intelligence', 'other'];
-      return order.indexOf(a.organizationalAffiliation) - order.indexOf(b.organizationalAffiliation);
-    });
-  }, [stations]);
-
-  const getTerminalStatusLabel = (terminal: DashboardTerminal) => {
-    if (terminal.isAllocated && terminal.allocations.length > 0) {
-      const alloc = terminal.allocations[0];
-      return (
-        <>
-          <span className="allocation-badge">
-            {alloc.antennaSize} {alloc.frequencyBand.toUpperCase()}
-          </span>
-          {terminal.name}
-        </>
-      );
-    }
-    return terminal.name;
+  const getAffiliationIcon = (affiliation: string) => {
+    const aff = affiliation.toLowerCase();
+    if (aff === 'tikshuv' || aff === 'intelligence') return C4I_ICON;
+    return IAF_ICON;
   };
-
-  const columns = useMemo(() => {
-    const col1: DashboardStation[] = [];
-    const col2: DashboardStation[] = [];
-    
-    sortedStations.forEach((station, index) => {
-      if (index % 2 === 0) {
-        col1.push(station);
-      } else {
-        col2.push(station);
-      }
-    });
-    
-    return [col1, col2];
-  }, [sortedStations]);
-
-  const renderStationCard = (station: DashboardStation) => (
-    <StationCard key={station.id}>
-      <StationHeader $affiliation={station.organizationalAffiliation}>
-        <SettingsIcon className="station-icon" />
-        <span className="station-name">{station.name}</span>
-      </StationHeader>
-      <TerminalsGrid>
-        {station.terminals.length > 0 ? (
-          station.terminals.map(terminal => (
-            <TerminalCell
-              key={terminal.id}
-              $status={terminal.readinessStatus}
-              $isAllocated={terminal.isAllocated}
-              onClick={() => onTerminalClick(terminal)}
-              title={`${terminal.name} - ${terminal.readinessStatus === 'ready' ? 'כשיר' : terminal.readinessStatus === 'partly_ready' ? 'כשיר חלקית' : 'תקול'}`}
-            >
-              {getTerminalStatusLabel(terminal)}
-            </TerminalCell>
-          ))
-        ) : (
-          <EmptyTerminals>אין טרמינלים</EmptyTerminals>
-        )}
-      </TerminalsGrid>
-    </StationCard>
-  );
 
   return (
     <MatrixContainer>
-      <StationColumn>
-        {columns[0].map(renderStationCard)}
-      </StationColumn>
-      <StationColumn>
-        {columns[1].map(renderStationCard)}
-      </StationColumn>
+      <Table>
+        <thead>
+          <tr>
+            <StationHeaderCell />
+            <HeaderCell>טרמינלים</HeaderCell>
+          </tr>
+
+        </thead>
+        <tbody>
+          {stations.map(station => (
+            <DataRow key={station.id}>
+              <StationCell>
+                <div className="content">
+                  <BattalionBadge>
+                    <img src={getAffiliationIcon(station.organizationalAffiliation)} alt={station.organizationalAffiliation} />
+                  </BattalionBadge>
+                  {station.name}
+                </div>
+              </StationCell>
+              <TerminalsGridCell>
+                {station.terminals.length > 0 ? (
+                  station.terminals.map(terminal => (
+                    <Tooltip
+                      key={terminal.id}
+                      title={
+                        <div style={{ padding: '4px' }}>
+                          <div><strong>{terminal.name}</strong></div>
+                          <div>סטטוס: {
+                            terminal.readinessStatus === 'ready' ? 'כשיר' :
+                              terminal.readinessStatus === 'partly_ready' ? 'כשיר חלקית' : 'תקול'
+                          }</div>
+                        </div>
+                      }
+                      arrow
+                    >
+                      <TerminalCell
+                        $status={terminal.readinessStatus}
+                        $isAllocated={terminal.isAllocated}
+                        onClick={() => onTerminalClick(terminal)}
+                      >
+                        {terminal.name}
+                      </TerminalCell>
+
+                    </Tooltip>
+                  ))
+                ) : (
+                  <div style={{ color: 'rgba(255,255,255,0.3)', padding: '16px', gridColumn: '1 / -1' }}>
+                    אין טרמינלים
+                  </div>
+                )}
+              </TerminalsGridCell>
+            </DataRow>
+          ))}
+
+        </tbody>
+      </Table>
     </MatrixContainer>
   );
 };

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Collapse, Menu, MenuItem } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import styled from 'styled-components';
@@ -90,7 +90,18 @@ export const OperationOrderCard = ({
   children
 }: OperationOrderCardProps) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [renderedChildren, setRenderedChildren] = useState<React.ReactNode>(null);
   const open = Boolean(anchorEl);
+
+  useEffect(() => {
+    if (isExpanded && children) {
+      setRenderedChildren(children);
+    }
+  }, [isExpanded, children]);
+
+  const handleExited = () => {
+    setRenderedChildren(null);
+  };
 
   const handleOptionsClick = (event: React.MouseEvent<HTMLElement>) => {
     event.stopPropagation();
@@ -194,10 +205,15 @@ export const OperationOrderCard = ({
         </Menu>
       </TopRow>
 
-      <Collapse in={isExpanded} timeout={400} unmountOnExit={true}>
+      <Collapse 
+        in={isExpanded} 
+        timeout={400} 
+        unmountOnExit={true}
+        onExited={handleExited}
+      >
         <Divider />
         <ExpandedContent onClick={(e) => e.stopPropagation()}>
-          {children}
+          {renderedChildren || children}
         </ExpandedContent>
       </Collapse>
     </OrderCard>

@@ -44,6 +44,7 @@ import {
   FormTextField,
   FormAddButton,
   FieldsNotice,
+  FormScrollContainer,
 } from '../../shared/components/ui';
 import { EditableNameField } from '../../shared/components/EditableNameField';
 
@@ -294,14 +295,15 @@ export const OperationOrderHeader = ({
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', flex: '0 1 auto', maxHeight: '100%', minHeight: 0, overflow: 'hidden' }}>
       <FormHeaderTop>
         <FormTitleLarge>{data.id ? 'עריכת פקודת מבצע' : 'הוספת פקודת מבצע חדשה'}</FormTitleLarge>
         <FormSubtitle>מלא את הפרטים הנדרשים בטופס</FormSubtitle>
       </FormHeaderTop>
 
       <FormMainContainer>
-        <FormSection style={{ padding: '8px 24px' }}>
+        <FormScrollContainer>
+          <FormSection style={{ padding: '8px 24px' }}>
           <EditableNameField
             name="name"
             control={control as any}
@@ -426,8 +428,9 @@ export const OperationOrderHeader = ({
             הוסף הקצאה ראשית חדשה
           </FormAddButton>
         </FormSection>
+      </FormScrollContainer>
 
-        <FormBottomActions>
+      <FormBottomActions>
           <div /> {/* Spacer */}
           <ActionButtonsGroup>
             {!data.id && (

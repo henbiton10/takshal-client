@@ -147,8 +147,44 @@ export const FormMainContainer = styled.div`
   box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  flex: 0 1 auto;
+  max-height: 100%;
+  min-height: 0;
+  overflow: hidden;
   direction: rtl;
+`;
+
+export const FormScrollContainer = styled.div`
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin: 4px 0;
+  
+  /* Keep scrollbar on the right side */
+  direction: ltr;
+  
+  & > * {
+    direction: rtl;
+  }
+
+  /* Custom Scrollbar for Premium Feel */
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(174, 199, 255, 0.2);
+    border-radius: 10px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: rgba(174, 199, 255, 0.3);
+  }
 `;
 
 export const FormSection = styled.div`
@@ -228,7 +264,8 @@ export const FormBottomActions = styled.div`
   width: 100%;
   border-top: 1px solid ${({ theme }) => theme.palette.divider};
   padding-top: 17px;
-  margin-top: 6px;
+  margin-top: auto;
+  flex-shrink: 0;
 `;
 
 export const FieldsNotice = styled.div`

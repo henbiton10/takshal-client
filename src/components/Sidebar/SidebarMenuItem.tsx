@@ -10,38 +10,46 @@ interface MenuItemProps {
 
 const MenuItemContainer = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'isSelected' && prop !== 'isExpanded',
-})<{ isSelected: boolean; isExpanded: boolean }>(({ isSelected, isExpanded, theme }) => ({
+})<{ isSelected: boolean; isExpanded: boolean }>(({ isExpanded }) => ({
   display: 'flex',
-  flexDirection: isExpanded ? 'row-reverse' : 'column',
+  flexDirection: isExpanded ? 'row' : 'column',
   alignItems: 'center',
-  justifyContent: isExpanded ? 'flex-end' : 'center',
+  justifyContent: isExpanded ? 'flex-start' : 'center',
   gap: isExpanded ? '12px' : '4px',
-  padding: isExpanded ? '8px 12px' : '8px',
+  padding: isExpanded ? '4px 12px' : '4px',
   height: isExpanded ? '48px' : 'auto',
   minWidth: isExpanded ? '196px' : '48px',
-  borderRadius: theme.customBorderRadius.xl,
-  backgroundColor: isSelected ? 'rgba(174, 199, 255, 0.25)' : 'transparent',
   cursor: 'pointer',
   transition: 'all 0.3s ease',
-  
-  '&:hover': {
-    backgroundColor: isSelected ? 'rgba(174, 199, 255, 0.25)' : theme.palette.action.hover,
-  },
+  borderRadius: '12px',
 }));
 
-const IconWrapper = styled(Box)(({ theme }) => ({
+
+
+const IconWrapper = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'isSelected',
+})<{ isSelected: boolean }>(({ isSelected, theme }) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  width: '24px',
-  height: '24px',
+  width: '36px',
+  height: '36px',
   flexShrink: 0,
-  color: theme.palette.text.primary,
+  color: isSelected ? '#ffffff' : theme.palette.text.primary,
+  backgroundColor: isSelected ? 'rgba(174, 199, 255, 0.25)' : 'transparent',
+  borderRadius: '10px',
+  transition: 'all 0.3s ease',
+  
+  [`${MenuItemContainer}:hover &`]: {
+    backgroundColor: 'rgba(174, 199, 255, 0.15)',
+  },
   
   '& svg': {
     fontSize: '24px',
   },
 }));
+
+
 
 const LabelText = styled(Typography, {
   shouldForwardProp: (prop) => prop !== 'isExpanded' && prop !== 'isSelected',
@@ -60,12 +68,13 @@ const LabelText = styled(Typography, {
 export default function SidebarMenuItem({ label, icon, isSelected, isExpanded, onClick }: MenuItemProps) {
   return (
     <MenuItemContainer isSelected={isSelected} isExpanded={isExpanded} onClick={onClick}>
+      <IconWrapper isSelected={isSelected}>
+        {icon}
+      </IconWrapper>
+
       <LabelText isExpanded={isExpanded} isSelected={isSelected}>
         {label}
       </LabelText>
-      <IconWrapper>
-        {icon}
-      </IconWrapper>
     </MenuItemContainer>
   );
 }
