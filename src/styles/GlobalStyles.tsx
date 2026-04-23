@@ -71,6 +71,99 @@ const GlobalStyle = createGlobalStyle`
   *::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.2);
   }
+
+  /* react-grid-layout styles */
+  .react-grid-layout {
+    position: relative;
+    transition: height 200ms ease;
+  }
+  .react-grid-item {
+    transition: all 200ms ease;
+    transition-property: left, top, transform;
+    transform-origin: 0 0;
+  }
+  .react-grid-item.cssTransforms {
+    transition-property: transform;
+  }
+  .react-grid-item.resizing {
+    z-index: 1;
+    will-change: width, height;
+  }
+  .react-grid-item.react-draggable-dragging {
+    transition: none;
+    z-index: 3;
+    will-change: transform;
+  }
+  .react-grid-item.dropping {
+    visibility: hidden;
+  }
+  .react-grid-placeholder {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    z-index: 2;
+    user-select: none;
+  }
+  .react-resizable-handle {
+    position: absolute;
+    z-index: 10;
+    display: none; /* Hide by default */
+  }
+
+  .is-editing .react-resizable-handle {
+    display: block; /* Show only in edit mode */
+  }
+  .react-resizable-handle-s {
+    cursor: ns-resize;
+    height: 10px;
+    width: 100%;
+    bottom: -5px;
+    left: 0;
+  }
+  .react-resizable-handle-e {
+    cursor: ew-resize;
+    width: 10px;
+    height: 100%;
+    right: -5px;
+    top: 0;
+  }
+  .react-resizable-handle-w {
+    cursor: ew-resize;
+    width: 10px;
+    height: 100%;
+    left: -5px;
+    top: 0;
+  }
+  .react-resizable-handle-n {
+    cursor: ns-resize;
+    height: 10px;
+    width: 100%;
+    top: -5px;
+    left: 0;
+  }
+  .react-resizable-handle-se { cursor: se-resize; width: 20px; height: 20px; right: 0; bottom: 0; }
+  .react-resizable-handle-sw { cursor: sw-resize; width: 20px; height: 20px; left: 0; bottom: 0; }
+  .react-resizable-handle-ne { cursor: ne-resize; width: 20px; height: 20px; right: 0; top: 0; }
+  .react-resizable-handle-nw { cursor: nw-resize; width: 20px; height: 20px; left: 0; top: 0; }
+
+  .is-editing .react-resizable-handle-se::after {
+    content: "";
+    position: absolute;
+    right: 5px;
+    bottom: 5px;
+    width: 8px;
+    height: 8px;
+    border-right: 2px solid rgba(255, 255, 255, 0.3);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+  }
+
+  /* Show a subtle indicator on hover for border handles only in edit mode */
+  .is-editing .react-grid-item:hover .react-resizable-handle {
+    background: rgba(48, 80, 136, 0.1);
+  }
+  
+  .is-editing .react-grid-item .react-resizable-handle:hover {
+    background: rgba(48, 80, 136, 0.4) !important;
+  }
 `;
 
 export default GlobalStyle;

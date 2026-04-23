@@ -1,5 +1,5 @@
 import { Box, Typography, styled } from '@mui/material';
-import SatelliteAltIcon from '@mui/icons-material/SatelliteAlt';
+import meteorLogo from '../../assets/Meteor-logo.svg';
 
 interface SidebarHeaderProps {
   isExpanded: boolean;
@@ -58,24 +58,18 @@ const Subtitle = styled(Typography)(({ theme }) => ({
   whiteSpace: 'nowrap',
 }));
 
-const LogoBackground = styled(Box)(({ theme }) => ({
-  width: '40px',
-  height: '40px',
-  background: theme.palette.primary.main,
-  borderRadius: '16px',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  color: '#ffffff',
+const LogoImage = styled('img')({
+  width: '42px',
+  height: '42px',
+  borderRadius: '12px',
   flexShrink: 0,
-}));
+  objectFit: 'contain',
+});
 
 export default function SidebarHeader({ isExpanded }: SidebarHeaderProps) {
   return (
     <HeaderContainer isExpanded={isExpanded}>
-      <LogoBackground>
-        <SatelliteAltIcon />
-      </LogoBackground>
+      <LogoImage src={meteorLogo} alt="Meteor Logo" />
       <HeaderContent isExpanded={isExpanded}>
         <TextContainer>
           <Title>מטאור</Title>

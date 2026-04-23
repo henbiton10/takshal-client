@@ -45,6 +45,33 @@ import { AntennaConnectivityMatrix } from './AntennaConnectivityMatrix';
 import { NetworksMatrix } from './NetworksMatrix';
 import { TerminalPopup } from './TerminalPopup';
 import { TimeSelector } from './TimeSelector';
+import { Responsive, WidthProvider, Layout } from 'react-grid-layout/legacy';
+
+const ResponsiveGridLayout = WidthProvider(Responsive);
+
+const EditLayoutIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M3 3H10V10H3V3ZM3 14H10V21H3V14ZM14 3H21V10H14V3ZM14 14H21V21H14V14ZM5 5V8H8V5H5ZM5 16V19H8V16H5ZM16 5V8H19V5H16ZM16 16V19H19V16H16Z" fill="currentColor"/>
+  </svg>
+);
+
+const LockIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M18 8H17V6C17 3.24 14.76 1 12 1C9.24 1 7 3.24 7 6V8H6C4.9 8 4 8.9 4 10V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V10C20 8.9 19.1 8 18 8ZM9 6C9 4.34 10.36 3 12 3C13.64 3 15 4.34 15 6V8H9V6ZM18 20H6V10H18V20ZM12 17C13.1 17 14 16.1 14 15C14 13.9 13.1 13 12 13C10.9 13 10 13.9 10 15C10 16.1 10.9 17 12 17Z" fill="currentColor"/>
+  </svg>
+);
+
+const DragIndicatorIcon = () => (
+  <div style={{ display: 'flex', gap: '2px', color: '#305088', fontSize: '20px', fontWeight: 'bold' }}>
+    ⋮⋮
+  </div>
+);
+
+const ResetIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4C7.58 4 4.01 7.58 4.01 12C4.01 16.42 7.58 20 12 20C15.73 20 18.84 17.45 19.73 14H17.65C16.83 16.33 14.61 18 12 18C8.69 18 6 15.31 6 12C6 8.69 8.69 6 12 6C13.66 6 15.14 6.69 16.22 7.78L13 11H20V4L17.65 6.35Z" fill="currentColor"/>
+  </svg>
+);
 
 import {
   DashboardTerminal,
@@ -55,6 +82,7 @@ import {
 import { dashboardApi } from '../../services/api';
 import { PageLayout } from '../../shared/components/PageLayout';
 import { useInitialization } from '../../contexts/InitializationContext';
+import { ConfirmDialog } from '../../shared/components/ConfirmDialog/ConfirmDialog';
 
 const TimeSelectButton = styled.button`
   display: flex;
@@ -119,32 +147,26 @@ const MainContent = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 20px;
   padding: 10px 20px 20px;
-  overflow: hidden;
-  height: calc(100vh - 120px); /* Adjust based on header/snapshot height */
+  overflow-y: auto;
+  height: calc(100vh - 120px);
+  position: relative;
+  direction: ltr; /* Ensure scrollbar is on the right and RGL has LTR context */
+  transform: translate(0, 0); /* Create new stacking context for accurate offset calculations */
 `;
 
-const DashboardRow = styled.div<{ $flex?: number }>`
-  display: flex;
-  gap: 20px;
-  flex: ${props => props.$flex || 1};
-  min-height: 0;
-  min-width: 0;
-`;
-
-const DashboardColumn = styled.div<{ $flex?: number }>`
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  flex: ${props => props.$flex || 1};
-  min-height: 0;
-  min-width: 0;
+const GridContainer = styled.div`
+  width: 100%;
+  height: 100%;
+  position: relative;
+  direction: ltr;
 `;
 
 
 
-const SectionCard = styled.div<{ $flex?: number; $isFullscreen?: boolean }>`
+
+
+const SectionCard = styled.div<{ $flex?: number; $isFullscreen?: boolean; $isEditing?: boolean }>`
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -153,6 +175,16 @@ const SectionCard = styled.div<{ $flex?: number; $isFullscreen?: boolean }>`
   width: 100%;
   min-height: 0;
   min-width: 0;
+  
+  ${props => props.$isEditing && `
+    outline: 2px dashed #305088;
+    outline-offset: 4px;
+    border-radius: 12px;
+    background: rgba(48, 80, 136, 0.05);
+  `}
+
+  /* Restore RTL for the content of the card */
+  direction: rtl;
 `;
 
 
@@ -162,6 +194,17 @@ const ControlBar = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 100%;
+`;
+
+const TitleGroup = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: default;
+  
+  &.grid-handle {
+    cursor: move;
+  }
 `;
 
 const SectionTitle = styled.h3`
@@ -235,6 +278,59 @@ const formatDateForApi = (date: Date) => {
 };
 
 const STORAGE_KEY = 'dashboard_time_range';
+const LAYOUT_STORAGE_KEY = 'dashboard_layout';
+
+const MIN_DIMENSIONS: Record<string, { minW: number; minH: number }> = {
+  'stations-satellites': { minW: 6, minH: 6 },
+  'stations-terminals': { minW: 4, minH: 8 },
+  'antenna-connectivity': { minW: 4, minH: 5 },
+  'networks': { minW: 4, minH: 3 },
+};
+
+const DEFAULT_LAYOUTS: { [key: string]: Layout } = {
+  lg: [
+    { i: 'stations-satellites', x: 0, y: 0, w: 12, h: 8, ...MIN_DIMENSIONS['stations-satellites'] },
+    { i: 'stations-terminals', x: 6, y: 8, w: 6, h: 12, ...MIN_DIMENSIONS['stations-terminals'] },
+    { i: 'antenna-connectivity', x: 0, y: 8, w: 6, h: 7, ...MIN_DIMENSIONS['antenna-connectivity'] },
+    { i: 'networks', x: 0, y: 15, w: 6, h: 5, ...MIN_DIMENSIONS['networks'] },
+  ]
+};
+
+const normalizeLayout = (layout: Partial<Record<string, Layout>>) => {
+  const normalized: any = {};
+  Object.keys(layout).forEach(key => {
+    normalized[key] = (layout[key] || []).map(item => ({
+      i: item.i,
+      x: item.x,
+      y: item.y,
+      w: item.w,
+      h: item.h
+    })).sort((a, b) => a.i.localeCompare(b.i));
+  });
+  return JSON.stringify(normalized);
+};
+
+const loadLayoutFromStorage = () => {
+  try {
+    const stored = localStorage.getItem(LAYOUT_STORAGE_KEY);
+    if (!stored) return DEFAULT_LAYOUTS;
+    
+    const parsed: { [key: string]: Layout } = JSON.parse(stored);
+    
+    // Always inject min dimensions to ensure they apply even to old stored layouts
+    Object.keys(parsed).forEach(breakpoint => {
+      parsed[breakpoint] = parsed[breakpoint].map(item => ({
+        ...item,
+        ...(MIN_DIMENSIONS[item.i] || {})
+      }));
+    });
+    
+    return parsed;
+  } catch (error) {
+    console.error('Failed to load layout:', error);
+    return DEFAULT_LAYOUTS;
+  }
+};
 
 const loadTimeRangeFromStorage = (): TimeRange | null => {
   try {
@@ -281,6 +377,9 @@ export const DashboardPage = () => {
   const [timeRange, setTimeRange] = useState<TimeRange | null>(() => loadTimeRangeFromStorage());
   const [lastUpdated, setLastUpdated] = useState<string>(new Date().toLocaleString('he-IL'));
   const [fullscreenSection, setFullscreenSection] = useState<DashboardSection | null>(null);
+  const [layouts, setLayouts] = useState<Partial<Record<string, Layout>>>(() => loadLayoutFromStorage());
+  const [isEditing, setIsEditing] = useState(false);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
   const { setAppReady } = useInitialization();
 
   const fetchDashboardData = useCallback(async () => {
@@ -337,6 +436,21 @@ export const DashboardPage = () => {
     );
   }, []);
 
+  const handleLayoutChange = (_: Layout, allLayouts: Partial<Record<string, Layout>>) => {
+    setLayouts(allLayouts);
+    localStorage.setItem(LAYOUT_STORAGE_KEY, JSON.stringify(allLayouts));
+  };
+
+  const handleResetLayout = () => {
+    // Deep clone to avoid mutations
+    const defaultLayoutCopy = JSON.parse(JSON.stringify(DEFAULT_LAYOUTS));
+    setLayouts(defaultLayoutCopy);
+    localStorage.removeItem(LAYOUT_STORAGE_KEY); // Removing the key is cleaner than storing the default
+    setShowResetConfirm(false);
+  };
+
+  const isDefaultLayout = normalizeLayout(layouts) === normalizeLayout(DEFAULT_LAYOUTS);
+
   const formatDisplayDate = () => {
     if (timeRange) {
       const d = timeRange.endDate;
@@ -372,10 +486,14 @@ export const DashboardPage = () => {
       key={section}
       $flex={fullscreenSection ? undefined : flex}
       $isFullscreen={fullscreenSection === section}
+      $isEditing={isEditing}
     >
 
       <ControlBar>
-        <SectionTitle>{title}</SectionTitle>
+        <TitleGroup className={isEditing ? 'grid-handle' : ''}>
+          {isEditing && <DragIndicatorIcon />}
+          <SectionTitle>{title}</SectionTitle>
+        </TitleGroup>
         <SectionToggle onClick={() => toggleFullscreen(section)}>
           {fullscreenSection === section ? <CollapseContentIcon /> : <ExpandContentIcon />}
           <p style={{ margin: 0 }}>{fullscreenSection === section ? 'הקטן תצוגה' : 'תצוגה מלאה'}</p>
@@ -398,11 +516,36 @@ export const DashboardPage = () => {
       contentPadding="0"
       fullHeight={true}
       actions={
-        <TimeSelectButton onClick={() => setShowTimeSelector(true)}>
-          <TimeJumpIcon />
-          בחירת זמן
-        </TimeSelectButton>
-
+        <div style={{ display: 'flex', gap: '12px' }}>
+          {isEditing && !isDefaultLayout && (
+            <TimeSelectButton 
+              onClick={() => setShowResetConfirm(true)}
+              style={{ 
+                background: '#f44336',
+                border: 'none',
+                color: '#fff'
+              }}
+            >
+              <ResetIcon />
+              איפוס פריסה
+            </TimeSelectButton>
+          )}
+          <TimeSelectButton 
+            onClick={() => setIsEditing(!isEditing)}
+            style={{ 
+              background: isEditing ? '#4CAF50' : '#1c2439',
+              border: '1px solid #305088',
+              color: '#fff'
+            }}
+          >
+            {isEditing ? <LockIcon /> : <EditLayoutIcon />}
+            {isEditing ? 'שמור פריסה' : 'עריכת פריסה'}
+          </TimeSelectButton>
+          <TimeSelectButton onClick={() => setShowTimeSelector(true)}>
+            <TimeJumpIcon />
+            בחירת זמן
+          </TimeSelectButton>
+        </div>
       }
     >
       <DashboardWrapper>
@@ -445,22 +588,33 @@ export const DashboardPage = () => {
             }
 
             return (
-              <>
-                <DashboardRow $flex={1}>
-                  {renderSectionCard(
-                    'stations-satellites',
-                    'מצבת התחנות והלווינים',
-                    <StationsSatellitesMatrix
-                      stations={dashboardData?.stations || []}
-                      satellites={dashboardData?.satellites || []}
-                    />
-                  )}
-                </DashboardRow>
+              <GridContainer>
+                <ResponsiveGridLayout
+                  className={`layout ${isEditing ? 'is-editing' : ''}`}
+                  layouts={layouts}
+                  breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
+                  cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
+                  rowHeight={30}
+                  isDraggable={isEditing}
+                  isResizable={isEditing}
+                  onLayoutChange={handleLayoutChange}
+                  draggableHandle=".grid-handle"
+                  margin={[20, 20]}
+                  useCSSTransforms={true}
+                  resizeHandles={['s', 'w', 'e', 'n', 'sw', 'nw', 'se', 'ne']}
+                >
+                  <div key="stations-satellites">
+                    {renderSectionCard(
+                      'stations-satellites',
+                      'מצבת התחנות והלווינים',
+                      <StationsSatellitesMatrix
+                        stations={dashboardData?.stations || []}
+                        satellites={dashboardData?.satellites || []}
+                      />
+                    )}
+                  </div>
 
-                <DashboardRow $flex={1}>
-
-                  {/* Right Half: Terminals */}
-                  <DashboardColumn $flex={1}>
+                  <div key="stations-terminals">
                     {renderSectionCard(
                       'stations-terminals',
                       'מצבת התחנות והטרמינלים',
@@ -469,32 +623,28 @@ export const DashboardPage = () => {
                         onTerminalClick={handleTerminalClick}
                       />
                     )}
-                  </DashboardColumn>
+                  </div>
 
-                  {/* Left Half: Split Vertically */}
-                  <DashboardColumn $flex={1}>
-                    <DashboardRow $flex={1.2}>
-                      {renderSectionCard(
-                        'antenna-connectivity',
-                        'מצבת קישוריות אנטנות',
-                        <AntennaConnectivityMatrix
-                          stations={dashboardData?.stations || []}
-                          showFullView
-                        />
-                      )}
-                    </DashboardRow>
-                    <DashboardRow $flex={0.8}>
-                      {renderSectionCard(
-                        'networks',
-                        'מצבת רשתות',
-                        <NetworksMatrix networks={dashboardData?.networks || []} />
-                      )}
-                    </DashboardRow>
+                  <div key="antenna-connectivity">
+                    {renderSectionCard(
+                      'antenna-connectivity',
+                      'מצבת קישוריות אנטנות',
+                      <AntennaConnectivityMatrix
+                        stations={dashboardData?.stations || []}
+                        showFullView
+                      />
+                    )}
+                  </div>
 
-                  </DashboardColumn>
-
-                </DashboardRow>
-              </>
+                  <div key="networks">
+                    {renderSectionCard(
+                      'networks',
+                      'מצבת רשתות',
+                      <NetworksMatrix networks={dashboardData?.networks || []} />
+                    )}
+                  </div>
+                </ResponsiveGridLayout>
+              </GridContainer>
             );
           })()}
         </MainContent>
@@ -515,6 +665,16 @@ export const DashboardPage = () => {
           currentRange={timeRange}
         />
       )}
+
+      <ConfirmDialog
+        open={showResetConfirm}
+        title="איפוס פריסה"
+        message="האם אתה בטוח שברצונך לאפס את פריסת הדאשבורד לברירת המחדל? פעולה זו לא ניתנת לביטול."
+        confirmText="אפס פריסה"
+        cancelText="בטל"
+        onConfirm={handleResetLayout}
+        onCancel={() => setShowResetConfirm(false)}
+      />
     </PageLayout>
   );
 };
