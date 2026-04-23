@@ -2,6 +2,7 @@ export interface SatelliteFormData {
   name: string;
   affiliation: 'israeli' | 'international' | '';
   hasFrequencyConverter: boolean | null;
+  frequencyBand: 'ku' | 'ka' | null | '';
   readinessStatus: 'ready' | 'partly_ready' | 'damaged' | '';
   notes: string;
 }

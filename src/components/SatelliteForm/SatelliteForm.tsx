@@ -7,6 +7,7 @@ import { SatelliteFormProps, SatelliteFormData } from './types';
 import {
   AFFILIATION_OPTIONS,
   FREQUENCY_CONVERTER_OPTIONS,
+  FREQUENCY_BAND_OPTIONS,
   READINESS_STATUS_OPTIONS,
   INITIAL_FORM_DATA,
 } from './constants';
@@ -37,6 +38,7 @@ export const SatelliteForm = ({ onSave, onDelete, editingSatelliteId, initialDat
     handleSubmit,
     watch,
     reset,
+    setValue,
     formState: { errors, isSubmitting, isDirty },
   } = useForm<SatelliteFormData>({
     defaultValues: initialData || INITIAL_FORM_DATA,
@@ -53,12 +55,24 @@ export const SatelliteForm = ({ onSave, onDelete, editingSatelliteId, initialDat
   }, [initialData, reset]);
 
   const readinessStatus = watch('readinessStatus');
+  const hasFrequencyConverter = watch('hasFrequencyConverter');
+
+  useEffect(() => {
+    if (hasFrequencyConverter === true) {
+      setValue('frequencyBand', null);
+    }
+  }, [hasFrequencyConverter, setValue]);
 
   const onSubmit = useCallback(
     async (data: SatelliteFormData) => {
       try {
         if (onSave) {
-          await onSave(data);
+          // Clean up data before saving
+          const formattedData = {
+            ...data,
+            frequencyBand: data.hasFrequencyConverter ? null : (data.frequencyBand || null)
+          };
+          await onSave(formattedData as any);
         }
         reset(INITIAL_FORM_DATA);
       } catch (error) {
@@ -129,6 +143,25 @@ export const SatelliteForm = ({ onSave, onDelete, editingSatelliteId, initialDat
                   toField: (value) => (value === null ? '' : value.toString()),
                   toForm: (value) => value === 'true',
                 }}
+              />
+              <FormSelect
+                name="frequencyBand"
+                control={control}
+                label="תחום תדר"
+                options={FREQUENCY_BAND_OPTIONS}
+                placeholder="בחר"
+                error={errors.frequencyBand}
+                disabled={hasFrequencyConverter === true}
+                value={hasFrequencyConverter ? null : undefined}
+                rules={{ 
+                  validate: (value: any) => {
+                    if (hasFrequencyConverter === false && !value) {
+                      return 'תחום תדר הינו שדה חובה';
+                    }
+                    return true;
+                  }
+                }}
+                required={hasFrequencyConverter === false}
               />
               <FormTextField
                 name="notes"

@@ -12,12 +12,18 @@ export const FREQUENCY_CONVERTER_OPTIONS = [
   { value: false, label: 'לא' },
 ];
 
+export const FREQUENCY_BAND_OPTIONS = [
+  { value: 'ku', label: 'KU' },
+  { value: 'ka', label: 'KA' },
+];
+
 export { READINESS_STATUS_OPTIONS };
 
 export const INITIAL_FORM_DATA = {
   name: '',
   affiliation: '' as const,
   hasFrequencyConverter: null,
+  frequencyBand: null as 'ku' | 'ka' | null,
   readinessStatus: 'ready' as const,
   notes: '',
 };

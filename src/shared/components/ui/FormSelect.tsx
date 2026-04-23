@@ -3,7 +3,7 @@ import { Control, Controller, FieldValues, Path, FieldError } from 'react-hook-f
 import { FieldLabel } from './FormLayout';
 
 interface SelectOption {
-  value: string | boolean;
+  value: string | boolean | null;
   label: string;
   icon?: string;
 }
@@ -17,6 +17,9 @@ interface FormSelectProps<T extends FieldValues> {
   error?: FieldError;
   rules?: object;
   required?: boolean;
+  disabled?: boolean;
+  value?: any;
+  onChange?: (value: any) => void;
   transformValue?: {
     toForm: (value: string) => any;
     toField: (value: any) => string;
@@ -68,6 +71,9 @@ export const FormSelect = <T extends FieldValues>({
   error,
   rules,
   required,
+  disabled,
+  value: propsValue,
+  onChange: propsOnChange,
   transformValue,
 }: FormSelectProps<T>) => {
   return (
@@ -77,69 +83,76 @@ export const FormSelect = <T extends FieldValues>({
         name={name}
         control={control}
         rules={rules}
-        render={({ field: { value, onChange, ...field }, fieldState: { error: fieldError } }) => (
-          <FormControl fullWidth error={!!fieldError || !!error}>
-            <Select
-              {...field}
-              value={transformValue ? transformValue.toField(value) : (value ?? '')}
-              onChange={(e) => {
-                const newValue = transformValue 
-                  ? transformValue.toForm(e.target.value as string)
-                  : e.target.value;
-                onChange(newValue);
-              }}
-              displayEmpty
-              sx={selectStyles}
-              error={!!fieldError || !!error}
-              MenuProps={{
-                PaperProps: {
-                  sx: {
-                    maxHeight: 300,
-                    backgroundColor: 'rgba(28, 40, 78, 0.95)',
-                    backdropFilter: 'blur(10px)',
-                    border: '1px solid rgba(174, 199, 255, 0.15)',
-                    '& .MuiMenuItem-root': {
-                      padding: '8px 16px',
+        render={({ field: { value: controllerValue, onChange, ...field }, fieldState: { error: fieldError } }) => {
+          const value = propsValue !== undefined ? propsValue : controllerValue;
+          return (
+            <FormControl fullWidth error={!!fieldError || !!error} disabled={disabled}>
+              <Select
+                {...field}
+                disabled={disabled}
+                value={transformValue ? transformValue.toField(value) : (value ?? '')}
+                onChange={(e) => {
+                  const newValue = transformValue 
+                    ? transformValue.toForm(e.target.value as string)
+                    : e.target.value;
+                  onChange(newValue);
+                  if (propsOnChange) {
+                    propsOnChange(newValue);
+                  }
+                }}
+                displayEmpty
+                sx={selectStyles}
+                error={!!fieldError || !!error}
+                MenuProps={{
+                  PaperProps: {
+                    sx: {
+                      maxHeight: 300,
+                      backgroundColor: 'rgba(28, 40, 78, 0.95)',
+                      backdropFilter: 'blur(10px)',
+                      border: '1px solid rgba(174, 199, 255, 0.15)',
+                      '& .MuiMenuItem-root': {
+                        padding: '8px 16px',
+                      }
                     }
                   }
-                }
-              }}
-              renderValue={(selected) => {
-                if (selected === '') {
-                  return <span style={{ opacity: 0.6 }}>{placeholder}</span>;
-                }
-                const option = options.find(o => String(o.value) === String(selected));
-                return (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    {option?.icon && <img src={option.icon} alt="" style={{ width: 18, height: 18, objectFit: 'contain' }} />}
-                    <span>{option?.label || selected}</span>
-                  </div>
-                );
-              }}
-            >
-              {placeholder && (
-                <MenuItem value="" disabled>
-                  {placeholder}
-                </MenuItem>
+                }}
+                renderValue={(selected) => {
+                  if (!selected || selected === '') {
+                    return <span style={{ opacity: 0.6 }}>{placeholder}</span>;
+                  }
+                  const option = options.find(o => String(o.value) === String(selected));
+                  return (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      {option?.icon && <img src={option.icon} alt="" style={{ width: 18, height: 18, objectFit: 'contain' }} />}
+                      <span>{option?.label || selected}</span>
+                    </div>
+                  );
+                }}
+              >
+                {placeholder && (
+                  <MenuItem value="" disabled>
+                    {placeholder}
+                  </MenuItem>
+                )}
+                {options.map((option) => (
+                  <MenuItem 
+                    key={String(option.value)} 
+                    value={String(option.value)}
+                    sx={{ gap: '8px' }}
+                  >
+                    {option.icon && <img src={option.icon} alt="" style={{ width: 18, height: 18, objectFit: 'contain' }} />}
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </Select>
+              {(fieldError || error) && (
+                <FormHelperText sx={{ textAlign: 'right', direction: 'rtl', margin: '4px 0 0 0' }}>
+                  {(fieldError?.message || error?.message) as string}
+                </FormHelperText>
               )}
-              {options.map((option) => (
-                <MenuItem 
-                  key={String(option.value)} 
-                  value={String(option.value)}
-                  sx={{ gap: '8px' }}
-                >
-                  {option.icon && <img src={option.icon} alt="" style={{ width: 18, height: 18, objectFit: 'contain' }} />}
-                  {option.label}
-                </MenuItem>
-              ))}
-            </Select>
-            {(fieldError || error) && (
-              <FormHelperText sx={{ textAlign: 'right', direction: 'rtl', margin: '4px 0 0 0' }}>
-                {(fieldError?.message || error?.message) as string}
-              </FormHelperText>
-            )}
-          </FormControl>
-        )}
+            </FormControl>
+          );
+        }}
       />
     </div>
   );

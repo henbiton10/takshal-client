@@ -43,6 +43,7 @@ export const SatelliteView = ({ satellite, onEdit }: SatelliteViewProps) => {
           )
         },
         { label: 'ממיר תדר', value: satellite.hasFrequencyConverter ? 'כן' : 'לא' },
+        ...(satellite.frequencyBand ? [{ label: 'תחום תדר', value: satellite.frequencyBand.toUpperCase() }] : []),
         { 
           label: 'סטטוס כשירות', 
           value: status.text, 

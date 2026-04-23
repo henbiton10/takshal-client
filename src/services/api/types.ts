@@ -4,6 +4,7 @@ export interface Satellite {
   affiliation: 'israeli' | 'international';
   hasFrequencyConverter: boolean;
   readinessStatus: 'ready' | 'partly_ready' | 'damaged';
+  frequencyBand?: 'ka' | 'ku';
   notes?: string;
   isDeleted: boolean;
   deletedAt?: Date;
@@ -22,6 +23,7 @@ export interface CreateSatelliteDto {
   affiliation: 'israeli' | 'international';
   hasFrequencyConverter: boolean;
   readinessStatus: 'ready' | 'partly_ready' | 'damaged';
+  frequencyBand?: 'ka' | 'ku';
   notes?: string;
 }
 
@@ -30,6 +32,7 @@ export interface UpdateSatelliteDto {
   affiliation: 'israeli' | 'international';
   hasFrequencyConverter: boolean;
   readinessStatus: 'ready' | 'partly_ready' | 'damaged';
+  frequencyBand?: 'ka' | 'ku';
   notes?: string;
 }
 

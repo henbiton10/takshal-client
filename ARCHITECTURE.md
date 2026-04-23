@@ -113,10 +113,13 @@ Generic select dropdown for forms.
 - `name`: Form field name
 - `control`: Form control object
 - `label`: Field label
-- `options`: Array of `{ value, label }` objects
+- `options`: Array of `{ value, label, icon? }` objects
 - `placeholder`: Placeholder text
 - `error`: Error object from react-hook-form
 - `rules`: Validation rules
+- `disabled`: Boolean to disable the field
+- `value`: Optional value override
+- `onChange`: Optional callback for value changes
 - `transformValue`: Optional value transformation
 
 **Usage:**
