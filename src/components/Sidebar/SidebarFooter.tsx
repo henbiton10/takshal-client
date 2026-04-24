@@ -77,9 +77,7 @@ export default function SidebarFooter({ isExpanded, isPinned, onTogglePin }: Sid
 
   const toggleTheme = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (mode === 'dark') setMode('light');
-    else if (mode === 'light') setMode('midnight');
-    else setMode('dark');
+    setMode(mode === 'dark' ? 'light' : 'dark');
   };
 
   return (
@@ -99,9 +97,7 @@ export default function SidebarFooter({ isExpanded, isPinned, onTogglePin }: Sid
         </CollapseLabel>
         <IconWrapper>
           <PaletteIcon sx={{ 
-            color: mode === 'midnight' ? '#4a90e2' : 
-                   mode === 'light' ? '#3d62b2' : 
-                   'inherit' 
+            color: mode === 'light' ? '#3d62b2' : 'inherit' 
           }} />
         </IconWrapper>
       </CollapseButton>

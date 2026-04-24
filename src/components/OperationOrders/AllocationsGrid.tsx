@@ -952,7 +952,7 @@ export const AllocationsGrid = ({
 
   return (
     <GridContainer
-      className={theme.palette.mode === 'dark' || theme.palette.mode === 'midnight' ? "ag-theme-alpine-dark" : "ag-theme-alpine"}
+      className={theme.palette.mode === 'dark' ? "ag-theme-alpine-dark" : "ag-theme-alpine"}
       style={{ height: Math.min(650, 64 + flattenedData.length * 64 + (allocations.length * 12)) }}
     >
       <AgGridReact<FlattenedAllocation>
