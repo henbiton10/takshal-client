@@ -19,8 +19,8 @@ const SearchContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #1c2439;
-  border: 1px solid #305088;
+  background: ${({ theme }) => theme.customColors.background.default};
+  border: 1px solid ${({ theme }) => theme.customColors.border.primary};
   border-radius: 21px;
   padding: 0 16px;
   width: 190px;
@@ -31,14 +31,14 @@ const SearchContainer = styled.div`
 const SearchInput = styled.input`
   background: none;
   border: none;
-  color: #e1eaff;
+  color: ${({ theme }) => theme.customColors.text.secondary};
   outline: none;
   font-size: 16px;
   font-weight: 600;
   width: 100%;
   text-align: right;
   direction: rtl;
-  &::placeholder { color: #e1eaff; font-weight: 600; }
+  &::placeholder { color: ${({ theme }) => theme.customColors.text.placeholder}; font-weight: 600; }
 `;
 
 export const OperationOrderPage = () => {
@@ -51,8 +51,8 @@ export const OperationOrderPage = () => {
     formMode, setFormMode,
     expandedOrderId, setExpandedOrderId,
     headerData, setHeaderData,
-    editingAllocation, setEditingAllocation,
-    parentAllocation, setParentAllocation,
+    editingAllocation,
+    parentAllocation,
     handleOrderClick,
     handleDeleteOrder,
     handleDeleteAllocation,
@@ -134,7 +134,7 @@ export const OperationOrderPage = () => {
       if (orders.length === 0) {
         return (
           <BigEmptyState
-            icon={<ListAltIcon sx={{ fontSize: 48, color: '#e1eaff' }} />}
+            icon={<ListAltIcon sx={{ fontSize: 48, color: (theme) => theme.customColors.text.secondary }} />}
             title="טרם הוגדרו פקודות מבצע"
             subtitle="כדי להתחיל, יש ליצור פקודה חדשה."
           />
@@ -255,7 +255,7 @@ export const OperationOrderPage = () => {
                 if (viewMode !== 'list') setViewMode('list');
               }}
             />
-            <SearchIcon sx={{ color: '#e1eaff', fontSize: 18 }} />
+            <SearchIcon sx={{ color: (theme) => theme.customColors.text.placeholder, fontSize: 18 }} />
           </SearchContainer>
           {viewMode === 'list' && (
             <AddResourceButton onClick={handleCreateNew}>

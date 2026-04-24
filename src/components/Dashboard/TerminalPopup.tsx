@@ -4,6 +4,7 @@ import SatelliteAltIcon from '@mui/icons-material/SatelliteAlt';
 import SettingsInputAntennaIcon from '@mui/icons-material/SettingsInputAntenna';
 import { DashboardTerminal } from './types';
 import { TerminalIcon } from '../ResourcesManagement/icons/TerminalIcon';
+import { useTheme } from '@mui/material/styles';
 
 const Overlay = styled.div`
   position: fixed;
@@ -11,7 +12,8 @@ const Overlay = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -19,8 +21,9 @@ const Overlay = styled.div`
 `;
 
 const PopupContainer = styled.div`
-  background: #1c2439;
-  border: 1px solid #305088;
+  background: ${({ theme }) => theme.customColors.background.glass};
+  backdrop-filter: blur(40px);
+  border: 1px solid ${({ theme }) => theme.customColors.border.divider};
   border-radius: 16px;
   width: 820px;
   max-width: 95vw;
@@ -30,7 +33,7 @@ const PopupContainer = styled.div`
   direction: rtl;
   display: flex;
   flex-direction: column;
-  box-shadow: 0px 0px 12px 0px rgba(36, 52, 96, 0.25);
+  box-shadow: 0px 4px 40px rgba(0, 0, 0, 0.4);
   padding: 24px 32px;
   gap: 24px;
 `;
@@ -41,7 +44,7 @@ const PopupHeader = styled.div`
   justify-content: space-between;
   align-items: center;
   padding-bottom: 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  border-bottom: 1px solid ${({ theme }) => theme.customColors.border.divider};
   width: 100%;
 `;
 
@@ -58,7 +61,7 @@ const TerminalName = styled.div`
   gap: 8px;
   font-size: 16px;
   font-weight: 600;
-  color: white;
+  color: ${({ theme }) => theme.palette.mode === 'dark' ? theme.customColors.text.white : theme.customColors.text.primary};
 
   svg {
     font-size: 20px;
@@ -71,19 +74,21 @@ const StatusBadge = styled.div<{ $status: string }>`
   font-size: 11px;
   font-weight: 500;
   background: ${props => {
+    const { ready, partlyReady, damaged } = props.theme.customColors.status;
     switch (props.$status) {
-      case 'ready': return 'rgba(34, 197, 94, 0.2)';
-      case 'partly_ready': return 'rgba(234, 179, 8, 0.2)';
-      case 'damaged': return 'rgba(239, 68, 68, 0.2)';
-      default: return 'rgba(107, 114, 128, 0.2)';
+      case 'ready': return `${ready}33`; // 20% opacity
+      case 'partly_ready': return `${partlyReady}33`;
+      case 'damaged': return `${damaged}33`;
+      default: return props.theme.customColors.background.medium;
     }
   }};
   color: ${props => {
+    const { ready, partlyReady, damaged } = props.theme.customColors.status;
     switch (props.$status) {
-      case 'ready': return '#22c55e';
-      case 'partly_ready': return '#eab308';
-      case 'damaged': return '#ef4444';
-      default: return '#9ca3af';
+      case 'ready': return ready;
+      case 'partly_ready': return partlyReady;
+      case 'damaged': return damaged;
+      default: return props.theme.customColors.text.disabled;
     }
   }};
 `;
@@ -95,14 +100,14 @@ const CloseButton = styled.button`
   width: 24px;
   height: 24px;
   border: none;
-  background: rgba(255, 255, 255, 0.12);
+  background: ${({ theme }) => theme.customColors.action.hover};
   border-radius: 100px;
-  color: white;
+  color: ${({ theme }) => theme.palette.mode === 'dark' ? theme.customColors.text.white : theme.customColors.text.primary};
   cursor: pointer;
   transition: all 0.2s;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: ${({ theme }) => theme.customColors.action.selected};
   }
 `;
 
@@ -129,14 +134,14 @@ const PopupContent = styled.div`
     background: transparent;
   }
   &::-webkit-scrollbar-thumb {
-    background: rgba(174, 199, 255, 0.2);
+    background: ${({ theme }) => theme.customColors.border.divider};
     border-radius: 10px;
   }
 `;
 
 
 const AllocationCard = styled.div`
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid ${({ theme }) => theme.customColors.border.subtle};
   border-right: none;
   border-radius: 8px;
   overflow: hidden;
@@ -145,13 +150,14 @@ const AllocationCard = styled.div`
 
 
 const CardInner = styled.div<{ $status: string }>`
-  background: rgba(255, 255, 255, 0.04);
+  background: ${({ theme }) => theme.customColors.background.subtle};
   border-right: 2px solid ${props => {
+    const { ready, partlyReady, damaged } = props.theme.customColors.status;
     switch (props.$status) {
-      case 'ready': return 'rgba(255, 255, 255, 0.8)';
-      case 'partly_ready': return '#ff8800';
-      case 'damaged': return '#ef4444';
-      default: return 'rgba(255, 255, 255, 0.8)';
+      case 'ready': return ready;
+      case 'partly_ready': return partlyReady;
+      case 'damaged': return damaged;
+      default: return props.theme.customColors.text.primary;
     }
   }};
 
@@ -182,9 +188,14 @@ const BandBadge = styled.div<{ $band: 'ka' | 'ku' }>`
   text-transform: uppercase;
   
   ${props => {
-    if (props.$band === 'ka') return `background: rgba(255, 179, 0, 0.2); color: #ffb300; border: 1px solid rgba(255, 179, 0, 0.2);`;
-    if (props.$band === 'ku') return `background: rgba(255, 255, 255, 0.6); color: #2c2c2c; border: 1px solid rgba(255, 255, 255, 0.4);`;
-    return `background: rgba(225, 234, 255, 0.1); color: #e1eaff;`;
+    const { status: statusColors, text, border } = props.theme.customColors;
+    if (props.$band === 'ka') return `background: ${statusColors.ka}33; color: ${statusColors.ka}; border: 1px solid ${statusColors.ka}33;`;
+    if (props.$band === 'ku') return `
+      background: ${props.theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)'}; 
+      color: ${text.primary}; 
+      border: 1px solid ${border.divider};
+    `;
+    return `background: ${props.theme.customColors.background.medium}; color: ${props.theme.customColors.text.secondary};`;
   }}
 `;
 
@@ -194,11 +205,11 @@ const FrequencyInfo = styled.div`
   align-items: center;
   gap: 8px;
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.9);
+  color: ${({ theme }) => theme.customColors.text.primary};
 `;
 
 const DirectionLabel = styled.span<{ $direction: 'transmission' | 'reception' }>`
-  color: ${props => props.$direction === 'transmission' ? '#f97316' : '#3b82f6'};
+  color: ${props => props.$direction === 'transmission' ? props.theme.customColors.error.main : props.theme.customColors.primary.main};
   font-weight: 500;
 `;
 
@@ -209,7 +220,7 @@ const AllocationDetails = styled.div`
 `;
 
 const DetailColumn = styled.div`
-  background: rgba(255, 255, 255, 0.04);
+  background: ${({ theme }) => theme.customColors.background.light};
   flex: 1;
   border-radius: 8px;
   padding: 10px;
@@ -220,8 +231,8 @@ const DetailColumn = styled.div`
 `;
 
 const DetailItem = styled.div`
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.04);
+  background: ${({ theme }) => theme.customColors.background.subtle};
+  border: 1px solid ${({ theme }) => theme.customColors.border.divider};
   border-radius: 8px;
   padding: 6px 10px;
   display: flex;
@@ -238,7 +249,7 @@ const DetailItem = styled.div`
 
 const DetailLabel = styled.div`
   font-size: 12px;
-  color: #ccc;
+  color: ${({ theme }) => theme.customColors.text.disabled};
   font-weight: 600;
   white-space: nowrap;
 `;
@@ -249,7 +260,7 @@ const DetailValue = styled.div`
   align-items: center;
   gap: 4px;
   font-size: 16px;
-  color: #e1eaff;
+  color: ${({ theme }) => theme.customColors.text.secondary};
   font-weight: 700;
   white-space: nowrap;
 
@@ -266,7 +277,7 @@ const NoAllocations = styled.div`
   align-items: center;
   justify-content: center;
   padding: 32px;
-  color: rgba(255, 255, 255, 0.4);
+  color: ${({ theme }) => theme.customColors.text.disabled};
   text-align: center;
   gap: 8px;
 
@@ -276,7 +287,7 @@ const NoAllocations = styled.div`
 
   .sub-message {
     font-size: 12px;
-    color: rgba(255, 255, 255, 0.3);
+    color: ${({ theme }) => theme.customColors.text.placeholder};
   }
 `;
 
@@ -286,6 +297,7 @@ interface Props {
 }
 
 export const TerminalPopup = ({ terminal, onClose }: Props) => {
+  const theme = useTheme();
   const getStatusLabel = (status: string) => {
     switch (status) {
       case 'ready': return 'פעיל';
@@ -301,7 +313,7 @@ export const TerminalPopup = ({ terminal, onClose }: Props) => {
 
   return (
     <Overlay onClick={onClose}>
-      <PopupContainer onClick={e => e.stopPropagation()}>
+      <PopupContainer onClick={(e: React.MouseEvent) => e.stopPropagation()}>
         <PopupHeader>
           <HeaderLeft>
             <TerminalName>
@@ -337,7 +349,7 @@ export const TerminalPopup = ({ terminal, onClose }: Props) => {
                   <AllocationDetails>
                     <DetailColumn>
                       <div style={{ display: 'flex', gap: '4px', alignItems: 'center', marginBottom: '4px', justifyContent: 'flex-start', width: '100%' }}>
-                        <SettingsInputAntennaIcon sx={{ fontSize: 16, color: 'white' }} />
+                        <SettingsInputAntennaIcon sx={{ fontSize: 16, color: (theme) => theme.palette.mode === 'dark' ? theme.customColors.text.white : theme.customColors.text.secondary }} />
                         <DetailLabel>אנטנה</DetailLabel>
                       </div>
                       <div style={{ display: 'flex', gap: '8px', width: '100%' }}>
@@ -352,7 +364,7 @@ export const TerminalPopup = ({ terminal, onClose }: Props) => {
                         <DetailItem>
                           <DetailLabel>קוטר</DetailLabel>
                           <DetailValue>
-                            {alloc.antennaSize || '15'} <span style={{ fontSize: '12px', color: '#ccc', fontWeight: 600 }}>מטר</span>
+                            {alloc.antennaSize || '15'} <span style={{ fontSize: '12px', color: theme.customColors.text.disabled, fontWeight: 600 }}>מטר</span>
                           </DetailValue>
                         </DetailItem>
                       </div>
@@ -360,7 +372,7 @@ export const TerminalPopup = ({ terminal, onClose }: Props) => {
 
                     <DetailColumn>
                       <div style={{ display: 'flex', gap: '4px', alignItems: 'center', marginBottom: '4px', justifyContent: 'flex-start', width: '100%' }}>
-                        <SatelliteAltIcon sx={{ fontSize: 16, color: 'white' }} />
+                        <SatelliteAltIcon sx={{ fontSize: 16, color: (theme) => theme.palette.mode === 'dark' ? theme.customColors.text.white : theme.customColors.text.secondary }} />
                         <DetailLabel>לוויין</DetailLabel>
                       </div>
                       <div style={{ display: 'flex', gap: '8px', width: '100%' }}>

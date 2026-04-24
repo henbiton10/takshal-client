@@ -1,12 +1,9 @@
 import { useState, useEffect } from 'react';
-import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Sidebar from './components/Sidebar';
 import GlobalStyle from './styles/GlobalStyles';
 import { AppLayout, MainContent } from './components/App/AppLayout';
 import { Authorization } from './components/Authorization/Authorization';
-import { theme } from './theme/theme';
-import { ThemeProvider as StyledThemeProvider } from 'styled-components';
 import { ResourcesManagement } from './components/ResourcesManagement';
 import { OperationOrderPage } from './components/OperationOrders';
 import { DashboardPage } from './components/Dashboard';
@@ -28,6 +25,8 @@ const PageWrapper = styled.div<{ $isVisible: boolean }>`
   overflow: hidden;
 `;
 
+import { CustomThemeProvider } from './theme/ThemeContext';
+
 function App() {
   const [showMeteor, setShowMeteor] = useState(false);
   const [selectedMenuItem, setSelectedMenuItem] = useState(() => {
@@ -47,40 +46,38 @@ function App() {
   };
 
   return (
-    <ThemeProvider theme={theme}>
-      <StyledThemeProvider theme={theme}>
-        <CssBaseline />
-        <GlobalStyle />
-        <MeteorShower active={showMeteor} onFinish={() => setShowMeteor(false)} />
-        <ToastProvider>
-          <TourProvider>
-            <PageStatusProvider>
-              <SocketProvider>
-                <Authorization>
-                  <AppLayout>
-                    <MainContent>
-                      <PageWrapper $isVisible={selectedMenuItem === 'dashboard'}>
-                        <DashboardPage />
-                      </PageWrapper>
-                      <PageWrapper $isVisible={selectedMenuItem === 'operations'}>
-                        <OperationOrderPage />
-                      </PageWrapper>
-                      <PageWrapper $isVisible={selectedMenuItem === 'resources'}>
-                        <ResourcesManagement />
-                      </PageWrapper>
-                    </MainContent>
-                    <Sidebar 
-                      selectedItem={selectedMenuItem}
-                      onItemSelect={handleMenuItemSelect}
-                    />
-                  </AppLayout>
-                </Authorization>
-              </SocketProvider>
-            </PageStatusProvider>
-          </TourProvider>
-        </ToastProvider>
-      </StyledThemeProvider>
-    </ThemeProvider>
+    <CustomThemeProvider>
+      <CssBaseline />
+      <GlobalStyle />
+      <MeteorShower active={showMeteor} onFinish={() => setShowMeteor(false)} />
+      <ToastProvider>
+        <TourProvider>
+          <PageStatusProvider>
+            <SocketProvider>
+              <Authorization>
+                <AppLayout>
+                  <MainContent>
+                    <PageWrapper $isVisible={selectedMenuItem === 'dashboard'}>
+                      <DashboardPage />
+                    </PageWrapper>
+                    <PageWrapper $isVisible={selectedMenuItem === 'operations'}>
+                      <OperationOrderPage />
+                    </PageWrapper>
+                    <PageWrapper $isVisible={selectedMenuItem === 'resources'}>
+                      <ResourcesManagement />
+                    </PageWrapper>
+                  </MainContent>
+                  <Sidebar 
+                    selectedItem={selectedMenuItem}
+                    onItemSelect={handleMenuItemSelect}
+                  />
+                </AppLayout>
+              </Authorization>
+            </SocketProvider>
+          </PageStatusProvider>
+        </TourProvider>
+      </ToastProvider>
+    </CustomThemeProvider>
   );
 }
 

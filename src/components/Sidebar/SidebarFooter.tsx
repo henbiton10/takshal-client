@@ -1,7 +1,9 @@
 import { Box, Typography, styled } from '@mui/material';
 import FirstPageIcon from '@mui/icons-material/FirstPage';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import PaletteIcon from '@mui/icons-material/Palette';
 import { useTour } from '../../shared/components/Tour/TourProvider';
+import { useCustomTheme } from '../../theme/ThemeContext';
 
 interface SidebarFooterProps {
   isExpanded: boolean;
@@ -34,10 +36,10 @@ const CollapseButton = styled(Box, {
   borderRadius: theme.customBorderRadius.xl,
   cursor: 'pointer',
   transition: 'all 0.3s ease',
-  backgroundColor: isPinned ? 'rgba(174, 199, 255, 0.15)' : 'transparent',
+  backgroundColor: isPinned ? theme.customColors.action.selected : 'transparent',
   
   '&:hover': {
-    backgroundColor: 'rgba(174, 199, 255, 0.15)',
+    backgroundColor: theme.customColors.action.hover,
   },
 }));
 
@@ -71,6 +73,14 @@ const IconWrapper = styled(Box)(({ theme }) => ({
 
 export default function SidebarFooter({ isExpanded, isPinned, onTogglePin }: SidebarFooterProps) {
   const { startTour } = useTour();
+  const { mode, setMode } = useCustomTheme();
+
+  const toggleTheme = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (mode === 'dark') setMode('light');
+    else if (mode === 'light') setMode('midnight');
+    else setMode('dark');
+  };
 
   return (
     <FooterContainer>
@@ -80,6 +90,19 @@ export default function SidebarFooter({ isExpanded, isPinned, onTogglePin }: Sid
         </CollapseLabel>
         <IconWrapper>
           <HelpOutlineIcon />
+        </IconWrapper>
+      </CollapseButton>
+
+      <CollapseButton isExpanded={isExpanded} isPinned={false} onClick={toggleTheme} style={{ marginBottom: '8px' }}>
+        <CollapseLabel isExpanded={isExpanded}>
+          החלף ערכת נושא
+        </CollapseLabel>
+        <IconWrapper>
+          <PaletteIcon sx={{ 
+            color: mode === 'midnight' ? '#4a90e2' : 
+                   mode === 'light' ? '#3d62b2' : 
+                   'inherit' 
+          }} />
         </IconWrapper>
       </CollapseButton>
 

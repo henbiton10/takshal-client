@@ -2,14 +2,14 @@ import styled from 'styled-components';
 import { TooltipRenderProps } from 'react-joyride';
 
 const TooltipContainer = styled.div`
-  background: rgba(28, 36, 57, 0.9);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(48, 80, 136, 0.5);
+  background: ${({ theme }) => theme.customColors.background.glass};
+  backdrop-filter: blur(40px);
+  border: 1px solid ${({ theme }) => theme.customColors.border.divider};
   border-radius: 16px;
-  color: #e1eaff;
+  color: ${({ theme }) => theme.customColors.text.primary};
   padding: 24px;
   max-width: 400px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  box-shadow: 0px 4px 40px rgba(0, 0, 0, 0.4);
   direction: rtl;
   font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 `;
@@ -18,13 +18,13 @@ const TooltipTitle = styled.h3`
   margin: 0 0 12px 0;
   font-size: 20px;
   font-weight: 700;
-  color: #fff;
+  color: ${({ theme }) => theme.customColors.text.primary};
 `;
 
 const TooltipContent = styled.div`
   font-size: 16px;
   line-height: 1.6;
-  color: rgba(225, 234, 255, 0.8);
+  color: ${({ theme }) => theme.customColors.text.secondary};
   margin-bottom: 24px;
 `;
 
@@ -36,19 +36,21 @@ const ButtonContainer = styled.div`
 `;
 
 const PrimaryButton = styled.button`
-  background: #3d62b2;
-  color: white;
+  background: ${({ theme }) => theme.customColors.primary.main};
+  color: ${({ theme }) => theme.customColors.text.white};
   border: none;
-  border-radius: 8px;
-  padding: 8px 24px;
+  border-radius: 12px;
+  padding: 10px 24px;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   transition: all 0.2s;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
 
   &:hover {
-    background: #4d72c2;
+    background: ${({ theme }) => theme.customColors.primary.hover};
     transform: translateY(-1px);
+    box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.3);
   }
 
   &:active {
@@ -58,32 +60,35 @@ const PrimaryButton = styled.button`
 
 const SecondaryButton = styled.button`
   background: transparent;
-  color: rgba(225, 234, 255, 0.7);
-  border: 1px solid rgba(225, 234, 255, 0.3);
-  border-radius: 8px;
-  padding: 8px 16px;
+  color: ${({ theme }) => theme.customColors.text.secondary};
+  border: 1px solid ${({ theme }) => theme.customColors.border.divider};
+  border-radius: 12px;
+  padding: 10px 16px;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.05);
-    color: #fff;
+    background: ${({ theme }) => theme.customColors.action.hover};
+    color: ${({ theme }) => theme.customColors.text.primary};
+    border-color: ${({ theme }) => theme.customColors.border.accent};
   }
 `;
 
 const SkipButton = styled.button`
   background: transparent;
-  color: rgba(225, 234, 255, 0.5);
+  color: ${({ theme }) => theme.customColors.text.disabled};
   border: none;
   font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
   padding: 0;
   margin-right: auto;
+  transition: all 0.2s;
 
   &:hover {
-    color: #fff;
+    color: ${({ theme }) => theme.customColors.text.primary};
     text-decoration: underline;
   }
 `;

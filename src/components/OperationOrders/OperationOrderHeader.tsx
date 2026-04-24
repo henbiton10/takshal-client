@@ -7,6 +7,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 import DateRangeIcon from '@mui/icons-material/DateRange';
 import LayersIcon from '@mui/icons-material/Layers';
+import { useTheme } from '@mui/material/styles';
 import {
   DndContext,
   closestCenter,
@@ -107,6 +108,7 @@ export const OperationOrderHeader = ({
   targetAllocationId,
   onTargetAllocationReached,
 }: OperationOrderHeaderProps) => {
+  const theme = useTheme();
   const [expandedAllocations, setExpandedAllocations] = useState<Record<string, boolean>>({});
   
   const lastParentDataRef = useRef<Partial<OperationOrderFormValues>>(data);
@@ -121,14 +123,14 @@ export const OperationOrderHeader = ({
   });
 
   const toggleAllocation = (fieldId: string) => {
-    setExpandedAllocations(prev => ({
+    setExpandedAllocations((prev: any) => ({
       ...prev,
       [fieldId]: !prev[fieldId]
     }));
   };
 
   const expandAllocation = (fieldId: string) => {
-    setExpandedAllocations(prev => {
+    setExpandedAllocations((prev: any) => {
       if (prev[fieldId]) return prev;
       return {
         ...prev,
@@ -167,7 +169,7 @@ export const OperationOrderHeader = ({
   }, [data, reset]);
 
   useEffect(() => {
-    const subscription = watch((value) => {
+    const subscription = watch((value: any) => {
       const isSameAsParent =
         value.name === lastParentDataRef.current.name &&
         value.startDate === lastParentDataRef.current.startDate &&
@@ -216,7 +218,7 @@ export const OperationOrderHeader = ({
       if (element) {
         element.scrollIntoView({ behavior: 'smooth', block: 'center' });
         element.style.transition = 'background 0.3s';
-        element.style.background = 'rgba(59, 130, 246, 0.2)';
+        element.style.background = `${theme.customColors.primary.main}33`;
         setTimeout(() => {
           element.style.background = '';
           if (onTargetAllocationReached) onTargetAllocationReached();
@@ -235,8 +237,8 @@ export const OperationOrderHeader = ({
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (over && active.id !== over.id) {
-      const oldIndex = allocationFields.findIndex((f) => f.id === active.id);
-      const newIndex = allocationFields.findIndex((f) => f.id === over.id);
+      const oldIndex = allocationFields.findIndex((f: any) => f.id === active.id);
+      const newIndex = allocationFields.findIndex((f: any) => f.id === over.id);
       moveAllocation(oldIndex, newIndex);
     }
   };
@@ -266,7 +268,7 @@ export const OperationOrderHeader = ({
             פרטי פקודת מבצע: {data.name}
           </ViewTitle>
           {onEdit && (
-            <IconButton onClick={onEdit} sx={{ color: '#3b82f6', background: 'rgba(59, 130, 246, 0.1)' }}>
+            <IconButton onClick={onEdit} sx={{ color: (theme: any) => theme.customColors.primary.main, background: (theme: any) => `${theme.customColors.primary.main}1A` }}>
               <EditIcon sx={{ fontSize: 20 }} />
             </IconButton>
           )}
@@ -314,7 +316,7 @@ export const OperationOrderHeader = ({
 
         <FormSection>
           <FormSectionHeader>
-            <DateRangeIcon sx={{ color: (theme) => theme.palette.common.white }} />
+            <DateRangeIcon sx={{ color: (theme: any) => theme.customColors.text.primary }} />
             <FormSectionTitle>זמני הפעילות</FormSectionTitle>
           </FormSectionHeader>
           <FieldsNotice>יש להגדיר את חלון הזמן המדויק לביצוע המשימה.</FieldsNotice>
@@ -385,7 +387,7 @@ export const OperationOrderHeader = ({
 
         <FormSection>
           <FormSectionHeader>
-            <LayersIcon sx={{ color: (theme) => theme.palette.common.white }} />
+            <LayersIcon sx={{ color: (theme: any) => theme.customColors.text.primary }} />
             <FormSectionTitle>הקצאות ומשאבים ({allocationFields.length})</FormSectionTitle>
           </FormSectionHeader>
           <FieldsNotice>נהל את רשימת ההקצאות עבור פקודה זו. ניתן לשנות את סדר ההקצאות בגרירה.</FieldsNotice>
@@ -396,11 +398,11 @@ export const OperationOrderHeader = ({
             onDragEnd={handleDragEnd}
           >
             <SortableContext
-              items={allocationFields.map(f => f.id)}
+              items={allocationFields.map((f: any) => f.id)}
               strategy={verticalListSortingStrategy}
             >
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {allocationFields.map((field, index) => (
+                {allocationFields.map((field: any, index: number) => (
                   <SortableAllocation
                     key={field.id}
                     field={field}
@@ -422,7 +424,7 @@ export const OperationOrderHeader = ({
           <FormAddButton
             type="button"
             onClick={handleAddAllocation}
-            sx={{ mt: 2, borderStyle: 'dashed', background: 'rgba(59, 130, 246, 0.03)' }}
+            sx={{ mt: 2, borderStyle: 'dashed', background: (theme: any) => `${theme.customColors.primary.main}08` }}
           >
             <AddIcon />
             הוסף הקצאה ראשית חדשה

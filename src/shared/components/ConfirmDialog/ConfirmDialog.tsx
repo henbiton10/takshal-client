@@ -15,19 +15,19 @@ interface ConfirmDialogProps {
 const StyledDialog = styled(Dialog)`
   && {
     .MuiDialog-paper {
-      background: #1c2439;
-      border: 1px solid #305088;
+      background: ${({ theme }) => theme.customColors.background.default};
+      border: 1px solid ${({ theme }) => theme.customColors.border.primary};
       border-radius: 12px;
       width: 318px;
       padding: 24px;
-      box-shadow: 0px 0px 12px 0px rgba(255, 77, 77, 0.24);
+      box-shadow: 0px 0px 12px 0px ${({ theme }) => theme.customColors.error.main}3D;
       direction: rtl;
       overflow: hidden;
       gap: 12px;
     }
     
     .MuiBackdrop-root {
-      background-color: rgba(10, 17, 34, 0.85);
+      background-color: ${({ theme }) => theme.customColors.background.glass};
       backdrop-filter: blur(4px);
     }
   }
@@ -44,7 +44,7 @@ const IconWrapper = styled(Box)`
   width: 48px;
   height: 48px;
   border-radius: 8px;
-  background: rgba(255, 77, 77, 0.12);
+  background: ${({ theme }) => theme.customColors.error.main}1F;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -53,7 +53,7 @@ const IconWrapper = styled(Box)`
 
 const StyledDialogTitle = styled(DialogTitle)`
   && {
-    color: #fafafa;
+    color: ${({ theme }) => theme.customColors.text.primary};
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     font-size: 18px;
     font-weight: 700;
@@ -67,7 +67,7 @@ const StyledDialogTitle = styled(DialogTitle)`
 const StyledDialogContent = styled(DialogContent)`
   && {
     padding: 0;
-    color: #cccccc;
+    color: ${({ theme }) => theme.customColors.text.secondary};
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     font-size: 14px;
     font-weight: 600;
@@ -78,7 +78,7 @@ const StyledDialogContent = styled(DialogContent)`
 
 const StyledDivider = styled(Divider)`
   && {
-    border-color: #305088;
+    border-color: ${({ theme }) => theme.customColors.border.divider};
   }
 `;
 
@@ -93,7 +93,7 @@ const StyledDialogActions = styled(DialogActions)`
 const CancelButton = styled(Button)`
   && {
     background: transparent;
-    color: #cccccc;
+    color: ${({ theme }) => theme.customColors.text.secondary};
     border-radius: 10px;
     padding: 8px 12px;
     text-transform: none;
@@ -104,16 +104,16 @@ const CancelButton = styled(Button)`
     letter-spacing: 0.16px;
     
     &:hover {
-      background: rgba(255, 255, 255, 0.05);
-      color: #fafafa;
+      background: ${({ theme }) => theme.customColors.action.hover};
+      color: ${({ theme }) => theme.customColors.text.primary};
     }
   }
 `;
 
 const ConfirmButton = styled(Button)`
   && {
-    background: #ff4d4d;
-    color: #FAFAFA;
+    background: ${({ theme }) => theme.customColors.error.main};
+    color: ${({ theme }) => theme.customColors.text.white};
     border-radius: 10px;
     padding: 8px 12px;
     text-transform: none;
@@ -124,8 +124,8 @@ const ConfirmButton = styled(Button)`
     letter-spacing: 0.16px;
     
     &:hover {
-      background: #ff3333;
-      box-shadow: 0 0 15px rgba(255, 77, 77, 0.4);
+      background: ${({ theme }) => theme.customColors.error.subtle};
+      box-shadow: 0 0 15px ${({ theme }) => theme.customColors.error.main}66;
     }
   }
 `;

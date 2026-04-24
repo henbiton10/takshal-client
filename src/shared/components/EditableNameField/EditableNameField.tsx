@@ -30,8 +30,12 @@ const NameFieldWrapper = styled.div<{ isEditing: boolean; hasError: boolean }>`
   display: flex;
   align-items: center;
   gap: 8px;
-  background: ${props => props.hasError ? 'rgba(239, 68, 68, 0.15)' : 'rgba(255, 255, 255, 0.12)'};
-  border: 1px solid ${props => props.hasError ? 'rgba(239, 68, 68, 0.4)' : 'transparent'};
+  background: ${props => props.hasError 
+    ? props.theme.customColors.error.subtle 
+    : props.theme.palette.mode === 'light' 
+      ? 'rgba(0, 0, 0, 0.04)' 
+      : 'rgba(255, 255, 255, 0.04)'};
+  border: 1px solid ${props => props.hasError ? props.theme.customColors.error.main : props.theme.customColors.border.divider};
   border-radius: 12px;
   padding: 0 12px;
   height: 42px;
@@ -40,16 +44,19 @@ const NameFieldWrapper = styled.div<{ isEditing: boolean; hasError: boolean }>`
   transition: all 0.2s ease;
   
   &:hover {
-    background: ${props => props.hasError ? 'rgba(239, 68, 68, 0.2)' : 'rgba(255, 255, 255, 0.18)'};
+    background: ${props => props.hasError 
+      ? props.theme.customColors.error.subtle 
+      : props.theme.customColors.action.hover};
+    border-color: ${props => props.hasError ? props.theme.customColors.error.main : props.theme.customColors.border.accent};
   }
 `;
 
 const ErrorText = styled.span`
-  color: #ef4444;
+  color: ${({ theme }) => theme.customColors.error.main};
   font-size: 12px;
   font-weight: 600;
   text-align: right;
-  margin-right: 54px; /* Keeping the offset to match input start, but ensured alignment */
+  margin-right: 54px;
   direction: rtl;
 `;
 
@@ -57,8 +64,8 @@ const NameFieldIcon = styled.div<{ hasError: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: ${props => props.hasError ? 'rgba(239, 68, 68, 0.4)' : 'rgba(0, 166, 62, 0.4)'};
-  color: white;
+  background: ${props => props.hasError ? props.theme.customColors.error.main + '33' : props.theme.customColors.primary.main + '33'};
+  color: ${props => props.hasError ? props.theme.customColors.error.main : props.theme.customColors.primary.main};
   width: 42px;
   height: 42px;
   border-radius: 10.5px;
@@ -74,7 +81,7 @@ const NameFieldInput = styled.input`
   background: transparent;
   border: none;
   outline: none;
-  color: #fafafa;
+  color: ${({ theme }) => theme.customColors.text.primary};
   font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   font-size: 18px;
   font-weight: 700;
@@ -84,12 +91,12 @@ const NameFieldInput = styled.input`
   padding: 0;
   
   &::placeholder {
-    color: rgba(225, 234, 255, 0.4);
+    color: ${({ theme }) => theme.customColors.text.disabled};
   }
 `;
 
 const NameFieldText = styled.div`
-  color: #fafafa;
+  color: ${({ theme }) => theme.customColors.text.primary};
   font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   font-size: 18px;
   font-weight: 700;
@@ -128,6 +135,7 @@ export const EditableNameField = <T extends FieldValues>({
               {isEditing ? (
                 <NameFieldInput
                   {...field}
+                  value={field.value ?? ''}
                   placeholder={placeholder}
                   autoFocus
                   onBlur={() => setIsEditing(false)}
@@ -149,7 +157,7 @@ export const EditableNameField = <T extends FieldValues>({
                   e.stopPropagation();
                   setIsEditing(true);
                 }}
-                sx={{ color: 'rgba(255, 255, 255, 0.7)', padding: '4px' }}
+                sx={{ color: (theme: any) => theme.customColors.text.secondary, padding: '4px' }}
               >
                 <EditIcon sx={{ fontSize: 18 }} />
               </IconButton>

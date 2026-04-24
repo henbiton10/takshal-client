@@ -31,12 +31,13 @@ const ToastWrapper = styled.div<{ $isExiting: boolean; $type: 'success' | 'error
   bottom: 32px;
   left: 32px;
   z-index: 10000;
-  background: #283045;
-  border: 1px solid ${props => props.$type === 'success' ? '#63ff6a' : '#ff4d4d'};
+  background: ${({ theme }) => theme.palette.mode === 'light' ? theme.customColors.background.paper : theme.customColors.background.glass};
+  backdrop-filter: blur(20px);
+  border: 1px solid ${props => props.$type === 'success' ? props.theme.customColors.status.ready : props.theme.customColors.error.main};
   border-radius: 12px;
   padding: 24px;
   min-width: 420px;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
   display: flex;
   align-items: center;
   gap: 24px;
@@ -60,7 +61,7 @@ const TextContainer = styled.div`
 `;
 
 const Title = styled.p`
-  color: #e1eaff;
+  color: ${({ theme }) => theme.customColors.text.primary};
   font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   font-weight: 700;
   font-size: 18px;
@@ -69,9 +70,9 @@ const Title = styled.p`
 `;
 
 const Subtitle = styled.p`
-  color: #bababa;
+  color: ${({ theme }) => theme.customColors.text.secondary};
   font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 14px;
   margin: 0;
   letter-spacing: 0.14px;
@@ -79,18 +80,18 @@ const Subtitle = styled.p`
 `;
 
 const IconContainer = styled.div<{ $type: 'success' | 'error' }>`
-  background: ${props => props.$type === 'success' ? 'rgba(82, 157, 52, 0.35)' : 'rgba(255, 77, 77, 0.25)'};
+  background: ${props => props.$type === 'success' ? props.theme.customColors.status.ready + '33' : props.theme.customColors.error.main + '26'};
   border-radius: 8px;
   width: 48px;
   height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${props => props.$type === 'success' ? '#63ff6a' : '#ff4d4d'};
+  color: ${props => props.$type === 'success' ? props.theme.customColors.status.ready : props.theme.customColors.error.main};
 `;
 
 const CloseButton = styled.button`
-  background: rgba(255, 255, 255, 0.2);
+  background: ${({ theme }) => theme.customColors.background.subtle};
   border: none;
   border-radius: 50%;
   width: 24px;
@@ -99,12 +100,13 @@ const CloseButton = styled.button`
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: #e1eaff;
+  color: ${({ theme }) => theme.customColors.text.secondary};
   transition: all 0.2s;
   padding: 0;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.3);
+    background: ${({ theme }) => theme.customColors.action.hover};
+    color: ${({ theme }) => theme.customColors.text.primary};
   }
 `;
 

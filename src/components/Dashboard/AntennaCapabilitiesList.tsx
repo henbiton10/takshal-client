@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTheme } from '@mui/material/styles';
 import styled from 'styled-components';
 import { DashboardStation } from './types';
 
@@ -19,15 +20,16 @@ const AntennaRow = styled.div<{ $index: number }>`
   font-weight: 500;
   color: white;
   background: ${props => {
+    const { primary, secondary, status, error } = props.theme.customColors;
     const colors = [
-      '#3b82f6', // blue
-      '#22c55e', // green
-      '#f59e0b', // amber
-      '#ef4444', // red
-      '#8b5cf6', // purple
-      '#ec4899', // pink
-      '#14b8a6', // teal
-      '#f97316', // orange
+      primary.main,
+      status.ready,
+      secondary.main,
+      error.main,
+      status.ka,
+      status.x,
+      primary.light,
+      status.partlyReady,
     ];
     return colors[props.$index % colors.length];
   }};
@@ -38,6 +40,7 @@ interface Props {
 }
 
 export const AntennaCapabilitiesList = ({ stations }: Props) => {
+  const theme = useTheme();
   const allAntennas = useMemo(() => {
     const antennas: Array<{ id: number; label: string; index: number }> = [];
     let index = 0;
@@ -59,7 +62,7 @@ export const AntennaCapabilitiesList = ({ stations }: Props) => {
   if (allAntennas.length === 0) {
     return (
       <ListContainer>
-        <div style={{ textAlign: 'center', color: 'rgba(255,255,255,0.4)', padding: '20px' }}>
+        <div style={{ textAlign: 'center', color: theme.customColors.text.disabled, padding: '20px' }}>
           אין אנטנות להצגה
         </div>
       </ListContainer>

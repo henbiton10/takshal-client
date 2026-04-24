@@ -16,34 +16,41 @@ const SearchContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #1c2439;
-  border: 1px solid #305088;
+  background: ${({ theme }) => theme.palette.mode === 'light' ? theme.customColors.background.default : theme.customColors.background.glass};
+  border: 1px solid ${({ theme }) => theme.palette.mode === 'light' ? theme.customColors.border.primary : theme.customColors.border.divider};
   border-radius: 21px;
   padding: 0 16px;
   width: 190px;
   height: 38px;
   flex-shrink: 0;
+  backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+
+  &:focus-within {
+    border-color: ${({ theme }) => theme.customColors.primary.main};
+    background: ${({ theme }) => theme.palette.mode === 'light' ? theme.customColors.background.paper : theme.customColors.background.paper};
+  }
 `;
 
 const SearchInput = styled.input`
   background: none;
   border: none;
-  color: #e1eaff;
+  color: ${({ theme }) => theme.customColors.text.secondary};
   outline: none;
   font-size: 16px;
   font-weight: 600;
   width: 100%;
   text-align: right;
   direction: rtl;
-  &::placeholder { color: #e1eaff; font-weight: 600; }
+  &::placeholder { color: ${({ theme }) => theme.customColors.text.placeholder}; font-weight: 600; }
 `;
 
 export const AddResourceButton = styled.button`
   display: flex;
   align-items: center;
   gap: 8px;
-  background: #3d62b2;
-  color: #f5f5f5;
+  background: ${({ theme }) => theme.customColors.primary.main};
+  color: ${({ theme }) => theme.customColors.text.white};
   border: none;
   border-radius: 20px;
   padding: 8px 12px 8px 16px;
@@ -51,7 +58,7 @@ export const AddResourceButton = styled.button`
   font-weight: 700;
   cursor: pointer;
   box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
-  &:hover { background: #304f93; }
+  &:hover { background: ${({ theme }) => theme.customColors.primary.hover}; }
 `;
 
 export const ResourcesManagement = () => {
@@ -98,7 +105,7 @@ export const ResourcesManagement = () => {
   const searchAction = (
     <SearchContainer>
       <SearchInput placeholder="חיפוש" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
-      <SearchIcon sx={{ color: '#e1eaff', fontSize: 18 }} />
+      <SearchIcon sx={{ color: (theme) => theme.customColors.text.placeholder, fontSize: 18 }} />
     </SearchContainer>
   );
 
@@ -190,7 +197,7 @@ export const ResourcesManagement = () => {
     const isEmpty = addingEntityId === null && Object.values(entityManagers).every(m => (m.items?.length || 0) === 0);
     if (isEmpty) return (
       <BigEmptyState 
-        icon={<CellTowerIcon sx={{ fontSize: 48, color: '#e1eaff' }} />}
+        icon={<CellTowerIcon sx={{ fontSize: 48, color: (theme) => theme.customColors.text.secondary }} />}
         title="טרם הוגדרו אמצעים במערכת"
         subtitle="כדי להתחיל בתכנון, יש להוסיף אמצעי."
       />

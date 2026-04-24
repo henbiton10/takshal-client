@@ -47,7 +47,7 @@ export const EntitySection = ({
 
   if (loading) {
     return (
-      <Box sx={{ padding: '20px', textAlign: 'center', color: '#aec7ff', width: '100%', display: 'flex', justifyContent: 'center' }}>
+      <Box sx={{ padding: '20px', textAlign: 'center', color: (theme) => theme.customColors.text.secondary, width: '100%', display: 'flex', justifyContent: 'center' }}>
         טוען {title}...
       </Box>
     );

@@ -107,9 +107,9 @@ export const FormSelect = <T extends FieldValues>({
                   PaperProps: {
                     sx: {
                       maxHeight: 300,
-                      backgroundColor: 'rgba(28, 40, 78, 0.95)',
+                      backgroundColor: (theme: any) => theme.customColors.background.glass,
                       backdropFilter: 'blur(10px)',
-                      border: '1px solid rgba(174, 199, 255, 0.15)',
+                      border: (theme: any) => `1px solid ${theme.customColors.border.divider}`,
                       '& .MuiMenuItem-root': {
                         padding: '8px 16px',
                       }

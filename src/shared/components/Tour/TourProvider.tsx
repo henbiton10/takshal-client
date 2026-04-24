@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Joyride, STATUS } from 'react-joyride';
+import { useTheme } from 'styled-components';
 import { TOUR_STEPS } from './steps';
 import { TourTooltip } from './TourTooltip';
 
@@ -15,6 +16,7 @@ const STORAGE_KEY = 'takshal_tour_completed';
 export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [run, setRun] = useState(false);
   const [tourKey, setTourKey] = useState(0);
+  const theme = useTheme();
 
   useEffect(() => {
     const isCompleted = localStorage.getItem(STORAGE_KEY) === 'true';
@@ -73,9 +75,9 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
           styles: {
             options: {
               zIndex: 10000,
-              arrowColor: 'rgba(28, 36, 57, 0.9)',
+              arrowColor: (theme as any).customColors.background.glass,
               overlayColor: 'rgba(0, 0, 0, 0.6)',
-              primaryColor: '#3d62b2',
+              primaryColor: (theme as any).customColors.primary.main,
             },
             spotlight: {
               borderRadius: 16,

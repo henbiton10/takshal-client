@@ -1,4 +1,5 @@
 import { useMemo, useCallback, useState, useRef } from 'react';
+import { useTheme } from '@mui/material/styles';
 import { AgGridReact } from 'ag-grid-react';
 import {
   ColDef,
@@ -32,7 +33,7 @@ const GridContainer = styled.div`
   width: 100%;
   direction: rtl;
 
-  &.ag-theme-alpine-dark {
+  &.ag-theme-alpine-dark, &.ag-theme-alpine {
     --ag-header-column-separator-display: block !important;
     --ag-header-column-separator-color: transparent !important;
     --ag-header-column-separator-width: 2px !important;
@@ -41,7 +42,7 @@ const GridContainer = styled.div`
     background-color: transparent !important;
     background: transparent !important;
     border: none !important;
-    color: #ffffff !important;
+    color: ${({ theme }) => theme.customColors.text.primary} !important;
 
     /* Styling the actual resize handle */
     .ag-header-cell-resize {
@@ -51,7 +52,7 @@ const GridContainer = styled.div`
     
     .ag-header-cell-resize::after {
       content: '' !important;
-      background-color: rgba(255, 255, 255, 0.6) !important;
+      background-color: ${({ theme }) => theme.customColors.border.divider} !important;
       width: 2px !important;
       height: 60% !important;
       top: 20% !important;
@@ -61,20 +62,20 @@ const GridContainer = styled.div`
     }
     
     .ag-header-cell-resize:hover::after {
-      background-color: #ffffff !important;
+      background-color: ${({ theme }) => theme.customColors.primary.main} !important;
       width: 4px !important;
     }
 
     --ag-background-color: transparent !important;
     --ag-header-background-color: transparent !important;
-    --ag-odd-row-background-color: rgba(255, 255, 255, 0.02) !important;
-    --ag-header-foreground-color: #ffffff !important;
-    --ag-foreground-color: #ffffff !important;
-    --ag-secondary-foreground-color: rgba(255, 255, 255, 0.7) !important;
-    --ag-row-hover-color: rgba(59, 130, 246, 0.08) !important;
-    --ag-selected-row-background-color: rgba(59, 130, 246, 0.15) !important;
-    --ag-row-border-color: rgba(255, 255, 255, 0.06) !important;
-    --ag-border-color: rgba(255, 255, 255, 0.06) !important;
+    --ag-odd-row-background-color: ${({ theme }) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.02)' : 'rgba(0, 0, 0, 0.02)'} !important;
+    --ag-header-foreground-color: ${({ theme }) => theme.customColors.text.primary} !important;
+    --ag-foreground-color: ${({ theme }) => theme.customColors.text.primary} !important;
+    --ag-secondary-foreground-color: ${({ theme }) => theme.customColors.text.secondary} !important;
+    --ag-row-hover-color: ${({ theme }) => theme.customColors.action.hover} !important;
+    --ag-selected-row-background-color: ${({ theme }) => theme.customColors.action.selected} !important;
+    --ag-row-border-color: ${({ theme }) => theme.customColors.border.divider} !important;
+    --ag-border-color: ${({ theme }) => theme.customColors.border.divider} !important;
     
     /* Target every single container layer of the grid */
     .ag-root-wrapper,
@@ -102,7 +103,7 @@ const GridContainer = styled.div`
     .ag-header {
       background-color: transparent !important;
       height: 60px !important;
-      color: ${({ theme }) => theme.palette.text.primary} !important;
+      color: ${({ theme }) => theme.customColors.text.primary} !important;
     }
 
     .ag-row {
@@ -113,12 +114,12 @@ const GridContainer = styled.div`
     }
 
     .ag-header-cell-text {
-      color: ${({ theme }) => theme.palette.text.primary} !important;
+      color: ${({ theme }) => theme.customColors.text.primary} !important;
       font-weight: 700;
     }
 
     .ag-cell {
-      color: ${({ theme }) => theme.palette.text.primary} !important;
+      color: ${({ theme }) => theme.customColors.text.primary} !important;
       border: none !important;
       background: transparent !important;
       display: flex;
@@ -128,7 +129,7 @@ const GridContainer = styled.div`
 
     /* Card-style grouping */
     .allocation-group-row {
-      background-color: ${({ theme }) => theme.palette.action.hover} !important;
+      background-color: ${({ theme }) => theme.customColors.action.hover} !important;
       border: none !important;
     }
 
@@ -144,16 +145,12 @@ const GridContainer = styled.div`
     }
 
     .has-children-divider {
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
-    }
-
-    .sub-allocation-row {
-      /* No separate background, uses .allocation-group-row instead */
+      border-bottom: 1px solid ${({ theme }) => theme.customColors.border.divider} !important;
     }
 
     /* Filter Icons Styling */
     .ag-header-cell-menu-button {
-      color: #ffffff !important;
+      color: ${({ theme }) => theme.customColors.text.secondary} !important;
       opacity: 0.5 !important;
       visibility: visible !important;
       width: 20px !important;
@@ -172,8 +169,8 @@ const GridContainer = styled.div`
     .ag-icon-menu,
     .ag-icon-menu::before,
     .ag-icon {
-      color: #ffffff !important;
-      fill: #ffffff !important;
+      color: ${({ theme }) => theme.customColors.text.primary} !important;
+      fill: ${({ theme }) => theme.customColors.text.primary} !important;
       font-size: 20px !important;
       font-weight: bold !important;
       display: inline-block !important;
@@ -188,8 +185,8 @@ const GridContainer = styled.div`
   }
 
   .ag-filter-wrapper {
-    background-color: #1e293b !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    background-color: ${({ theme }) => theme.customColors.background.paper} !important;
+    border: 1px solid ${({ theme }) => theme.customColors.border.divider} !important;
     padding: 8px !important;
     border-radius: 8px !important;
   }
@@ -197,18 +194,18 @@ const GridContainer = styled.div`
   .ag-filter-filter, 
   .ag-filter-body, 
   .ag-filter-select {
-    background-color: #1e293b !important;
-    color: #ffffff !important;
+    background-color: ${({ theme }) => theme.customColors.background.paper} !important;
+    color: ${({ theme }) => theme.customColors.text.primary} !important;
   }
 
   .ag-filter-condition {
-    color: #ffffff !important;
+    color: ${({ theme }) => theme.customColors.text.primary} !important;
   }
 
   .ag-input-field-input {
-     background-color: rgba(255, 255, 255, 0.05) !important;
-     border: 1px solid rgba(255, 255, 255, 0.1) !important;
-     color: #ffffff !important;
+     background-color: ${({ theme }) => theme.customColors.background.subtle} !important;
+     border: 1px solid ${({ theme }) => theme.customColors.border.divider} !important;
+     color: ${({ theme }) => theme.customColors.text.primary} !important;
      border-radius: 4px !important;
      padding: 4px 10px 4px 30px !important;
      direction: rtl !important;
@@ -243,15 +240,15 @@ const GridContainer = styled.div`
   }
 
   .ag-picker-field-wrapper {
-     background-color: rgba(255, 255, 255, 0.05) !important;
-     border: 1px solid rgba(255, 255, 255, 0.1) !important;
-     color: #ffffff !important;
+     background-color: ${({ theme }) => theme.customColors.background.subtle} !important;
+     border: 1px solid ${({ theme }) => theme.customColors.border.divider} !important;
+     color: ${({ theme }) => theme.customColors.text.primary} !important;
   }
 
   .ag-set-filter-item, .ag-menu-option {
-    color: #ffffff !important;
+    color: ${({ theme }) => theme.customColors.text.primary} !important;
     &:hover {
-      background-color: rgba(59, 130, 246, 0.1) !important;
+      background-color: ${({ theme }) => theme.customColors.action.hover} !important;
     }
   }
 
@@ -277,25 +274,26 @@ const StatusBadge = styled.div<{ $status: 'success' | 'error' | 'warning' }>`
   height: 28px;
   border-radius: 8px;
   font-size: 13px;
-  font-weight: 600;
-  background: rgba(255, 255, 255, 0.04);
+  font-weight: 700;
+  background: ${({ theme }) => theme.customColors.background.subtle};
   
   ${(props) => {
+    const { status: statusColors, error } = props.theme.customColors;
     switch (props.$status) {
       case 'success':
         return `
-          border: 1px solid rgba(34, 197, 94, 0.8);
-          color: rgba(34, 197, 94, 0.9);
+          border: 1px solid ${props.theme.palette.mode === 'dark' ? 'rgba(34, 197, 94, 0.8)' : '#22c55e'};
+          color: ${props.theme.palette.mode === 'dark' ? 'rgba(34, 197, 94, 0.9)' : '#16a34a'};
         `;
       case 'warning':
         return `
-          border: 1px solid rgba(251, 191, 36, 0.8);
-          color: rgba(251, 191, 36, 0.9);
+          border: 1px solid ${statusColors.partlyReady};
+          color: ${props.theme.palette.mode === 'dark' ? statusColors.partlyReady : '#d97706'};
         `;
       case 'error':
         return `
-          border: 1px solid rgba(255, 77, 77, 0.8);
-          color: rgba(255, 77, 77, 0.8);
+          border: 1px solid ${error.main};
+          color: ${error.main};
         `;
     }
   }}
@@ -326,11 +324,11 @@ const GridActionButton = styled.button`
 `;
 
 const DeleteGridButton = styled(GridActionButton)`
-  background: rgba(255, 77, 77, 0.15);
-  color: #ff4d4d;
+  background: ${({ theme }) => theme.customColors.error.subtle};
+  color: ${({ theme }) => theme.customColors.error.main};
   
   &:hover {
-    background: rgba(255, 77, 77, 0.25);
+    background: ${({ theme }) => theme.customColors.error.main}33;
   }
 `;
 
@@ -353,21 +351,23 @@ const AllocationTypeBadge = styled.div<{ $type: 'main' | 'sub' }>`
   font-weight: 700;
   white-space: nowrap;
   
-  ${(props) =>
-    props.$type === 'main'
+  ${(props) => {
+    const { primary, text, background } = props.theme.customColors;
+    return props.$type === 'main'
       ? `
-        background: rgba(0, 188, 125, 0.15);
-        color: #00bc7d;
+        background: ${primary.main}26;
+        color: ${props.theme.palette.mode === 'dark' ? '#00bc7d' : primary.main};
       `
       : `
-        background: rgba(61, 98, 178, 0.3);
-        color: #e1eaff;
-      `}
+        background: ${background.subtle};
+        color: ${text.secondary};
+      `;
+  }}
 `;
 
 const GridChip = styled.div`
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: ${({ theme }) => theme.customColors.background.subtle};
+  border: 1px solid ${({ theme }) => theme.customColors.border.divider};
   border-radius: 12px;
   height: 32px;
   padding: 0 12px;
@@ -375,14 +375,14 @@ const GridChip = styled.div`
   align-items: center;
   gap: 8px;
   width: fit-content;
-  color: #fafafa;
+  color: ${({ theme }) => theme.customColors.text.primary};
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   transition: all 0.2s ease;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.12);
-    border-color: rgba(255, 255, 255, 0.2);
+    background: ${({ theme }) => theme.customColors.action.hover};
+    border-color: ${({ theme }) => theme.customColors.border.accent};
   }
 `;
 
@@ -390,22 +390,23 @@ const ChipIcon = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #e1eaff;
-  opacity: 0.8;
+  color: ${({ theme }) => theme.customColors.primary.main};
+  opacity: 0.9;
 `;
 
 const ExpandIcon = styled.span<{ $expanded?: boolean }>`
   display: flex;
   align-items: center;
   cursor: pointer;
-  color: rgba(255, 255, 255, 0.5);
+  color: ${({ theme }) => theme.customColors.text.secondary};
   transition: transform 0.2s;
   transform: ${(props) => (props.$expanded ? 'rotate(0deg)' : 'rotate(90deg)')};
 `;
 
 const OrderNumber = styled.span<{ $isSubAllocation?: boolean }>`
-  color: ${(props) => (props.$isSubAllocation ? 'rgba(255, 255, 255, 0.5)' : 'rgba(255, 255, 255, 0.85)')};
+  color: ${({ theme, $isSubAllocation }) => $isSubAllocation ? theme.customColors.text.disabled : theme.customColors.text.primary};
   margin-right: ${(props) => (props.$isSubAllocation ? '24px' : '0')};
+  font-weight: 700;
 `;
 
 interface FlattenedAllocation extends AllocationData {
@@ -439,6 +440,7 @@ export const AllocationsGrid = ({
   onDelete,
   onReorder,
 }: AllocationsGridProps) => {
+  const theme = useTheme() as any;
   const [collapsedIds, setCollapsedIds] = useState<Set<number>>(new Set());
   const [deleteConfirmation, setDeleteConfirmation] = useState<{ open: boolean; allocationId: number | null }>({
     open: false,
@@ -935,11 +937,11 @@ export const AllocationsGrid = ({
             alignItems: 'center',
             justifyContent: 'center',
             height: '100%',
-            color: 'rgba(255, 255, 255, 0.4)',
+            color: theme.customColors.text.disabled,
             fontSize: '14px',
             background: 'transparent',
             borderRadius: 8,
-            border: '1px dashed rgba(255, 255, 255, 0.1)',
+            border: `1px dashed ${theme.customColors.border.divider}`,
           }}
         >
           אין הקצאות להצגה
@@ -950,7 +952,7 @@ export const AllocationsGrid = ({
 
   return (
     <GridContainer
-      className="ag-theme-alpine-dark"
+      className={theme.palette.mode === 'dark' || theme.palette.mode === 'midnight' ? "ag-theme-alpine-dark" : "ag-theme-alpine"}
       style={{ height: Math.min(650, 64 + flattenedData.length * 64 + (allocations.length * 12)) }}
     >
       <AgGridReact<FlattenedAllocation>

@@ -36,7 +36,7 @@ const PageHeader = styled.div`
   align-items: center;
   height: 64px;
   padding: 0 28px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  border-bottom: 1px solid ${({ theme }) => theme.customColors.border.divider};
   flex-shrink: 0;
   box-sizing: border-box;
 `;
@@ -48,7 +48,7 @@ const TitleContainer = styled.div`
 `;
 
 const Title = styled.h1`
-  color: rgba(225, 234, 255, 1);
+  color: ${({ theme }) => theme.customColors.text.primary};
   font-size: 24px;
   font-weight: 700;
   margin: 0;
@@ -56,7 +56,7 @@ const Title = styled.h1`
 
 const SubtitleWrapper = styled.div`
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.7);
+  color: ${({ theme }) => theme.customColors.text.secondary};
   margin-top: 4px;
 `;
 
@@ -67,8 +67,8 @@ const BreadcrumbsContainer = styled.div`
 `;
 
 const BackIconButton = styled.button`
-  background: #3c61b2;
-  color: white;
+  background: ${({ theme }) => theme.customColors.primary.main};
+  color: ${({ theme }) => theme.customColors.text.white};
   border: none;
   border-radius: 50%;
   width: 40px;
@@ -80,14 +80,14 @@ const BackIconButton = styled.button`
   transition: all 0.2s;
 
   &:hover {
-    background: #304f93;
+    background: ${({ theme }) => theme.customColors.primary.hover};
   }
 `;
 
 const BreadcrumbButton = styled.button<{ $clickable?: boolean }>`
   background: none;
   border: none;
-  color: rgba(225, 234, 255, 0.7);
+  color: ${({ theme }) => theme.customColors.text.secondary};
   font-size: 24px;
   font-weight: 500;
   padding: 0;
@@ -101,7 +101,12 @@ const BreadcrumbButton = styled.button<{ $clickable?: boolean }>`
   outline: none;
 
   &:hover {
-    color: ${props => props.$clickable ? '#fff' : 'rgba(225, 234, 255, 0.7)'};
+    color: ${props => {
+      if (!props.$clickable) return props.theme.customColors.text.secondary;
+      return props.theme.palette.mode === 'light' 
+        ? props.theme.customColors.primary.main 
+        : props.theme.customColors.text.white;
+    }};
     transform: ${props => props.$clickable ? 'translateY(-1px)' : 'none'};
   }
 
@@ -111,7 +116,7 @@ const BreadcrumbButton = styled.button<{ $clickable?: boolean }>`
 `;
 
 const BreadcrumbCurrent = styled.span`
-  color: #e1eaff;
+  color: ${({ theme }) => theme.customColors.text.primary};
   font-size: 24px;
   font-weight: 700;
   font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -168,7 +173,7 @@ export const PageLayout = ({
               >
                 {breadcrumbs.parent}
               </BreadcrumbButton>
-              <ChevronLeftIcon sx={{ color: 'rgba(255, 255, 255, 0.3)', fontSize: 24 }} />
+              <ChevronLeftIcon sx={{ color: (theme) => theme.customColors.text.muted, fontSize: 24 }} />
               {breadcrumbs.middle && (
                 <>
                   <BreadcrumbButton 
@@ -178,7 +183,7 @@ export const PageLayout = ({
                   >
                     {breadcrumbs.middle}
                   </BreadcrumbButton>
-                  <ChevronLeftIcon sx={{ color: 'rgba(255, 255, 255, 0.3)', fontSize: 24 }} />
+                  <ChevronLeftIcon sx={{ color: (theme) => theme.customColors.text.muted, fontSize: 24 }} />
                 </>
               )}
               <BreadcrumbCurrent>{breadcrumbs.current}</BreadcrumbCurrent>

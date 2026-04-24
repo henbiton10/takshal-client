@@ -13,19 +13,19 @@ interface AntennaConflictWarningProps {
 const StyledDialog = styled(Dialog)`
   && {
     .MuiDialog-paper {
-      background: rgb(30, 45, 70);
+      background: ${({ theme }) => theme.customColors.background.default};
       border-radius: 12px;
       min-width: 500px;
       max-width: 600px;
       direction: rtl;
-      border: 1px solid rgba(245, 158, 11, 0.3);
+      border: 1px solid ${({ theme }) => theme.customColors.status.partlyReady}4D;
     }
   }
 `;
 
 const StyledDialogTitle = styled(DialogTitle)`
   && {
-    color: #f59e0b;
+    color: ${({ theme }) => theme.customColors.status.partlyReady};
     font-size: 18px;
     font-weight: 600;
     padding: 20px 24px 16px;
@@ -47,45 +47,45 @@ const StyledDialogActions = styled(DialogActions)`
     padding: 16px 24px;
     gap: 12px;
     justify-content: flex-start;
-    border-top: 1px solid rgba(174, 199, 255, 0.1);
+    border-top: 1px solid ${({ theme }) => theme.customColors.border.divider};
   }
 `;
 
 const CancelButton = styled(Button)`
   && {
-    background: rgba(51, 65, 85, 0.9);
-    color: white;
+    background: ${({ theme }) => theme.customColors.background.medium};
+    color: ${({ theme }) => theme.customColors.text.white};
     border-radius: 20px;
     padding: 8px 24px;
     text-transform: none;
     font-size: 14px;
-    border: 1px solid rgba(100, 116, 139, 0.5);
+    border: 1px solid ${({ theme }) => theme.customColors.border.primary};
     
     &:hover {
-      background: rgba(71, 85, 105, 1);
+      background: ${({ theme }) => theme.customColors.action.hover};
     }
   }
 `;
 
 const ConfirmButton = styled(Button)`
   && {
-    background: rgba(245, 158, 11, 0.25);
-    color: #f59e0b;
+    background: ${({ theme }) => theme.customColors.status.partlyReady}40;
+    color: ${({ theme }) => theme.customColors.status.partlyReady};
     border-radius: 20px;
     padding: 8px 24px;
     text-transform: none;
     font-size: 14px;
-    border: 1px solid rgba(245, 158, 11, 0.4);
+    border: 1px solid ${({ theme }) => theme.customColors.status.partlyReady}66;
     
     &:hover {
-      background: rgba(245, 158, 11, 0.35);
+      background: ${({ theme }) => theme.customColors.status.partlyReady}59;
     }
   }
 `;
 
 const ConflictCard = styled.div`
-  background: rgba(245, 158, 11, 0.1);
-  border: 1px solid rgba(245, 158, 11, 0.2);
+  background: ${({ theme }) => theme.customColors.status.partlyReady}1A;
+  border: 1px solid ${({ theme }) => theme.customColors.status.partlyReady}33;
   border-radius: 8px;
   padding: 16px;
   margin-bottom: 12px;
@@ -98,7 +98,7 @@ const ConflictCard = styled.div`
 const ConflictTitle = styled.div`
   font-size: 14px;
   font-weight: 600;
-  color: #f59e0b;
+  color: ${({ theme }) => theme.customColors.status.partlyReady};
   margin-bottom: 12px;
 `;
 
@@ -107,7 +107,7 @@ const ConflictDetail = styled.div`
   gap: 8px;
   margin-bottom: 6px;
   font-size: 13px;
-  color: rgba(225, 234, 255, 0.9);
+  color: ${({ theme }) => theme.customColors.text.primary};
   
   &:last-child {
     margin-bottom: 0;
@@ -115,7 +115,7 @@ const ConflictDetail = styled.div`
 `;
 
 const DetailLabel = styled.span`
-  color: rgba(225, 234, 255, 0.6);
+  color: ${({ theme }) => theme.customColors.text.secondary};
   min-width: 100px;
 `;
 
@@ -125,7 +125,7 @@ const DetailValue = styled.span`
 
 const WarningMessage = styled(Typography)`
   && {
-    color: rgba(225, 234, 255, 0.8);
+    color: ${({ theme }) => theme.customColors.text.secondary};
     font-size: 14px;
     text-align: right;
     margin-bottom: 16px;

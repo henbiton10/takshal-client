@@ -20,13 +20,13 @@ const CategoryHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  border-bottom: 1px solid ${({ theme }) => theme.customColors.border.divider};
   padding-bottom: 12px;
   margin-bottom: 4px;
 `;
 
 const CategoryTitle = styled.h2`
-  color: #fafafa;
+  color: ${({ theme }) => theme.customColors.text.primary};
   font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   font-size: 24px;
   font-weight: 700;
@@ -36,7 +36,7 @@ const CategoryTitle = styled.h2`
 
 const ShowAllButton = styled(Button)`
   && {
-    color: #e1eaff;
+    color: ${({ theme }) => theme.customColors.text.secondary};
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     font-size: 16px;
     font-weight: 600;
@@ -107,7 +107,7 @@ export const ResourceDashboard = ({
                 })}
               </ItemsGrid>
             ) : (
-              <Box sx={{ padding: '24px 0', color: 'rgba(225, 234, 255, 0.4)', textAlign: 'right', fontSize: '14px' }}>
+              <Box sx={{ padding: '24px 0', color: (theme) => theme.customColors.text.disabled, textAlign: 'right', fontSize: '14px' }}>
                 {config.emptyMessage || 'לא נמצאו פריטים'}
               </Box>
             )}

@@ -3,7 +3,7 @@ import { Box, Button, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
 export const FormContainer = styled(Box)`
-  background: ${({ theme }) => theme.palette.background.paper};
+  background: ${({ theme }) => theme.customColors.background.paper};
   border-radius: ${({ theme }) => theme.customBorderRadius.md};
   padding: ${({ theme }) => `${theme.customSpacing.xl} ${theme.customSpacing.xxl}`};
   direction: rtl;
@@ -18,7 +18,7 @@ const FormHeaderContainer = styled.div`
 `;
 
 export const FormTitle = styled.h1`
-  color: ${({ theme }) => theme.palette.text.primary};
+  color: ${({ theme }) => theme.customColors.text.primary};
   font-size: ${({ theme }) => theme.customTypography.fontSize.xl};
   font-weight: ${({ theme }) => theme.customTypography.fontWeight.medium};
   margin: 0;
@@ -29,12 +29,12 @@ export const FormTitle = styled.h1`
 
 const CloseButton = styled(IconButton)`
   && {
-    color: ${({ theme }) => theme.palette.text.disabled};
+    color: ${({ theme }) => theme.customColors.text.disabled};
     padding: 8px;
     
     &:hover {
-      color: ${({ theme }) => theme.palette.text.primary};
-      background: ${({ theme }) => theme.palette.action.hover};
+      color: ${({ theme }) => theme.customColors.text.primary};
+      background: ${({ theme }) => theme.customColors.action.hover};
     }
   }
 `;
@@ -75,7 +75,7 @@ export const FullWidthField = styled.div`
 `;
 
 export const FieldWrapper = styled.div`
-  background: ${({ theme }) => theme.palette.background.paper};
+  background: ${({ theme }) => theme.customColors.background.paper};
   border-radius: ${({ theme }) => theme.customBorderRadius.lg};
   padding: 14px;
   direction: rtl;
@@ -83,7 +83,7 @@ export const FieldWrapper = styled.div`
 `;
 
 export const CombinedFieldWrapper = styled.div`
-  background: ${({ theme }) => theme.palette.background.paper};
+  background: ${({ theme }) => theme.customColors.background.paper};
   border-radius: ${({ theme }) => theme.customBorderRadius.lg};
   direction: rtl;
   text-align: right;
@@ -101,7 +101,7 @@ export const CombinedFieldSection = styled.div<CombinedFieldSectionProps>`
   flex: ${props => props.flexBasis ? `1 1 ${props.flexBasis}` : '1'};
   min-width: 0;
   ${props => props.hasBorder && `
-    border-left: 1px solid ${props.theme.palette.divider};
+    border-left: 1px solid ${props.theme.customColors.border.divider};
   `}
 `;
 
@@ -113,7 +113,7 @@ export const FieldLabel = styled.label<FieldLabelProps>`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: ${({ theme }) => theme.palette.text.secondary};
+  color: ${({ theme }) => theme.customColors.text.secondary};
   font-family: inherit;
   font-size: 16px;
   font-weight: 600;
@@ -123,7 +123,7 @@ export const FieldLabel = styled.label<FieldLabelProps>`
   
   &::after {
     content: '${props => props.$required ? '*' : ''}';
-    color: ${({ theme }) => theme.palette.error.main};
+    color: ${({ theme }) => theme.customColors.error.main};
   }
 `;
 
@@ -138,13 +138,15 @@ export const ButtonContainer = styled.div`
 // NEW FIGMA LAYOUT COMPONENTS //
 
 export const FormMainContainer = styled.div`
-  background: rgba(45, 58, 89, 0.55);
+  background: ${({ theme }) => theme.customColors.background.glass};
+  backdrop-filter: blur(40px);
+  border: 1px solid ${({ theme }) => theme.customColors.border.divider};
   border-radius: 24px;
   padding: 20px 28px;
   width: 100%;
   max-width: 1100px;
   margin: 0 auto;
-  box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.3);
+  box-shadow: 0px 4px 40px rgba(0, 0, 0, 0.4);
   display: flex;
   flex-direction: column;
   flex: 0 1 auto;
@@ -179,16 +181,17 @@ export const FormScrollContainer = styled.div`
     background: transparent;
   }
   &::-webkit-scrollbar-thumb {
-    background: rgba(174, 199, 255, 0.2);
+    background: ${({ theme }) => theme.customColors.border.divider};
     border-radius: 10px;
   }
   &::-webkit-scrollbar-thumb:hover {
-    background: rgba(174, 199, 255, 0.3);
+    background: ${({ theme }) => theme.customColors.border.subtle};
   }
 `;
 
 export const FormSection = styled.div`
-  background: ${({ theme }) => theme.palette.action.hover};
+  background: ${({ theme }) => theme.customColors.background.subtle};
+  border: 1px solid ${({ theme }) => theme.customColors.border.divider};
   border-radius: 16px;
   padding: 18px 24px;
   display: flex;
@@ -206,7 +209,7 @@ export const FormSectionHeader = styled.div`
 `;
 
 export const FormSectionTitle = styled.h3`
-  color: ${({ theme }) => theme.palette.text.secondary};
+  color: ${({ theme }) => theme.customColors.text.secondary};
   font-family: inherit;
   font-size: 18px;
   font-weight: 700;
@@ -239,7 +242,7 @@ export const FormHeaderTop = styled.div`
 `;
 
 export const FormTitleLarge = styled.h2`
-  color: ${({ theme }) => theme.palette.text.primary};
+  color: ${({ theme }) => theme.customColors.text.primary};
   font-family: inherit;
   font-size: 24px;
   font-weight: 700;
@@ -248,7 +251,7 @@ export const FormTitleLarge = styled.h2`
 `;
 
 export const FormSubtitle = styled.p`
-  color: ${({ theme }) => theme.palette.text.secondary};
+  color: ${({ theme }) => theme.customColors.text.secondary};
   font-family: inherit;
   font-size: 18px;
   font-weight: 600;
@@ -262,7 +265,7 @@ export const FormBottomActions = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  border-top: 1px solid ${({ theme }) => theme.palette.divider};
+  border-top: 1px solid ${({ theme }) => theme.customColors.border.divider};
   padding-top: 17px;
   margin-top: auto;
   flex-shrink: 0;
@@ -272,13 +275,13 @@ export const FieldsNotice = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-  color: ${({ theme }) => theme.palette.text.disabled};
+  color: ${({ theme }) => theme.customColors.text.disabled};
   font-family: inherit;
   font-size: 16px;
   font-weight: 600;
 
   span {
-    color: ${({ theme }) => theme.palette.error.main};
+    color: ${({ theme }) => theme.customColors.error.main};
   }
 `;
 
@@ -290,8 +293,8 @@ export const ActionButtonsGroup = styled.div`
 
 export const FormPrimaryButton = styled(Button)`
   && {
-    background: linear-gradient(180deg, rgba(99, 255, 106, 0.4) 0%, rgba(66, 228, 73, 0.4) 100%);
-    color: ${({ theme }) => theme.palette.text.primary};
+    background: ${({ theme }) => theme.customColors.status.ready};
+    color: ${({ theme }) => theme.customColors.text.white};
     border-radius: 12px;
     padding: 12px 24px;
     min-width: 160px;
@@ -304,12 +307,13 @@ export const FormPrimaryButton = styled(Button)`
     border: none;
     
     &:hover {
-      background: linear-gradient(180deg, rgba(99, 255, 106, 0.5) 0%, rgba(66, 228, 73, 0.5) 100%);
+      background: ${({ theme }) => theme.customColors.status.ready};
+      opacity: 0.9;
     }
     
     &:disabled {
-      background: ${({ theme }) => theme.palette.action.disabledBackground};
-      color: ${({ theme }) => theme.palette.action.disabled};
+      background: ${({ theme }) => theme.customColors.primary.disabled};
+      color: ${({ theme }) => theme.customColors.text.disabled};
       box-shadow: none;
     }
     
@@ -322,7 +326,7 @@ export const FormPrimaryButton = styled(Button)`
 
 export const FormSecondaryButton = styled(Button)`
   && {
-    color: ${({ theme }) => theme.palette.text.secondary};
+    color: ${({ theme }) => theme.customColors.text.secondary};
     padding: 12px 20px;
     min-width: 102px;
     white-space: nowrap;
@@ -333,17 +337,17 @@ export const FormSecondaryButton = styled(Button)`
     border-radius: 12px;
     
     &:hover {
-      background: ${({ theme }) => theme.palette.action.hover};
-      color: ${({ theme }) => theme.palette.text.primary};
+      background: ${({ theme }) => theme.customColors.action.hover};
+      color: ${({ theme }) => theme.customColors.text.primary};
     }
   }
 `;
 
 export const FormDeleteButton = styled(Button)`
   && {
-    background: rgba(255, 77, 77, 0.15);
-    border: 1px solid ${({ theme }) => theme.palette.error.main};
-    color: ${({ theme }) => theme.palette.error.main};
+    background: ${({ theme }) => theme.customColors.error.subtle};
+    border: 1px solid ${({ theme }) => theme.customColors.error.main};
+    color: ${({ theme }) => theme.customColors.error.main};
     border-radius: 12px;
     padding: 12px 20px;
     min-width: 149px;
@@ -355,7 +359,8 @@ export const FormDeleteButton = styled(Button)`
     text-transform: none;
     
     &:hover {
-      background: rgba(255, 77, 77, 0.25);
+      background: ${({ theme }) => theme.customColors.error.subtle};
+      opacity: 0.8;
     }
     
     .MuiButton-startIcon {
@@ -367,11 +372,11 @@ export const FormDeleteButton = styled(Button)`
 
 export const FormAddButton = styled(Button)`
   && {
-    background: #2e3c5a;
-    border: 1px solid #3d62b2;
+    background: ${({ theme }) => theme.customColors.background.subtle};
+    border: 1px solid ${({ theme }) => theme.customColors.border.divider};
     border-radius: 12px;
     padding: 8px 16px 8px 12px;
-    color: #fafafa;
+    color: ${({ theme }) => theme.customColors.text.primary};
     font-family: inherit;
     font-size: 16px;
     font-weight: 600;
@@ -380,19 +385,16 @@ export const FormAddButton = styled(Button)`
     align-items: center;
     gap: 8px;
     width: fit-content;
-    box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.1), 0px 1px 2px -1px rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
     
     &:hover {
-      background: #364669;
-      border-color: #4d73c7;
+      background: ${({ theme }) => theme.customColors.action.hover};
+      border-color: ${({ theme }) => theme.customColors.border.accent};
     }
     
     .MuiButton-startIcon {
       margin-left: 0;
       margin-right: 0;
     }
-    
-    /* Reverse the order for RTL if needed, but since it's a flex with gap, 
-       just ensuring the icon is on the correct side */
   }
 `;

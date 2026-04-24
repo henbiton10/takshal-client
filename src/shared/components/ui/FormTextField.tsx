@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { TextField, SxProps, InputAdornment, Theme } from '@mui/material';
+import { TextField, SxProps, InputAdornment, Theme, useTheme } from '@mui/material';
 import { Control, Controller, FieldValues, Path, FieldError, RegisterOptions } from 'react-hook-form';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
@@ -23,11 +23,12 @@ interface FormTextFieldProps<T extends FieldValues> {
   inputProps?: any;
 }
 
-const textFieldStyles: SxProps<Theme> = (theme) => ({
+const getTextFieldStyles = (theme: Theme, multiline: boolean): SxProps<Theme> => ({
   borderRadius: '4px',
   fontFamily: 'inherit',
   '& .MuiOutlinedInput-root': {
-    height: '36px',
+    minHeight: '42px',
+    height: 'auto',
     backgroundColor: theme.palette.action.hover,
     borderRadius: '4px',
     color: theme.palette.text.primary,
@@ -43,10 +44,10 @@ const textFieldStyles: SxProps<Theme> = (theme) => ({
     },
   },
   '& .MuiInputBase-input': {
-    color: theme.palette.text.secondary,
+    color: theme.palette.text.primary,
     fontSize: '16px',
     fontWeight: 600,
-    padding: '0 12px',
+    padding: multiline ? '12px' : '0 12px',
     textAlign: 'right',
     '&::placeholder': {
       color: theme.palette.text.disabled,
@@ -75,6 +76,7 @@ export const FormTextField = <T extends FieldValues>({
   rules,
   inputProps: extraInputProps,
 }: FormTextFieldProps<T>) => {
+  const theme = useTheme();
   const [isFocused, setIsFocused] = useState(false);
   const isDateField = type === 'date';
   const isTimeField = type === 'time';
@@ -130,7 +132,7 @@ export const FormTextField = <T extends FieldValues>({
               rows={rows}
               placeholder={isDateField ? 'בחר תאריך' : (isTimeField ? 'בחר שעה' : placeholder)}
               variant="outlined"
-              sx={textFieldStyles}
+              sx={getTextFieldStyles(theme, multiline)}
               InputProps={{
                 endAdornment: isPickerField ? (
                   <InputAdornment 
@@ -149,9 +151,9 @@ export const FormTextField = <T extends FieldValues>({
                     }}
                   >
                     {isDateField ? (
-                      <CalendarMonthIcon sx={{ color: '#bababa', fontSize: 20 }} />
+                      <CalendarMonthIcon sx={{ color: (theme: any) => theme.palette.text.secondary, fontSize: 20 }} />
                     ) : (
-                      <AccessTimeIcon sx={{ color: '#bababa', fontSize: 20 }} />
+                      <AccessTimeIcon sx={{ color: (theme: any) => theme.palette.text.secondary, fontSize: 20 }} />
                     )}
                   </InputAdornment>
                 ) : null,
@@ -159,15 +161,14 @@ export const FormTextField = <T extends FieldValues>({
                   '& input': {
                     textAlign: 'right !important',
                     direction: 'rtl !important',
-                    marginLeft: 'auto !important', /* Force input to hit the RIGHT */
+                    marginLeft: 'auto !important',
                   },
-                  /* Force segments to the right in native mode */
                   '& input[type="date"], & input[type="time"]': {
                     display: 'flex !important',
                     flexDirection: 'row !important',
-                    justifyContent: 'flex-start !important', /* RIGHT in RTL */
+                    justifyContent: 'flex-start !important',
                     paddingRight: '0 !important',
-                    width: 'auto !important', /* shrink to content to allow auto margin to work */
+                    width: 'auto !important',
                     cursor: 'pointer',
                   },
                   '& input[type="date"]::-webkit-datetime-edit, & input[type="time"]::-webkit-datetime-edit': {
@@ -178,7 +179,7 @@ export const FormTextField = <T extends FieldValues>({
                     direction: 'ltr !important',
                   },
                   '& input[type="date"]::-webkit-calendar-picker-indicator, & input[type="time"]::-webkit-calendar-picker-indicator': {
-                    filter: 'invert(1)',
+                    filter: (theme: any) => theme.palette.mode === 'dark' ? 'invert(1)' : 'none',
                     opacity: 0,
                     cursor: 'pointer',
                     position: 'absolute',

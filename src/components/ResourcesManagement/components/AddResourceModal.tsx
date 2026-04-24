@@ -8,16 +8,16 @@ interface AddResourceModalProps {
 }
 
 const ENTITY_ICON_COLORS: Record<string, string> = {
-  stations: 'rgba(21, 93, 252, 0.4)',
-  satellites: 'rgba(152, 16, 250, 0.4)',
-  terminals: 'rgba(0, 166, 62, 0.4)',
-  networks: 'rgba(245, 73, 0, 0.4)',
+  stations: '#155dfc66',
+  satellites: '#9810fa66',
+  terminals: '#00a63e66',
+  networks: '#f5490066',
 };
 
 const Overlay = styled.div`
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.4);
   z-index: 1000;
   display: flex;
   align-items: center;
@@ -25,8 +25,8 @@ const Overlay = styled.div`
 `;
 
 const Card = styled.div`
-  background: #1c2439;
-  border: 2px solid #305088;
+  background: ${({ theme }) => theme.customColors.background.default};
+  border: 2px solid ${({ theme }) => theme.customColors.border.primary};
   border-radius: 24px;
   box-shadow: 0px 25px 50px -12px rgba(0, 0, 0, 0.25);
   width: 500px;
@@ -52,7 +52,7 @@ const Titles = styled.div`
 `;
 
 const Title = styled.h2`
-  color: white;
+  color: ${({ theme }) => theme.customColors.text.white};
   font-size: 24px;
   font-weight: 700;
   margin: 0;
@@ -60,7 +60,7 @@ const Title = styled.h2`
 `;
 
 const Subtitle = styled.p`
-  color: #e1eaff;
+  color: ${({ theme }) => theme.customColors.text.secondary};
   font-size: 18px;
   font-weight: 600;
   margin: 0;
@@ -68,7 +68,7 @@ const Subtitle = styled.p`
 `;
 
 const CloseButton = styled.button`
-  background: rgba(255, 255, 255, 0.12);
+  background: ${({ theme }) => theme.customColors.action.hover};
   border: none;
   border-radius: 100px;
   width: 36px;
@@ -77,7 +77,7 @@ const CloseButton = styled.button`
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: white;
+  color: ${({ theme }) => theme.customColors.text.white};
   flex-shrink: 0;
 `;
 
@@ -88,8 +88,8 @@ const OptionList = styled.div`
 `;
 
 const OptionButton = styled.button`
-  background: rgba(29, 41, 61, 0.3);
-  border: 2px solid #305088;
+  background: ${({ theme }) => theme.customColors.background.light};
+  border: 2px solid ${({ theme }) => theme.customColors.border.primary};
   border-radius: 16px;
   height: 80px;
   padding: 2px 26px;
@@ -100,12 +100,12 @@ const OptionButton = styled.button`
   width: 100%;
   transition: background 0.15s;
   &:hover {
-    background: rgba(29, 41, 61, 0.6);
+    background: ${({ theme }) => theme.customColors.action.hover};
   }
 `;
 
 const OptionName = styled.span`
-  color: white;
+  color: ${({ theme }) => theme.customColors.text.white};
   font-size: 24px;
   font-weight: 700;
   line-height: 1.1;
@@ -119,7 +119,7 @@ const IconBox = styled.div<{ $color: string }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: ${({ theme }) => theme.customColors.text.white};
 `;
 
 export const AddResourceModal = ({ onClose, onSelect }: AddResourceModalProps) => (

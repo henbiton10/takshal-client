@@ -28,7 +28,7 @@ const MatrixContainer = styled.div`
   height: 100%;
   overflow: auto;
   direction: rtl;
-  background: #1c2439;
+  background: ${props => props.theme.customColors.background.default};
 `;
 
 const Table = styled.table`
@@ -45,9 +45,9 @@ const CategoryHeader = styled.th<{ $type: 'local' | 'global' }>`
   position: sticky;
   top: 0;
   z-index: 10;
-  background: ${props => props.$type === 'local' ? 'rgba(63, 124, 255, 0.95)' : 'rgba(231, 239, 255, 0.45)'};
+  background: ${props => props.$type === 'local' ? props.theme.customColors.primary.main : props.theme.customColors.background.subtle};
   backdrop-filter: blur(8px);
-  border: 1px solid #305088;
+  border: 1px solid ${props => props.theme.customColors.border.primary};
   padding: 10px;
   text-align: center;
 
@@ -56,7 +56,9 @@ const CategoryHeader = styled.th<{ $type: 'local' | 'global' }>`
     align-items: center;
     justify-content: center;
     gap: 12px;
-    color: #fafafa;
+    color: ${props => props.$type === 'local' 
+      ? props.theme.customColors.text.white 
+      : (props.theme.palette.mode === 'dark' ? props.theme.customColors.text.white : props.theme.customColors.text.primary)};
     font-size: 18px;
     font-weight: 700;
 
@@ -72,9 +74,9 @@ const SatelliteHeaderCell = styled.th`
   position: sticky;
   top: 56px;
   z-index: 10;
-  background: rgba(28, 36, 57, 0.95);
+  background: ${props => props.theme.customColors.background.glass};
   backdrop-filter: blur(8px);
-  border: 1px solid #305088;
+  border: 1px solid ${props => props.theme.customColors.border.primary};
   padding: 8px;
   min-width: 140px;
 
@@ -83,13 +85,13 @@ const SatelliteHeaderCell = styled.th`
     align-items: center;
     justify-content: center;
     gap: 8px;
-    color: #e1eaff;
+    color: ${props => props.theme.palette.mode === 'dark' ? props.theme.customColors.text.white : props.theme.customColors.text.primary};
     font-size: 16px;
     font-weight: 700;
 
     svg {
       font-size: 20px;
-      color: #94a3b8;
+      color: ${props => props.theme.palette.mode === 'dark' ? props.theme.customColors.text.secondary : props.theme.customColors.text.muted};
     }
   }
 `;
@@ -99,17 +101,17 @@ const CornerCell = styled.th<{ $top?: string }>`
   right: 0;
   top: ${props => props.$top || '0'};
   z-index: 20;
-  background: #1c2439;
+  background: ${props => props.theme.customColors.background.default};
   width: 320px;
   min-width: 320px;
 `;
 
 const DataRow = styled.tr`
   height: 56px;
-  border-bottom: 1px solid #305088;
+  border-bottom: 1px solid ${props => props.theme.customColors.border.primary};
 
   &:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: ${props => props.theme.customColors.action.hover};
   }
 `;
 
@@ -117,11 +119,11 @@ const StationCell = styled.td`
   position: sticky;
   right: 0;
   z-index: 5;
-  background: rgba(41, 121, 255);
+  background: ${props => props.theme.customColors.primary.main};
   backdrop-filter: blur(8px);
-  border: 1px solid #305088;
+  border: 1px solid ${props => props.theme.customColors.border.primary};
   padding: 0 16px;
-  color: #fafafa;
+  color: ${props => props.theme.customColors.text.white};
   font-size: 18px;
   font-weight: 700;
 
@@ -148,10 +150,10 @@ const BattalionBadge = styled.div`
 `;
 
 const AllocationCell = styled.td<{ $hasAllocation: boolean }>`
-  border: 1px solid #305088;
+  border: 1px solid ${props => props.theme.customColors.border.primary};
   padding: 10px;
   text-align: center;
-  background: ${props => props.$hasAllocation ? 'linear-gradient(180deg, rgba(99, 255, 106, 0.3) 0%, rgba(66, 228, 73, 0.3) 100%)' : 'transparent'};
+  background: ${props => props.$hasAllocation ? `linear-gradient(180deg, ${props.theme.customColors.status.ready} 0%, ${props.theme.customColors.status.ready} 100%)` : 'transparent'};
   width: 140px;
   min-width: 140px;
 `;
@@ -181,7 +183,7 @@ const AllocationBadge = styled.div<{ $band: string }>`
       default: return ku;
     }
   }};
-  color: ${props => props.$band.toUpperCase() === 'KU' ? '#000' : '#fff'};
+  color: ${props => props.$band.toUpperCase() === 'KU' ? (props.theme.palette.mode === 'dark' ? '#000' : '#fff') : '#fff'};
   font-size: 16px;
   font-weight: 700;
 
@@ -199,19 +201,21 @@ const StatusDot = styled.div<{ $status: 'work' | 'half' | 'not' }>`
   height: 8px;
   border-radius: 50%;
   box-shadow: ${props => {
+    const { ready, partlyReady, damaged } = props.theme.customColors.status;
     switch (props.$status) {
-      case 'work': return '0px 0px 6px 0px rgba(155, 255, 139, 0.8)';
-      case 'half': return '0px 0px 6px 0px rgba(255, 208, 77, 0.8)';
-      case 'not': return '0px 0px 6px 0px rgba(255, 77, 77, 0.8)';
+      case 'work': return `0px 0px 6px 0px ${ready}`;
+      case 'half': return `0px 0px 6px 0px ${partlyReady}`;
+      case 'not': return `0px 0px 6px 0px ${damaged}`;
       default: return 'none';
     }
   }};
   background: ${props => {
+    const { ready, partlyReady, damaged } = props.theme.customColors.status;
     switch (props.$status) {
-      case 'work': return '#75eca6';
-      case 'half': return '#ffd04d';
-      case 'not': return '#ff4d4d';
-      default: return '#75eca6';
+      case 'work': return ready;
+      case 'half': return partlyReady;
+      case 'not': return damaged;
+      default: return ready;
     }
   }};
 `;

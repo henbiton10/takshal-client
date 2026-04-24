@@ -12,7 +12,7 @@ const MatrixContainer = styled.div`
   height: 100%;
   overflow: auto;
   direction: rtl;
-  background: #1c2439;
+  background: ${props => props.theme.customColors.background.default};
 `;
 
 const Table = styled.table`
@@ -24,12 +24,12 @@ const HeaderCell = styled.th`
   position: sticky;
   top: 0;
   z-index: 10;
-  background: rgba(28, 36, 57, 0.95);
+  background: ${props => props.theme.customColors.background.glass};
   backdrop-filter: blur(8px);
-  border: 1px solid #305088;
+  border: 1px solid ${props => props.theme.customColors.border.primary};
   padding: 10px;
   height: 56px;
-  color: #fafafa;
+  color: ${props => props.theme.palette.mode === 'dark' ? props.theme.customColors.text.white : props.theme.customColors.text.primary};
   font-size: 18px;
   font-weight: 700;
   text-align: center;
@@ -40,17 +40,17 @@ const StationHeaderCell = styled.th`
   top: 0;
   right: 0;
   z-index: 20;
-  background: #1c2439;
+  background: ${props => props.theme.customColors.background.default};
   width: 320px;
   min-width: 320px;
 `;
 
 const DataRow = styled.tr`
   min-height: 56px;
-  border-bottom: 1px solid #305088;
+  border-bottom: 1px solid ${props => props.theme.customColors.border.primary};
   
   &:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: ${props => props.theme.customColors.action.hover};
   }
 `;
 
@@ -58,9 +58,9 @@ const StationCell = styled.td`
   position: sticky;
   right: 0;
   z-index: 5;
-  background: rgba(41, 121, 255);
+  background: ${props => props.theme.customColors.primary.main};
   backdrop-filter: blur(8px);
-  border: 1px solid #305088;
+  border: 1px solid ${props => props.theme.customColors.border.primary};
   padding: 0 16px;
   text-align: right;
   width: 320px;
@@ -71,7 +71,7 @@ const StationCell = styled.td`
     align-items: center;
     justify-content: flex-start;
     gap: 12px;
-    color: #fafafa;
+    color: ${props => props.theme.customColors.text.white};
     font-size: 18px;
     font-weight: 700;
   }
@@ -91,12 +91,12 @@ const TerminalCell = styled.button<{ $status: string; $isAllocated: boolean }>`
   gap: 10px;
   height: 56px;
   padding: 0 16px;
-  border: 1px solid #305088;
+  border: 1px solid ${props => props.theme.customColors.border.primary};
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s;
-  color: #fafafa;
+  color: ${props => (props.$status !== 'transparent' || props.$isAllocated) ? props.theme.customColors.text.white : props.theme.customColors.text.primary};
   white-space: nowrap;
   
   background: ${props => {
@@ -109,13 +109,13 @@ const TerminalCell = styled.button<{ $status: string; $isAllocated: boolean }>`
 
   &:hover {
     opacity: 0.8;
-    background: ${props => props.$isAllocated ? '' : 'rgba(255, 255, 255, 0.1)'};
+    background: ${props => props.$isAllocated ? '' : props.theme.customColors.action.hover};
   }
 
 
   svg {
     font-size: 18px;
-    color: ${props => props.$isAllocated ? '#75eca6' : '#e1eaff'};
+    color: ${props => props.$isAllocated ? '#75eca6' : props.theme.customColors.text.secondary};
   }
 `;
 
@@ -131,6 +131,12 @@ const BattalionBadge = styled.div`
     height: 24px;
     object-fit: contain;
   }
+`;
+
+const EmptyMessage = styled.div`
+  color: ${props => props.theme.customColors.text.disabled};
+  padding: 16px;
+  grid-column: 1 / -1;
 `;
 
 interface Props {
@@ -193,9 +199,9 @@ export const StationsTerminalsMatrix = ({ stations, onTerminalClick }: Props) =>
                     </Tooltip>
                   ))
                 ) : (
-                  <div style={{ color: 'rgba(255,255,255,0.3)', padding: '16px', gridColumn: '1 / -1' }}>
+                  <EmptyMessage>
                     אין טרמינלים
-                  </div>
+                  </EmptyMessage>
                 )}
               </TerminalsGridCell>
             </DataRow>

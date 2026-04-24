@@ -10,7 +10,7 @@ export interface ViewField {
   value: string | React.ReactNode;
   fullWidth?: boolean;
   flex?: number | string;
-  statusColor?: string;
+  statusColor?: string | ((theme: any) => string);
   statusIcon?: React.ReactNode;
 }
 
@@ -50,28 +50,28 @@ const StatusIconImg = styled.img`
   height: 24px;
 `;
 
-export const formatReadinessStatus = (status: string): { text: string; color: string; icon?: React.ReactNode } => {
+export const formatReadinessStatus = (status: string): { text: string; color: any; icon?: React.ReactNode } => {
   if (status === 'ready') return {
     text: 'כשיר',
-    color: '#63FF6A',
+    color: (theme: any) => theme.customColors.status.ready,
     icon: <StatusIconImg src={workingIcon} alt="כשיר" />
   };
   if (status === 'partly_ready') return {
     text: 'כשיר חלקית',
-    color: '#FFB800',
+    color: (theme: any) => theme.customColors.status.partlyReady,
     icon: <StatusIconImg src={halfWorkingIcon} alt="כשיר חלקית" />
   };
   if (status === 'damaged') return {
     text: 'תקול',
-    color: '#FF4D4D',
+    color: (theme: any) => theme.customColors.error.main,
     icon: <StatusIconImg src={notWorkingIcon} alt="תקול" />
   };
-  return { text: status, color: '#FAFAFA' };
+  return { text: status, color: (theme: any) => theme.customColors.text.primary };
 };
 
 // UI Components
 export const PageTitle = styled.h2`
-  color: #FAFAFA;
+  color: ${({ theme }) => theme.customColors.text.primary};
   font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   font-size: 24px;
   font-weight: 700;
@@ -80,7 +80,7 @@ export const PageTitle = styled.h2`
 `;
 
 export const PageSubtitle = styled.p`
-  color: #E1EAFF;
+  color: ${({ theme }) => theme.customColors.text.secondary};
   font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   font-size: 18px;
   font-weight: 600;
@@ -100,13 +100,15 @@ export const PageHeaderArea = styled.div`
 `;
 
 export const Card = styled.div`
-  background: rgba(45, 58, 89, 0.55);
+  background: ${({ theme }) => theme.customColors.background.glass};
+  backdrop-filter: blur(40px);
+  border: 1px solid ${({ theme }) => theme.customColors.border.divider};
   border-radius: 24px;
   padding: 20px 28px;
   width: 100%;
   max-width: 1100px;
   margin: 0 auto;
-  box-shadow: 0px 1px 3px rgba(0,0,0,0.1), 0px 1px 2px -1px rgba(0,0,0,0.1);
+  box-shadow: 0px 4px 40px rgba(0, 0, 0, 0.4);
   display: flex;
   flex-direction: column;
   direction: rtl;
@@ -140,11 +142,11 @@ export const ViewScrollContainer = styled.div`
     background: transparent;
   }
   &::-webkit-scrollbar-thumb {
-    background: rgba(174, 199, 255, 0.2);
+    background: ${({ theme }) => theme.customColors.border.divider};
     border-radius: 10px;
   }
   &::-webkit-scrollbar-thumb:hover {
-    background: rgba(174, 199, 255, 0.3);
+    background: ${({ theme }) => theme.customColors.border.accent};
   }
 `;
 
@@ -166,15 +168,15 @@ export const IconCircle = styled.div`
   width: 42px;
   height: 42px;
   border-radius: 10.5px;
-  background: rgba(0, 166, 62, 0.4);
+  background: ${({ theme }) => theme.customColors.primary.main}33;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: ${({ theme }) => theme.customColors.primary.main};
 `;
 
 export const EntityNameText = styled.span`
-  color: #FAFAFA;
+  color: ${({ theme }) => theme.customColors.text.primary};
   font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   font-size: 24px;
   font-weight: 700;
@@ -183,9 +185,9 @@ export const EntityNameText = styled.span`
 
 export const EditButton = styled(Button)`
   && {
-    background: #2e3c5a;
-    color: #FAFAFA;
-    border: 1px solid #305088;
+    background: ${({ theme }) => theme.customColors.background.subtle};
+    color: ${({ theme }) => theme.customColors.text.primary};
+    border: 1px solid ${({ theme }) => theme.customColors.border.divider};
     border-radius: 12px;
     padding: 10px 20px;
     text-transform: none;
@@ -195,13 +197,15 @@ export const EditButton = styled(Button)`
     gap: 8px;
     
     &:hover {
-      background: #3a4d72;
+      background: ${({ theme }) => theme.customColors.action.hover};
+      border-color: ${({ theme }) => theme.customColors.border.accent};
     }
   }
 `;
 
 export const SectionBox = styled.div`
-  background: rgba(255, 255, 255, 0.04);
+  background: ${({ theme }) => theme.customColors.background.subtle};
+  border: 1px solid ${({ theme }) => theme.customColors.border.divider};
   border-radius: 16px;
   padding: 18px 24px;
   display: flex;
@@ -219,7 +223,7 @@ export const SectionLabelRow = styled.div`
 `;
 
 export const SectionLabelText = styled.span`
-  color: #E1EAFF;
+  color: ${({ theme }) => theme.customColors.text.secondary};
   font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   font-size: 18px;
   font-weight: 700;
@@ -244,7 +248,7 @@ export const FieldColumn = styled.div<{ $flex?: number | string }>`
 `;
 
 export const FieldLabelText = styled.span`
-  color: #E1EAFF;
+  color: ${({ theme }) => theme.customColors.text.secondary};
   font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   font-size: 16px;
   font-weight: 600;
@@ -255,8 +259,11 @@ export const FieldLabelText = styled.span`
   padding-right: 8px;
 `;
 
-export const FieldValuePill = styled.div<{ $statusColor?: string }>`
-  background: rgba(255, 255, 255, 0.08);
+export const FieldValuePill = styled.div<{ $statusColor?: any }>`
+  background: ${({ theme }) => theme.palette.mode === 'light' 
+    ? theme.customColors.background.paper 
+    : 'rgba(255, 255, 255, 0.03)'};
+  border: 1px solid ${({ theme }) => theme.customColors.border.divider};
   border-radius: 12px;
   padding: 8px 16px;
   width: 100%;
@@ -265,17 +272,21 @@ export const FieldValuePill = styled.div<{ $statusColor?: string }>`
   align-items: center;
   justify-content: flex-start;
   gap: 8px;
+  box-shadow: ${({ theme }) => theme.palette.mode === 'light' 
+    ? 'inset 0 1px 2px rgba(0,0,0,0.02)' 
+    : 'none'};
   
   span {
-    color: #FAFAFA;
+    color: ${({ theme }) => theme.customColors.text.primary};
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    font-size: 18px;
+    font-size: 17px;
     font-weight: 600;
     letter-spacing: 0.18px;
   }
   
   .MuiSvgIcon-root {
-    color: ${props => props.$statusColor || '#FAFAFA'};
+    font-size: 20px;
+    color: ${props => typeof props.$statusColor === 'function' ? props.$statusColor(props.theme) : (props.$statusColor || props.theme.customColors.text.primary)};
   }
 `;
 
@@ -289,7 +300,10 @@ export const TagsContainer = styled.div`
 `;
 
 export const DataTag = styled.div`
-  background: rgba(255, 255, 255, 0.08);
+  background: ${({ theme }) => theme.palette.mode === 'light' 
+    ? theme.customColors.background.paper 
+    : 'rgba(255, 255, 255, 0.03)'};
+  border: 1px solid ${({ theme }) => theme.customColors.border.divider};
   border-radius: 12px;
   height: 42px;
   padding: 0 12px;
@@ -297,18 +311,23 @@ export const DataTag = styled.div`
   align-items: center;
   gap: 10px;
   direction: rtl;
+  box-shadow: ${({ theme }) => theme.palette.mode === 'light' 
+    ? '0 2px 4px rgba(0,0,0,0.02)' 
+    : 'none'};
   
   .tag-label {
-    color: #FAFAFA;
+    color: ${({ theme }) => theme.customColors.text.primary};
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    font-size: 18px;
+    font-size: 17px;
     font-weight: 600;
     letter-spacing: 0.18px;
   }
   
   .tag-icon {
     display: flex;
-    color: rgba(225, 234, 255, 0.8);
+    color: ${({ theme }) => theme.customColors.primary.main};
+    opacity: 0.9;
+    font-size: 20px;
   }
 `;
 
@@ -318,7 +337,10 @@ export const InlineMetadataContainer = styled.div`
 `;
 
 export const InlinePill = styled.div`
-  background: rgba(255, 255, 255, 0.08);
+  background: ${({ theme }) => theme.palette.mode === 'light' 
+    ? theme.customColors.background.paper 
+    : 'rgba(255, 255, 255, 0.05)'};
+  border: 1px solid ${({ theme }) => theme.customColors.border.divider};
   border-radius: 12px;
   padding: 2px 12px;
   display: flex;
@@ -326,9 +348,9 @@ export const InlinePill = styled.div`
   height: 24px;
   
   span {
-    color: #FAFAFA;
+    color: ${({ theme }) => theme.customColors.text.secondary};
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     letter-spacing: 0.16px;
     white-space: nowrap;

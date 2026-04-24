@@ -15,7 +15,7 @@ const MatrixContainer = styled.div`
   height: 100%;
   overflow: auto;
   direction: rtl;
-  background: #1c2439;
+  background: ${props => props.theme.customColors.background.default};
 `;
 
 const Table = styled.table`
@@ -29,14 +29,14 @@ const HeaderCell = styled.th`
   position: sticky;
   top: 0;
   z-index: 10;
-  background: rgba(28, 36, 57, 0.95);
+  background: ${props => props.theme.customColors.background.glass};
   backdrop-filter: blur(8px);
-  border: 1px solid #305088;
+  border: 1px solid ${props => props.theme.customColors.border.primary};
   padding: 10px;
   height: 56px;
   width: 140px;
   min-width: 140px;
-  color: #fafafa;
+  color: ${props => props.theme.palette.mode === 'dark' ? props.theme.customColors.text.white : props.theme.customColors.text.primary};
   font-size: 18px;
   font-weight: 700;
   text-align: center;
@@ -48,7 +48,7 @@ const LabelHeaderCell = styled.th`
   right: 0;
   top: 0;
   z-index: 15;
-  background: #1c2439;
+  background: ${props => props.theme.customColors.background.default};
   width: 320px;
   min-width: 320px;
 `;
@@ -56,11 +56,11 @@ const LabelHeaderCell = styled.th`
 const DataRow = styled.tr`
 
   height: 56px;
-  border-top: 1px solid #305088;
-  border-bottom: 1px solid #305088;
+  border-top: 1px solid ${props => props.theme.customColors.border.primary};
+  border-bottom: 1px solid ${props => props.theme.customColors.border.primary};
   
   &:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: ${props => props.theme.customColors.action.hover};
   }
 `;
 
@@ -68,10 +68,10 @@ const LinkLabelCell = styled.td`
   position: sticky;
   right: 0;
   z-index: 5;
-  background: rgba(41, 121, 255, 0.9);
+  background: ${props => props.theme.customColors.primary.main};
   backdrop-filter: blur(4px);
-  border-right: 1px solid #305088;
-  border-left: 1px solid #305088;
+  border-right: 1px solid ${props => props.theme.customColors.border.primary};
+  border-left: 1px solid ${props => props.theme.customColors.border.primary};
   padding: 10px;
   text-align: center;
   width: 320px;
@@ -83,7 +83,7 @@ const LinkLabelCell = styled.td`
     align-items: center;
     justify-content: center;
     gap: 8px;
-    color: #fafafa;
+    color: ${props => props.theme.customColors.text.white};
     font-size: 16px;
     font-weight: 700;
     
@@ -92,13 +92,13 @@ const LinkLabelCell = styled.td`
     }
     
     svg {
-      color: rgba(255, 255, 255, 0.6);
+      color: ${props => props.theme.customColors.text.disabled};
     }
   }
 `;
 
 const StatusCell = styled.td<{ $ratio: number }>`
-  border-right: 1px solid #305088;
+  border-right: 1px solid ${props => props.theme.customColors.border.primary};
   padding: 10px;
   text-align: center;
   width: 140px;
@@ -106,22 +106,22 @@ const StatusCell = styled.td<{ $ratio: number }>`
 
   font-size: 18px;
   font-weight: 700;
-  color: #fafafa;
+  color: ${props => props.theme.customColors.text.white};
   
   background: ${props => {
-    if (props.$ratio >= 0.8) return 'linear-gradient(180deg, rgba(99, 255, 106, 0.5) 0%, rgba(66, 228, 73, 0.5) 100%)';
-    if (props.$ratio >= 0.4) return 'rgba(255, 179, 0, 0.83)';
-    if (props.$ratio > 0) return 'rgba(255, 77, 77, 0.5)';
+    const { ready, partlyReady, damaged } = props.theme.customColors.status;
+    if (props.$ratio >= 0.8) return ready;
+    if (props.$ratio >= 0.4) return partlyReady;
+    if (props.$ratio > 0) return damaged;
     return 'transparent';
   }};
 `;
 
 interface Props {
   stations: DashboardStation[];
-  showFullView?: boolean;
 }
 
-export const AntennaConnectivityMatrix = ({ stations, showFullView = false }: Props) => {
+export const AntennaConnectivityMatrix = ({ stations }: Props) => {
   const channelTypes = ['RF3', 'RFI2', 'RFO'];
 
   // For the redesign, we'll transform the data into "Connectivity Pairs"

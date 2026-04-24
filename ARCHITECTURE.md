@@ -52,23 +52,27 @@ src/
 
 ## Theme System
 
-The theme provides consistent styling across the application:
+The application utilizes a sophisticated, multi-mode theme engine supporting **Dark**, **Light**, and **Midnight** themes.
 
-### Colors
-- **Primary**: Main action colors (buttons, highlights)
-- **Background**: Different levels of dark backgrounds
-- **Text**: Text colors with opacity variants
-- **Border**: Border colors for different states
-- **Error**: Error state colors
+### Centralized Token Architecture
+The system is built on a "Token-First" principle. Instead of hardcoding colors, components consume values from the `theme.customColors` object. This object is defined in `src/theme/types.ts` and implemented for each mode in `src/theme/colors.ts`.
 
-### Spacing
-- `xs` to `xxxl` for consistent spacing
-- Border radius variants (`sm`, `md`, `lg`, `xl`, `pill`)
+### Theme Modes
+- **Dark (Default)**: High-contrast slate design (`darkColors`).
+- **Light**: Paper-white design with primary blue accents (`lightColors`).
+- **Midnight**: Deep sea-blue design for tactical environments (`midnightColors`).
 
-### Typography
-- Font sizes from `xs` (12px) to `xxxl` (28px)
-- Font weights: `normal`, `medium`, `semiBold`, `bold`
-- Icon sizes for consistent icon scaling
+### Implementation Strategy
+- **Styled-Components**: All custom styling uses the `styled` wrapper, which provides type-safe access to the MUI theme.
+- **Dynamic Inversion**: Complex components (like Matrix Headers) use logic to invert text color based on background brightness in different modes (e.g., White text on Blue headers, Primary text on Glass headers).
+- **Glassmorphism**: Themes use the `background.glass` token combined with `backdrop-filter` to maintain a premium feel across all backgrounds.
+
+### Style Token Categories
+- **Primary**: Main branding and action colors.
+- **Background**: Layered background tokens (`default`, `paper`, `glass`, `subtle`).
+- **Text**: Contrast-optimized typography tokens (`primary`, `secondary`, `white`).
+- **Border**: Consistent divider and interactive border tokens.
+- **Status**: Glowing semantic colors for readiness states (Ready, Partly Ready, Damaged).
 
 ## Reusable Components
 

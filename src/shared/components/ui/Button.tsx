@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 import { Button } from '@mui/material';
-import { theme } from '../../../theme';
 
 interface StyledButtonProps {
   variant?: 'contained' | 'outlined';
@@ -8,43 +7,43 @@ interface StyledButtonProps {
 
 export const StyledButton = styled(Button) <StyledButtonProps>`
   && {
-    border-radius: ${theme.borderRadius.sm};
-    padding: 6px ${theme.spacing.lg};
-    font-size: ${theme.typography.fontSize.xs};
-    font-weight: ${theme.typography.fontWeight.medium};
+    border-radius: ${({ theme }: any) => theme.customBorderRadius.sm};
+    padding: 6px ${({ theme }: any) => theme.customSpacing.lg};
+    font-size: ${({ theme }: any) => theme.customTypography.fontSize.xs};
+    font-weight: ${({ theme }: any) => theme.customTypography.fontWeight.medium};
     text-transform: none;
     min-width: 80px;
     
-    ${(props) =>
+    ${(props: any) =>
     props.variant === 'outlined' &&
     `
-      border-color: ${theme.colors.border.accent};
-      color: ${theme.colors.text.secondary};
-      background: ${theme.colors.background.subtle};
+      border-color: ${props.theme.customColors.border.primary};
+      color: ${props.theme.customColors.text.secondary};
+      background: ${props.theme.customColors.background.subtle};
       
       &:hover {
-        border-color: ${theme.colors.border.accentHover};
-        background: rgba(100, 110, 130, 0.6);
+        border-color: ${props.theme.customColors.border.hover};
+        background: ${props.theme.customColors.action.hover};
       }
       
       .MuiButton-startIcon {
-        margin-right: ${theme.spacing.sm};
+        margin-right: ${props.theme.customSpacing.sm};
         margin-left: -4px;
       }
     `}
     
-    ${(props) =>
+    ${(props: any) =>
     props.variant === 'contained' &&
     `
-      background: ${theme.colors.primary.main};
+      background: ${props.theme.customColors.primary.main};
       
       &:hover {
-        background: ${theme.colors.primary.hover};
+        background: ${props.theme.customColors.primary.hover};
       }
       
       &:disabled {
-        background: ${theme.colors.primary.disabled};
-        color: ${theme.colors.text.disabled};
+        background: ${props.theme.customColors.primary.disabled};
+        color: ${props.theme.customColors.text.disabled};
       }
     `}
   }

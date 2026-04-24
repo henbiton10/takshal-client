@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, useTheme } from '@mui/material';
 import Lottie from 'lottie-react';
 import accessDeniedData from '../../assets/accessDenied.json';
 import { PermissionsProvider, useCompartmentalization } from '../../contexts/PermissionsContext';
@@ -10,6 +10,8 @@ import { InitializationProvider, useInitialization } from '../../contexts/Initia
 const PermissionGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { entities, isLoading: isPermissionsLoading } = useCompartmentalization();
   const { isAppReady } = useInitialization();
+  const theme = useTheme() as any;
+  const isLight = theme.palette.mode === 'light';
 
   const hasAccess = !isPermissionsLoading && entities['EnterMagenElyon']?.Read;
   const showLoader = isPermissionsLoading || !isAppReady;
@@ -17,13 +19,36 @@ const PermissionGuard: React.FC<{ children: React.ReactNode }> = ({ children }) 
   // Handle access denied state
   if (!isPermissionsLoading && !hasAccess) {
     return (
-      <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" height="100vh">
+      <Box 
+        display="flex" 
+        flexDirection="column" 
+        alignItems="center" 
+        justifyContent="center" 
+        height="100vh"
+        sx={{
+          background: (theme: any) => theme.customColors.background.gradient,
+        }}
+      >
         <Lottie
           animationData={accessDeniedData}
           loop={true}
-          style={{ width: 400, height: 400 }}
+          style={{ 
+            width: 400, 
+            height: 400,
+            filter: isLight ? 'invert(0.8) brightness(0.8)' : 'none'
+          }}
         />
-        <Typography color="error" variant="h5" sx={{ mt: -2, fontWeight: 'bold' }}>אין הרשאות</Typography>
+        <Typography 
+          color="error" 
+          variant="h5" 
+          sx={{ 
+            mt: -2, 
+            fontWeight: 'bold',
+            textShadow: (theme: any) => theme.palette.mode === 'light' ? 'none' : '0 0 10px rgba(255, 77, 77, 0.3)'
+          }}
+        >
+          אין הרשאות
+        </Typography>
       </Box>
     );
   }

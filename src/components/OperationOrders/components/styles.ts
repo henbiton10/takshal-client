@@ -2,15 +2,17 @@ import styled from 'styled-components';
 import { IconButton } from '@mui/material';
 
 export const ViewHeaderWrapper = styled.div`
-  background: ${({ theme }) => theme.palette.background.paper};
+  background: ${({ theme }) => theme.customColors.background.glass};
+  backdrop-filter: blur(40px);
   border-radius: 20px;
   padding: 16px 24px;
-  border: 1px solid ${({ theme }) => theme.palette.divider};
+  border: 1px solid ${({ theme }) => theme.customColors.border.divider};
   display: flex;
   flex-direction: column;
   gap: 16px;
   width: 100%;
   direction: rtl;
+  box-shadow: 0px 4px 40px rgba(0, 0, 0, 0.4);
 `;
 
 export const ViewTitleRow = styled.div`
@@ -49,7 +51,7 @@ export const ViewLabel = styled.span`
 `;
 
 export const ViewValue = styled.span`
-  color: #fafafa;
+  color: ${({ theme }) => theme.customColors.text.primary};
   font-size: 16px;
   font-weight: 700;
 `;
@@ -60,19 +62,19 @@ export const DynamicRow = styled.div`
   align-items: center;
   margin-bottom: 12px;
   direction: rtl;
-  background: rgba(255, 255, 255, 0.04);
+  background: ${({ theme }) => theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.02)' : 'rgba(255, 255, 255, 0.04)'};
   padding: 12px 12px 12px 20px;
-  border-radius: 8px;
-  border: 1px solid ${({ theme }) => theme.palette.divider};
+  border-radius: 12px;
+  border: 1px solid ${({ theme }) => theme.customColors.border.divider};
   position: relative;
 `;
 
 export const SubRow = styled(DynamicRow)`
   margin-left: 0;
   margin-right: 40px;
-  background: rgba(255, 255, 255, 0.02);
-  border-left: 2px solid ${({ theme }) => theme.palette.primary.main};
-  border-radius: 0 8px 8px 0;
+  background: ${({ theme }) => theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.01)' : 'rgba(255, 255, 255, 0.02)'};
+  border-left: 2px solid ${({ theme }) => theme.customColors.primary.main};
+  border-radius: 0 12px 12px 0;
   margin-top: -8px;
   margin-bottom: 20px;
   position: relative;
@@ -84,9 +86,9 @@ export const SubRow = styled(DynamicRow)`
     top: 0;
     width: 20px;
     height: 20px;
-    border-right: 2px solid ${({ theme }) => theme.palette.primary.main};
-    border-bottom: 2px solid ${({ theme }) => theme.palette.primary.main};
-    border-radius: 0 0 8px 0;
+    border-right: 2px solid ${({ theme }) => theme.customColors.primary.main};
+    border-bottom: 2px solid ${({ theme }) => theme.customColors.primary.main};
+    border-radius: 0 0 12px 0;
   }
 `;
 
@@ -130,13 +132,13 @@ export const DragHandle = styled.div`
 `;
 
 export const AddSubButton = styled.button`
-  background: #2e3c5a;
-  border: 1px solid #3d62b2;
-  color: #fafafa;
+  background: ${({ theme }) => theme.palette.mode === 'light' ? theme.customColors.background.paper : theme.customColors.background.glass};
+  border: 1px solid ${({ theme }) => theme.customColors.border.divider};
+  color: ${({ theme }) => theme.customColors.text.primary};
   padding: 8px 16px 8px 12px;
   border-radius: 12px;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -144,11 +146,11 @@ export const AddSubButton = styled.button`
   margin-right: 40px;
   margin-bottom: 20px;
   transition: all 0.2s;
-  box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.1), 0px 1px 2px -1px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
   font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   
   &:hover {
-    background: #364669;
-    border-color: #4d73c7;
+    background: ${({ theme }) => theme.customColors.action.hover};
+    border-color: ${({ theme }) => theme.customColors.border.accent};
   }
 `;

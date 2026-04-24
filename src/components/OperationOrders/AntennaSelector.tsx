@@ -13,30 +13,30 @@ const Container = styled.div`
 `;
 
 const FieldLabel = styled.label`
-  color: rgba(225, 234, 255, 0.7);
+  color: ${({ theme }) => theme.customColors.text.secondary};
   font-size: 13px;
   font-weight: 500;
 
   .required {
-    color: #ef4444;
+    color: ${({ theme }) => theme.customColors.error.main};
     margin-right: 4px;
   }
 `;
 
 const SelectorButton = styled.div<{ $hasError?: boolean; $hasValue?: boolean }>`
-  background: rgba(16, 33, 62, 0.6);
+  background: ${({ theme }) => theme.customColors.background.light};
   border: 1px solid
-    ${(props) =>
+    ${(props: any) =>
       props.$hasError
-        ? '#ef4444'
+        ? props.theme.customColors.error.main
         : props.$hasValue
-        ? 'rgba(59, 130, 246, 0.5)'
-        : 'rgba(59, 130, 246, 0.3)'};
+        ? props.theme.customColors.border.focused
+        : props.theme.customColors.border.primary};
   border-radius: 6px;
   padding: 10px 12px;
   font-size: 14px;
-  color: ${(props) =>
-    props.$hasValue ? 'rgba(225, 234, 255, 0.9)' : 'rgba(225, 234, 255, 0.4)'};
+  color: ${(props: any) =>
+    props.$hasValue ? props.theme.customColors.text.primary : props.theme.customColors.text.disabled};
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -44,31 +44,31 @@ const SelectorButton = styled.div<{ $hasError?: boolean; $hasValue?: boolean }>`
   transition: all 0.2s;
 
   &:hover {
-    border-color: rgba(59, 130, 246, 0.7);
+    border-color: ${({ theme }) => theme.customColors.border.hover};
   }
 `;
 
 const SearchContainer = styled.div`
   padding: 12px;
-  border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+  border-bottom: 1px solid ${({ theme }) => theme.customColors.border.divider};
 `;
 
 const StyledSearchField = styled(TextField)`
   .MuiOutlinedInput-root {
-    background: rgba(16, 33, 62, 0.8);
+    background: ${({ theme }) => theme.customColors.background.medium};
     border-radius: 6px;
-    color: rgba(225, 234, 255, 0.9);
+    color: ${({ theme }) => theme.customColors.text.primary};
 
     fieldset {
-      border-color: rgba(59, 130, 246, 0.3);
+      border-color: ${({ theme }) => theme.customColors.border.subtle};
     }
 
     &:hover fieldset {
-      border-color: rgba(59, 130, 246, 0.5);
+      border-color: ${({ theme }) => theme.customColors.border.hover};
     }
 
     &.Mui-focused fieldset {
-      border-color: #3b82f6;
+      border-color: ${({ theme }) => theme.customColors.border.focused};
     }
   }
 
@@ -79,7 +79,7 @@ const StyledSearchField = styled(TextField)`
   }
 
   .MuiInputAdornment-root {
-    color: rgba(225, 234, 255, 0.5);
+    color: ${({ theme }) => theme.customColors.text.disabled};
   }
 `;
 
@@ -104,41 +104,41 @@ const OptionItem = styled.div<{ $selected?: boolean; $disabled?: boolean }>`
   display: flex;
   flex-direction: column;
   gap: 2px;
-  background: ${(props) => (props.$selected ? 'rgba(59, 130, 246, 0.2)' : 'transparent')};
+  background: ${(props: any) => (props.$selected ? props.theme.customColors.action.hover : 'transparent')};
   opacity: ${(props) => (props.$disabled ? 0.5 : 1)};
 
   &:hover {
-    background: ${(props) => (props.$disabled ? 'transparent' : 'rgba(59, 130, 246, 0.1)')};
+    background: ${(props: any) => (props.$disabled ? 'transparent' : props.theme.customColors.action.hover)};
   }
 `;
 
 const OptionName = styled.span`
-  color: rgba(225, 234, 255, 0.9);
+  color: ${({ theme }) => theme.customColors.text.primary};
   font-size: 14px;
 `;
 
 const OptionDetails = styled.span`
-  color: rgba(225, 234, 255, 0.5);
+  color: ${({ theme }) => theme.customColors.text.disabled};
   font-size: 12px;
 `;
 
 const NoResults = styled.div`
   padding: 20px;
   text-align: center;
-  color: rgba(225, 234, 255, 0.5);
+  color: ${({ theme }) => theme.customColors.text.disabled};
   font-size: 13px;
 `;
 
 const ErrorText = styled.span`
-  color: #ef4444;
+  color: ${({ theme }) => theme.customColors.error.main};
   font-size: 12px;
   margin-top: 4px;
 `;
 
 const PopoverContent = styled.div`
   width: 350px;
-  background: rgba(6, 15, 35, 0.98);
-  border: 1px solid rgba(59, 130, 246, 0.3);
+  background: ${({ theme }) => theme.customColors.background.default};
+  border: 1px solid ${({ theme }) => theme.customColors.border.primary};
   border-radius: 8px;
   direction: rtl;
 `;
@@ -210,7 +210,7 @@ export const AntennaSelector = ({
         $hasValue={!!selectedAntenna}
       >
         <span>{selectedAntenna?.displayName || 'בחר אנטנה'}</span>
-        <SearchIcon sx={{ fontSize: 18, color: 'rgba(225, 234, 255, 0.5)' }} />
+        <SearchIcon sx={{ fontSize: 18, color: (theme) => theme.customColors.text.disabled }} />
       </SelectorButton>
       {error && <ErrorText>{error}</ErrorText>}
 
@@ -229,7 +229,7 @@ export const AntennaSelector = ({
         PaperProps={{
           sx: {
             background: 'transparent',
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+            boxShadow: (theme) => `0 8px 32px ${theme.customColors.border.divider}`,
             marginTop: '4px',
           },
         }}

@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import { theme } from '../../../theme';
 import LinkIcon from '@mui/icons-material/Link';
 import LinkOffIcon from '@mui/icons-material/LinkOff';
 
@@ -19,15 +18,21 @@ interface EquipmentCardProps {
   selected?: boolean;
 }
 
-const statusColors = {
-  ready: '#05df72',
-  partial: '#ffb300',
-  faulty: '#ff9292',
+const getStatusColor = (theme: any, status: ReadinessStatus) => {
+  switch (status) {
+    case 'ready': return theme.customColors.status.ready; 
+    case 'partial': return theme.customColors.status.partlyReady;
+    case 'faulty': return theme.customColors.status.damaged;
+    default: return theme.customColors.status.ready;
+  }
 };
 
 const CardContainer = styled.div<{ $status: ReadinessStatus; $selected?: boolean }>`
-  background: linear-gradient(180deg, rgba(151, 187, 255, 0.15) 0%, rgba(105, 158, 255, 0.1) 100%);
-  border-right: 4px solid ${props => statusColors[props.$status]};
+  background: ${({ theme }) => theme.palette.mode === 'light' 
+    ? theme.customColors.background.paper 
+    : theme.customColors.background.glass};
+  backdrop-filter: blur(20px);
+  border-right: 4px solid ${props => getStatusColor(props.theme, props.$status)};
   border-radius: 8px;
   padding: 16px;
   display: flex;
@@ -36,15 +41,16 @@ const CardContainer = styled.div<{ $status: ReadinessStatus; $selected?: boolean
   width: 100%;
   min-height: 134px;
   cursor: pointer;
-  transition: transform 0.2s ease-in-out, background 0.2s ease-in-out, box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-  border-left: 1px solid rgba(255, 255, 255, 0.05);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: ${props => props.$selected ? `0 0 0 2px ${theme.colors.border.accent}` : 'none'};
+  transition: all 0.2s ease-in-out;
+  border-top: 1px solid ${({ theme }) => theme.customColors.border.divider};
+  border-left: 1px solid ${({ theme }) => theme.customColors.border.divider};
+  border-bottom: 1px solid ${({ theme }) => theme.customColors.border.divider};
+  box-shadow: ${props => props.$selected ? `0 0 0 2px ${props.theme.customColors.border.accent}` : '0 4px 20px rgba(0, 0, 0, 0.1)'};
 
   &:hover {
-    background: linear-gradient(180deg, rgba(151, 187, 255, 0.2) 0%, rgba(105, 158, 255, 0.15) 100%);
+    background: ${({ theme }) => theme.customColors.action.hover};
     transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
   }
 `;
 
@@ -71,9 +77,14 @@ const Tag = styled.div<{ $type?: 'ka' | 'ku' | 'white' }>`
   text-transform: uppercase;
   
   ${props => {
-    if (props.$type === 'ka') return `background: rgba(255, 179, 0, 0.2); color: #ffb300; border: 1px solid rgba(255, 179, 0, 0.2);`;
-    if (props.$type === 'ku') return `background: rgba(255, 255, 255, 0.6); color: #2c2c2c; border: 1px solid rgba(255, 255, 255, 0.4);`;
-    return `background: rgba(225, 234, 255, 0.1); color: #e1eaff;`;
+    const { status: statusColors, background, text, border } = props.theme.customColors;
+    if (props.$type === 'ka') return `background: ${statusColors.ka}33; color: ${statusColors.ka}; border: 1px solid ${statusColors.ka}33;`;
+    if (props.$type === 'ku') return `
+      background: ${props.theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)'}; 
+      color: ${text.primary}; 
+      border: 1px solid ${border.divider};
+    `;
+    return `background: ${background.subtle}; color: ${text.secondary}; border: 1px solid ${border.divider};`;
   }}
 `;
 
@@ -90,14 +101,14 @@ const TextContent = styled.div`
 `;
 
 const NameText = styled.div`
-  color: #ffffff;
+  color: ${({ theme }) => theme.customColors.text.primary};
   font-size: 16px;
   font-weight: 700;
   line-height: 1.2;
 `;
 
 const SubnameText = styled.div`
-  color: #e1eaff;
+  color: ${({ theme }) => theme.customColors.text.secondary};
   font-size: 12px;
   font-weight: 600;
   opacity: 0.8;
@@ -106,27 +117,36 @@ const SubnameText = styled.div`
 const IconContainer = styled.div`
   width: 36px;
   height: 36px;
-  background: rgba(225, 234, 255, 0.1);
+  background: ${({ theme }) => theme.palette.mode === 'light' 
+    ? theme.customColors.background.paper 
+    : theme.customColors.background.subtle};
+  border: 1px solid ${({ theme }) => theme.customColors.border.divider};
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
+  color: ${({ theme }) => theme.customColors.primary.main};
 `;
 
 const ConnectivityTag = styled.div`
-  background: rgba(255, 255, 255, 0.08);
+  background: ${({ theme }) => theme.palette.mode === 'light' 
+    ? theme.customColors.background.paper 
+    : theme.customColors.background.light};
   border-radius: 20px;
-  padding: 4px 8px;
+  padding: 4px 12px;
   display: flex;
   align-items: center;
   gap: 4px;
   align-self: flex-start;
+  border: 1px solid ${({ theme }) => theme.customColors.border.divider};
+  box-shadow: ${({ theme }) => theme.palette.mode === 'light' 
+    ? '0 1px 2px rgba(0,0,0,0.02)' 
+    : 'none'};
 `;
 
 const ConnectivityText = styled.span`
-  color: #e1eaff;
-  font-size: 12px;
+  color: ${({ theme }) => theme.customColors.text.secondary};
+  font-size: 13px;
   font-weight: 600;
 `;
 
@@ -138,9 +158,9 @@ const StatusRow = styled.div`
 `;
 
 const StatusText = styled.div<{ $status: ReadinessStatus }>`
-  color: ${props => statusColors[props.$status]};
+  color: ${props => getStatusColor(props.theme, props.$status)};
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.14px;
   text-align: right;
 `;
@@ -180,9 +200,9 @@ export const EquipmentCard = ({
       {connectivity && (
         <ConnectivityTag>
           {connectivityIcon === 'link' ? (
-            <LinkIcon sx={{ fontSize: 16, color: '#e1eaff' }} />
+            <LinkIcon sx={{ fontSize: 16 }} />
           ) : (
-            <LinkOffIcon sx={{ fontSize: 16, color: '#e1eaff' }} />
+            <LinkOffIcon sx={{ fontSize: 16 }} />
           )}
           <ConnectivityText>{connectivity}</ConnectivityText>
         </ConnectivityTag>

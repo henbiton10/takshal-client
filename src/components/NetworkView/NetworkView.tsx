@@ -12,7 +12,7 @@ interface NetworkViewProps {
 
 const IconWrapper = styled.div`
   display: flex;
-  color: #e1eaff;
+  color: ${({ theme }) => theme.customColors.text.secondary};
   opacity: 0.8;
 `;
 

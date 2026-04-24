@@ -28,7 +28,7 @@ const MenuItemContainer = styled(Box, {
 
 const IconWrapper = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'isSelected',
-})<{ isSelected: boolean }>(({ isSelected }) => ({
+})<{ isSelected: boolean }>(({ isSelected, theme }) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
@@ -36,13 +36,13 @@ const IconWrapper = styled(Box, {
   height: '36px',
   flexShrink: 0,
   position: 'relative',
-  color: isSelected ? '#ffffff' : 'rgba(255, 255, 255, 0.7)',
-  backgroundColor: isSelected ? 'rgba(174, 199, 255, 0.25)' : 'transparent',
+  color: isSelected ? theme.customColors.text.white : theme.customColors.text.secondary,
+  backgroundColor: isSelected ? theme.customColors.primary.main : 'transparent',
   borderRadius: '10px',
   transition: 'all 0.3s ease',
   
   [`${MenuItemContainer}:hover &`]: {
-    backgroundColor: 'rgba(174, 199, 255, 0.15)',
+    backgroundColor: isSelected ? theme.customColors.primary.hover : theme.customColors.action.hover,
   },
   
   '& svg': {
@@ -50,16 +50,16 @@ const IconWrapper = styled(Box, {
   },
 }));
 
-const NotificationDot = styled(Box)(() => ({
+const NotificationDot = styled(Box)(({ theme }) => ({
   position: 'absolute',
   top: '-2px',
   right: '-2px',
   width: '10px',
   height: '10px',
-  backgroundColor: '#3d82f6', // Premium blue
+  backgroundColor: theme.customColors.primary.main,
   borderRadius: '50%',
-  border: `2px solid #112145`, // Dark background border for contrast
-  boxShadow: '0 0 6px rgba(61, 130, 246, 0.5)',
+  border: `2px solid ${theme.customColors.background.default}`,
+  boxShadow: `0 0 6px ${theme.customColors.primary.main}80`,
   zIndex: 1,
 }));
 
@@ -71,7 +71,7 @@ const LabelText = styled(Typography, {
   fontSize: isExpanded ? '16px' : '12px',
   lineHeight: isExpanded ? '24px' : '14px',
   letterSpacing: isExpanded ? '0.16px' : '0',
-  color: isSelected ? '#ffffff' : theme.palette.text.secondary,
+  color: isSelected ? (theme.palette.mode === 'light' ? theme.customColors.primary.main : theme.customColors.text.white) : theme.customColors.text.secondary,
   whiteSpace: 'nowrap',
   textAlign: 'center',
   transition: 'all 0.3s ease',

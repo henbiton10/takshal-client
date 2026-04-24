@@ -36,24 +36,24 @@ import {
   FormScrollContainer,
 } from '../../shared/components/ui';
 import { EditableNameField } from '../../shared/components/EditableNameField';
+import { useTheme } from '@mui/material/styles';
 import { StationIcon } from '../ResourcesManagement/icons/StationIcon';
 import { TerminalIcon } from '../ResourcesManagement/icons/TerminalIcon';
 import { stationsApi } from '../../services/api';
-import { theme } from '../../theme';
 
 
 const DynamicRow = styled.div`
   display: flex;
-  gap: ${theme.spacing.md};
+  gap: ${({ theme }) => theme.customSpacing.md};
   align-items: flex-start;
-  margin-bottom: ${theme.spacing.md};
+  margin-bottom: ${({ theme }) => theme.customSpacing.md};
   direction: rtl;
 `;
 
 const DeleteButton = styled.button`
   background: transparent;
   border: none;
-  color: ${theme.colors.error.main};
+  color: ${({ theme }) => theme.customColors.error.main};
   cursor: pointer;
   padding: 8px;
   display: flex;
@@ -63,13 +63,14 @@ const DeleteButton = styled.button`
   transition: all 0.2s;
   
   &:hover {
-    background: rgba(244, 67, 54, 0.1);
+    background: ${({ theme }) => theme.customColors.error.subtle};
   }
 `;
 
 
 export const StationForm = ({ onSave, onDelete, editingStationId, initialData, onCancel }: StationFormProps) => {
   const [stations, setStations] = useState<Array<{ value: string; label: string }>>([]);
+  const theme = useTheme();
 
   const {
     control,
@@ -249,7 +250,7 @@ export const StationForm = ({ onSave, onDelete, editingStationId, initialData, o
             {connectivityFields.map((field, index) => (
               <DynamicRow key={field.id} style={{ alignItems: 'flex-end', gap: '12px' }}>
                 <div style={{
-                  color: '#e1eaff',
+                  color: theme.customColors.text.secondary,
                   fontFamily: 'sans-serif',
                   fontWeight: 700,
                   fontSize: '16px',
@@ -257,7 +258,7 @@ export const StationForm = ({ onSave, onDelete, editingStationId, initialData, o
                 }}>
                   {index + 1}.
                 </div>
-                <div style={{ flex: '1', display: 'flex', gap: theme.spacing.md }}>
+                <div style={{ flex: '1', display: 'flex', gap: theme.customSpacing.md }}>
                   <div style={{ flex: '1' }}>
                     <FormSelect
                       name={`connectivities.${index}.connectedStationId`}
@@ -329,14 +330,14 @@ export const StationForm = ({ onSave, onDelete, editingStationId, initialData, o
             <FormSection>
               <FormSectionHeader>
                 <FormSectionTitle>טרמינלים</FormSectionTitle>
-                <TerminalIcon sx={{ fontSize: 20, color: '#e1eaff', opacity: 0.8 }} />
+                <TerminalIcon sx={{ fontSize: 20, color: (theme) => theme.customColors.text.secondary, opacity: 0.8 }} />
               </FormSectionHeader>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', direction: 'rtl' }}>
                 {terminals.map((terminal) => (
                   <div
                     key={terminal.id}
                     style={{
-                      background: 'rgba(255, 255, 255, 0.08)',
+                      background: theme.customColors.background.subtle,
                       borderRadius: '12px',
                       height: '42px',
                       padding: '0 16px',
@@ -345,8 +346,8 @@ export const StationForm = ({ onSave, onDelete, editingStationId, initialData, o
                       gap: '10px',
                     }}
                   >
-                    <span style={{ color: '#FAFAFA', fontSize: '18px', fontWeight: 600 }}>{terminal.name}</span>
-                    <TerminalIcon sx={{ fontSize: 20, color: '#e1eaff', opacity: 0.8 }} />
+                    <span style={{ color: theme.customColors.text.white, fontSize: '18px', fontWeight: 600 }}>{terminal.name}</span>
+                    <TerminalIcon sx={{ fontSize: 20, color: (theme: any) => theme.customColors.text.secondary, opacity: 0.8 }} />
                   </div>
                 ))}
               </div>
@@ -362,7 +363,7 @@ export const StationForm = ({ onSave, onDelete, editingStationId, initialData, o
             {antennaFields.map((field, index) => (
               <DynamicRow key={field.id} style={{ alignItems: 'flex-end', gap: '12px' }}>
                 <div style={{
-                  color: '#e1eaff',
+                  color: theme.customColors.text.secondary,
                   fontFamily: 'sans-serif',
                   fontWeight: 700,
                   fontSize: '16px',
@@ -370,7 +371,7 @@ export const StationForm = ({ onSave, onDelete, editingStationId, initialData, o
                 }}>
                   {index + 1}.
                 </div>
-                <div style={{ flex: '1', display: 'flex', gap: theme.spacing.md }}>
+                <div style={{ flex: '1', display: 'flex', gap: theme.customSpacing.md }}>
                   <div style={{ flex: '1' }}>
                     <FormTextField
                       name={`antennas.${index}.size`}

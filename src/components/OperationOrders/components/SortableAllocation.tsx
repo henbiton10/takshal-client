@@ -1,4 +1,4 @@
-import { Box, IconButton } from '@mui/material';
+import { Box, IconButton, useTheme } from '@mui/material';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import CloseIcon from '@mui/icons-material/Close';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -39,6 +39,7 @@ export const SortableAllocation = ({
   remove,
   watch
 }: SortableAllocationProps) => {
+  const theme = useTheme();
   const {
     attributes,
     listeners,
@@ -129,7 +130,12 @@ export const SortableAllocation = ({
                 alignItems: 'center',
                 gap: 1
               }}>
-                <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#42e449' }} />
+                <div style={{ 
+                  width: 8, 
+                  height: 8, 
+                  borderRadius: '50%', 
+                  background: (theme as any).palette.mode === 'light' ? '#16a34a' : '#42e449' 
+                }} />
                 שידור
               </Box>
               <Box sx={{ display: 'flex', gap: 1 }}>
@@ -198,7 +204,12 @@ export const SortableAllocation = ({
                 alignItems: 'center',
                 gap: 1
               }}>
-                <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#3b82f6' }} />
+                <div style={{ 
+                  width: 8, 
+                  height: 8, 
+                  borderRadius: '50%', 
+                  background: (theme as any).palette.mode === 'light' ? '#2563eb' : '#3b82f6' 
+                }} />
                 קליטה
               </Box>
               <Box sx={{ display: 'flex', gap: 1 }}>
@@ -263,8 +274,8 @@ export const SortableAllocation = ({
                 onClick={() => toggleAllocation(field.id)}
                 title={isExpanded ? "צמצם" : "הרחב"}
                 sx={{
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  '&:hover': { background: 'rgba(255, 255, 255, 0.1)' }
+                  background: (theme: any) => theme.customColors.background.light,
+                  '&:hover': { background: (theme: any) => theme.customColors.action.hover }
                 }}
               >
                 <Box component="span" sx={{ fontSize: '13px', ml: 1, fontWeight: 600 }}>

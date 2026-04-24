@@ -16,15 +16,18 @@ export const AllocationTitle = ({ title, type }: AllocationTitleProps) => (
     <Box sx={{
       fontSize: '16px',
       fontWeight: 700,
-      color: '#fafafa',
+      color: (theme: any) => theme.customColors.text.primary,
       fontFamily: 'sans-serif',
-      opacity: 0.9
     }}>
       {title}
     </Box>
     <Box sx={{
-      background: type === 'primary' ? 'rgba(0, 188, 125, 0.15)' : 'rgba(59, 130, 246, 0.15)',
-      color: type === 'primary' ? '#0bc78d' : '#3b82f6',
+      background: (theme: any) => type === 'primary' 
+        ? `${theme.customColors.status.allocated}26` // 15% opacity from gradient is tricky, but allocated is green-ish
+        : `${theme.customColors.primary.main}26`,
+      color: (theme: any) => type === 'primary' 
+        ? (theme.palette.mode === 'light' ? '#16a34a' : '#42e449')
+        : theme.customColors.primary.main,
       padding: '4px 16px',
       borderRadius: '50px',
       fontSize: '14px',

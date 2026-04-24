@@ -25,14 +25,14 @@ const TimeJumpIcon = () => (
 
 const ExpandContentIcon = () => (
   <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M2 12H5C5.28333 12 5.52083 12.0958 5.7125 12.2875C5.90417 12.4792 6 12.7167 6 13C6 13.2833 5.90417 13.5208 5.7125 13.7125C5.52083 13.9042 5.28333 14 5 14H1C0.716667 14 0.479167 13.9042 0.2875 13.7125C0.0958333 13.5208 0 13.2833 0 13V9C0 8.71667 0.0958333 8.47917 0.2875 8.2875C0.479167 8.09583 0.716667 8 1 8C1.28333 8 1.52083 8.09583 1.7125 8.2875C1.90417 8.47917 2 8.71667 2 9V12ZM12 2H9C8.71667 2 8.47917 1.90417 8.2875 1.7125C8.09583 1.52083 8 1.28333 8 1C8 0.716667 8.09583 0.479167 8.2875 0.2875C8.47917 0.0958333 8.71667 0 9 0H13C13.2833 0 13.5208 0.0958333 13.7125 0.2875C13.9042 0.479167 14 0.716667 14 1V5C14 5.28333 13.9042 5.52083 13.7125 5.7125C13.5208 5.90417 13.2833 6 13 6C12.7167 6 12.4792 5.90417 12.2875 5.7125C12.0958 5.52083 12 5.28333 12 5V2Z" fill="#F2F2F2" />
+    <path d="M2 12H5C5.28333 12 5.52083 12.0958 5.7125 12.2875C5.90417 12.4792 6 12.7167 6 13C6 13.2833 5.90417 13.5208 5.7125 13.7125C5.52083 13.9042 5.28333 14 5 14H1C0.716667 14 0.479167 13.9042 0.2875 13.7125C0.0958333 13.5208 0 13.2833 0 13V9C0 8.71667 0.0958333 8.47917 0.2875 8.2875C0.479167 8.09583 0.716667 8 1 8C1.28333 8 1.52083 8.09583 1.7125 8.2875C1.90417 8.47917 2 8.71667 2 9V12ZM12 2H9C8.71667 2 8.47917 1.90417 8.2875 1.7125C8.09583 1.52083 8 1.28333 8 1C8 0.716667 8.09583 0.479167 8.2875 0.2875C8.47917 0.0958333 8.71667 0 9 0H13C13.2833 0 13.5208 0.0958333 13.7125 0.2875C13.9042 0.479167 14 0.716667 14 1V5C14 5.28333 13.9042 5.52083 13.7125 5.7125C13.5208 5.90417 13.2833 6 13 6C12.7167 6 12.4792 5.90417 12.2875 5.7125C12.0958 5.52083 12 5.28333 12 5V2Z" fill="currentColor" />
   </svg>
 
 );
 
 const CollapseContentIcon = () => (
   <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M4 10H1C0.716667 10 0.479167 9.90417 0.2875 9.7125C0.0958333 9.52083 0 9.28333 0 9C0 8.71667 0.0958333 8.47917 0.2875 8.2875C0.479167 8.09583 0.716667 8 1 8H5C5.28333 8 5.52083 8.09583 5.7125 8.2875C5.90417 8.47917 6 8.71667 6 9V13C6 13.2833 5.90417 13.5208 5.7125 13.7125C5.52083 13.9042 5.28333 14 5 14C4.71667 14 4.47917 13.9042 4.2875 13.7125C4.09583 13.5208 4 13.2833 4 13V10ZM10 4H13C13.2833 4 13.5208 4.09583 13.7125 4.2875C13.9042 4.47917 14 4.71667 14 5C14 5.28333 13.9042 5.52083 13.7125 5.7125C13.5208 5.90417 13.2833 6 13 6H9C8.71667 6 8.47917 5.90417 8.2875 5.7125C8.09583 5.52083 8 5.28333 8 5V1C8 0.716667 8.09583 0.479167 8.2875 0.2875C8.47917 0.0958333 8.71667 0 9 0C9.28333 0 9.52083 0.0958333 9.7125 0.2875C9.90417 0.479167 10 0.716667 10 1V4Z" fill="#F2F2F2" />
+    <path d="M4 10H1C0.716667 10 0.479167 9.90417 0.2875 9.7125C0.0958333 9.52083 0 9.28333 0 9C0 8.71667 0.0958333 8.47917 0.2875 8.2875C0.479167 8.09583 0.716667 8 1 8H5C5.28333 8 5.52083 8.09583 5.7125 8.2875C5.90417 8.47917 6 8.71667 6 9V13C6 13.2833 5.90417 13.5208 5.7125 13.7125C5.52083 13.9042 5.28333 14 5 14C4.71667 14 4.47917 13.9042 4.2875 13.7125C4.09583 13.5208 4 13.2833 4 13V10ZM10 4H13C13.2833 4 13.5208 4.09583 13.7125 4.2875C13.9042 4.47917 14 4.71667 14 5C14 5.28333 13.9042 5.52083 13.7125 5.7125C13.5208 5.90417 13.2833 6 13 6H9C8.71667 6 8.47917 5.90417 8.2875 5.7125C8.09583 5.52083 8 5.28333 8 5V1C8 0.716667 8.09583 0.479167 8.2875 0.2875C8.47917 0.0958333 8.71667 0 9 0C9.28333 0 9.52083 0.0958333 9.7125 0.2875C9.90417 0.479167 10 0.716667 10 1V4Z" fill="currentColor" />
   </svg>
 
 );
@@ -62,7 +62,7 @@ const LockIcon = () => (
 );
 
 const DragIndicatorIcon = () => (
-  <div style={{ display: 'flex', gap: '2px', color: '#305088', fontSize: '20px', fontWeight: 'bold' }}>
+  <div style={{ display: 'flex', gap: '2px', color: 'var(--mui-palette-primary-main)', fontSize: '20px', fontWeight: 'bold' }}>
     ⋮⋮
   </div>
 );
@@ -84,25 +84,36 @@ import { PageLayout } from '../../shared/components/PageLayout';
 import { useInitialization } from '../../contexts/InitializationContext';
 import { ConfirmDialog } from '../../shared/components/ConfirmDialog/ConfirmDialog';
 
-const TimeSelectButton = styled.button`
+const TimeSelectButton = styled.button<{ $isEditing?: boolean; $isReset?: boolean }>`
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 8px 16px 8px 12px;
-  background: #3d62b2;
-  border: none;
+  background: ${props => {
+    if (props.$isReset) return props.theme.customColors.error.main;
+    if (props.$isEditing) return props.theme.customColors.primary.main;
+    return 'transparent';
+  }};
+  border: ${props => (props.$isReset || props.$isEditing) ? 'none' : `1px solid ${props.theme.customColors.border.divider}`};
   border-radius: 20px;
-  color: #fafafa;
+  color: ${props => {
+    if (props.$isReset || props.$isEditing) return props.theme.customColors.text.white;
+    return props.theme.customColors.text.primary;
+  }};
   font-size: 18px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1), 0px 1px 2px -1px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 1px 3px ${({ theme }) => theme.palette.mode === 'dark' ? theme.customColors.border.divider : 'rgba(0,0,0,0.1)'};
 
   &:hover {
-    background: #304f93;
+    background: ${props => {
+      if (props.$isReset) return props.theme.customColors.error.main;
+      if (props.$isEditing) return props.theme.customColors.primary.hover;
+      return props.theme.customColors.action.hover;
+    }};
+    opacity: 0.9;
   }
-
 
   svg {
     font-size: 24px;
@@ -122,18 +133,18 @@ const SnapshotContainer = styled.div`
 const SnapshotTitle = styled.div`
   font-size: 24px;
   font-weight: 700;
-  color: #fafafa;
+  color: ${props => props.theme.customColors.text.primary};
   text-align: right;
   
   span {
-    color: #e1eaff;
+    color: ${props => props.theme.customColors.text.secondary};
   }
 `;
 
 const LastUpdate = styled.div`
   font-size: 16px;
   font-weight: 600;
-  color: #bababa;
+  color: ${props => props.theme.customColors.text.muted};
   letter-spacing: 0.16px;
 `;
 
@@ -177,10 +188,10 @@ const SectionCard = styled.div<{ $flex?: number; $isFullscreen?: boolean; $isEdi
   min-width: 0;
   
   ${props => props.$isEditing && `
-    outline: 2px dashed #305088;
+    outline: 2px dashed ${props.theme.customColors.border.primary};
     outline-offset: 4px;
     border-radius: 12px;
-    background: rgba(48, 80, 136, 0.05);
+    background: ${props.theme.customColors.background.dark};
   `}
 
   /* Restore RTL for the content of the card */
@@ -210,7 +221,7 @@ const TitleGroup = styled.div`
 const SectionTitle = styled.h3`
   font-size: 18px;
   font-weight: 700;
-  color: #e1eaff;
+  color: ${props => props.theme.customColors.text.secondary};
   margin: 0;
 `;
 
@@ -220,30 +231,30 @@ const SectionToggle = styled.button`
 
   gap: 6px;
   padding: 6px 8px 6px 12px;
-  background: #1c2439;
-  border: 1px solid #305088;
+  background: ${props => props.theme.customColors.background.default};
+  border: 1px solid ${props => props.theme.customColors.border.primary};
   border-radius: 12px;
-  color: #e1eaff;
+  color: ${props => props.theme.customColors.text.secondary};
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s;
 
   &:hover {
-    background: #252f4a;
-    border-color: #3f60a0;
+    background: ${props => props.theme.customColors.background.paper};
+    border-color: ${props => props.theme.customColors.border.accent};
   }
 
   svg {
     font-size: 24px;
-    color: #e1eaff;
+    color: ${props => props.theme.customColors.text.secondary};
   }
 `;
 
 
 const SectionContent = styled.div`
-  background: #1c2439;
-  border: 1px solid #305088;
+  background: ${props => props.theme.customColors.background.default};
+  border: 1px solid ${props => props.theme.customColors.border.primary};
   border-radius: 12px;
   overflow: hidden;
   flex: 1;
@@ -266,7 +277,7 @@ const LoadingContainer = styled.div`
   align-items: center;
   justify-content: center;
   height: 100%;
-  color: rgba(255, 255, 255, 0.5);
+  color: ${({ theme }) => theme.customColors.text.disabled};
 `;
 
 const formatDateForApi = (date: Date) => {
@@ -519,30 +530,23 @@ export const DashboardPage = () => {
         <div style={{ display: 'flex', gap: '12px' }}>
           {isEditing && !isDefaultLayout && (
             <TimeSelectButton 
+              $isReset
               onClick={() => setShowResetConfirm(true)}
-              style={{ 
-                background: '#f44336',
-                border: 'none',
-                color: '#fff'
-              }}
             >
               <ResetIcon />
               איפוס פריסה
             </TimeSelectButton>
           )}
           <TimeSelectButton 
+            $isEditing={isEditing}
             onClick={() => setIsEditing(!isEditing)}
             data-tour="edit-layout"
-            style={{ 
-              background: isEditing ? '#4CAF50' : '#1c2439',
-              border: '1px solid #305088',
-              color: '#fff'
-            }}
           >
             {isEditing ? <LockIcon /> : <EditLayoutIcon />}
             {isEditing ? 'שמור פריסה' : 'עריכת פריסה'}
           </TimeSelectButton>
           <TimeSelectButton 
+            $isEditing
             onClick={() => setShowTimeSelector(true)}
             data-tour="time-selector"
           >
@@ -582,7 +586,6 @@ export const DashboardPage = () => {
                 ) : fullscreenSection === 'antenna-connectivity' ? (
                   <AntennaConnectivityMatrix
                     stations={dashboardData?.stations || []}
-                    showFullView
                   />
                 ) : (
                   <NetworksMatrix networks={dashboardData?.networks || []} />
@@ -635,7 +638,6 @@ export const DashboardPage = () => {
                       'מצבת קישוריות אנטנות',
                       <AntennaConnectivityMatrix
                         stations={dashboardData?.stations || []}
-                        showFullView
                       />
                     )}
                   </div>

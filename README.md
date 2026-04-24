@@ -8,7 +8,8 @@ A premium, state-of-the-art resource management and operation planning platform.
 - **Unified Editing Experience**: Real-time allocation management within a unified header view, featuring automatic expansion and focus for sub-allocations.
 - **High-Fidelity Dashboard Matrices**: Advanced matrix views with custom SVG iconography, differentiated band color tokens, and glow-enhanced status indicators for real-time situational awareness.
 - **Resource Management**: Comprehensive tracking of Stations, Satellites, Terminals, and Networks with a premium, RTL-optimized viewing experience.
-- **Premium UI/UX**: State-of-the-art dark mode design based on Figma specifications, featuring glassmorphism, glowing status dots, and smooth internal scroll systems.
+- **Multi-Theme Design System**: State-of-the-art UI supporting three distinct modes: **Dark**, **Light**, and **Midnight (Blue)**. The entire system is built on a centralized token-based architecture ensuring perfect contrast and readability in every mode.
+- **Premium UX Aesthetics**: Featuring glassmorphism, glowing status dots, smooth internal scroll systems, and micro-animations for a high-end feel.
 
 - **Real-time Background Synchronization**: Seamless data updates across multiple clients via WebSockets, eliminating the need for manual refreshes.
 - **Global Notifications**: Real-time success and error toasts for all operations.
@@ -57,8 +58,18 @@ npm run dev
 Create a `.env` file in the root directory (based on `.env.example`).
 The application proxies API requests to `http://localhost:3000` by default.
 
+### Multi-Theme Engine
+
+The application supports three visual modes:
+- **Dark Mode**: The standard, high-contrast slate theme.
+- **Light Mode**: A clean, professional theme for bright environments.
+- **Midnight Mode**: A specialized deep-blue theme for low-light situational awareness.
+
+Switching themes updates all components instantly via the `ThemeContext`, leveraging the `customColors` interface defined in `src/theme/types.ts`.
+
 ## Development Principles
 
+- **Token-First Styling**: Never use hardcoded hex values. Always reference `theme.customColors` or `theme.palette`.
 - **Convention over Configuration**: Use the established `ENTITY_CONFIGS` pattern for adding new resource types.
 - **Clean Code**: Follow the layout patterns defined in `shared/components/ui`.
 - **Responsive Design**: All pages use the standardized `PageLayout` component.

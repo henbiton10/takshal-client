@@ -18,8 +18,10 @@ const SidebarContainer = styled(Box, {
 })<{ isExpanded: boolean }>(({ isExpanded, theme }) => ({
   width: isExpanded ? `${SIDEBAR_WIDTH_EXPANDED}px` : `${SIDEBAR_WIDTH_COLLAPSED}px`,
   height: '100vh',
-  background: `linear-gradient(204.53deg, ${theme.palette.background.paper} 9.08%, ${theme.palette.background.default} 99.47%)`,
-  borderLeft: `1px solid ${theme.palette.divider}`,
+  background: isExpanded 
+    ? `linear-gradient(204.53deg, ${theme.customColors.background.paper} 9.08%, ${theme.customColors.background.default} 99.47%)`
+    : theme.customColors.background.paper,
+  borderLeft: `1px solid ${theme.customColors.border.divider}`,
   boxShadow: '0px 4px 24px 0px rgba(0, 0, 0, 0.25)',
   backdropFilter: `blur(${SIDEBAR_BACKDROP_BLUR})`,
   padding: isExpanded ? '12px 12px' : '12px 16px',
