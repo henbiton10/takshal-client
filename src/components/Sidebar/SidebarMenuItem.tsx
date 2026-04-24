@@ -1,6 +1,7 @@
 import { Box, Typography, styled } from '@mui/material';
 
 interface MenuItemProps {
+  itemId: string;
   label: string;
   icon: React.ReactNode;
   isSelected: boolean;
@@ -27,7 +28,7 @@ const MenuItemContainer = styled(Box, {
 
 const IconWrapper = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'isSelected',
-})<{ isSelected: boolean }>(({ isSelected, theme }) => ({
+})<{ isSelected: boolean }>(({ isSelected }) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
@@ -35,7 +36,7 @@ const IconWrapper = styled(Box, {
   height: '36px',
   flexShrink: 0,
   position: 'relative',
-  color: isSelected ? '#ffffff' : theme.palette.text.primary,
+  color: isSelected ? '#ffffff' : 'rgba(255, 255, 255, 0.7)',
   backgroundColor: isSelected ? 'rgba(174, 199, 255, 0.25)' : 'transparent',
   borderRadius: '10px',
   transition: 'all 0.3s ease',
@@ -49,7 +50,7 @@ const IconWrapper = styled(Box, {
   },
 }));
 
-const NotificationDot = styled(Box)(({ theme }) => ({
+const NotificationDot = styled(Box)(() => ({
   position: 'absolute',
   top: '-2px',
   right: '-2px',
@@ -76,9 +77,14 @@ const LabelText = styled(Typography, {
   transition: 'all 0.3s ease',
 }));
 
-export default function SidebarMenuItem({ label, icon, isSelected, isExpanded, hasWaitingForm, onClick }: MenuItemProps) {
+export default function SidebarMenuItem({ itemId, label, icon, isSelected, isExpanded, hasWaitingForm, onClick }: MenuItemProps) {
   return (
-    <MenuItemContainer isSelected={isSelected} isExpanded={isExpanded} onClick={onClick}>
+    <MenuItemContainer 
+      isSelected={isSelected} 
+      isExpanded={isExpanded} 
+      onClick={onClick}
+      data-tour={`${itemId}-menu`}
+    >
       <IconWrapper isSelected={isSelected}>
         {icon}
         {hasWaitingForm && !isSelected && <NotificationDot />}

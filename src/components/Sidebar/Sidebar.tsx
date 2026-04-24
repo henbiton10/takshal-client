@@ -56,6 +56,7 @@ export default function Sidebar({ selectedItem = 'operations', onItemSelect }: S
   return (
     <SidebarContainer
       isExpanded={isExpanded}
+      className="sidebar-container"
     >
       <SidebarHeader isExpanded={isExpanded} />
 
@@ -65,6 +66,7 @@ export default function Sidebar({ selectedItem = 'operations', onItemSelect }: S
         {MENU_ITEMS.map((item) => (
           <SidebarMenuItem
             key={item.id}
+            itemId={item.id}
             label={item.label}
             icon={item.icon}
             isSelected={selectedItem === item.id}

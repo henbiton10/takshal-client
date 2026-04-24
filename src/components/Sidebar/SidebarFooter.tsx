@@ -1,6 +1,7 @@
 import { Box, Typography, styled } from '@mui/material';
 import FirstPageIcon from '@mui/icons-material/FirstPage';
-
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import { useTour } from '../../shared/components/Tour/TourProvider';
 
 interface SidebarFooterProps {
   isExpanded: boolean;
@@ -69,9 +70,21 @@ const IconWrapper = styled(Box)(({ theme }) => ({
 }));
 
 export default function SidebarFooter({ isExpanded, isPinned, onTogglePin }: SidebarFooterProps) {
+  const { startTour } = useTour();
+
   return (
     <FooterContainer>
+      <CollapseButton isExpanded={isExpanded} isPinned={false} onClick={startTour} style={{ marginBottom: '8px' }}>
+        <CollapseLabel isExpanded={isExpanded}>
+          סיור במערכת
+        </CollapseLabel>
+        <IconWrapper>
+          <HelpOutlineIcon />
+        </IconWrapper>
+      </CollapseButton>
+
       <Separator />
+      
       <CollapseButton isExpanded={isExpanded} isPinned={isPinned} onClick={onTogglePin}>
         <CollapseLabel isExpanded={isExpanded}>
           קפל תפריט
@@ -84,7 +97,6 @@ export default function SidebarFooter({ isExpanded, isPinned, onTogglePin }: Sid
             }} 
           />
         </IconWrapper>
-
       </CollapseButton>
     </FooterContainer>
   );

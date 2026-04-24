@@ -13,6 +13,9 @@ import { DashboardPage } from './components/Dashboard';
 import { ToastProvider } from './shared/components/ui/Toast';
 import { SocketProvider } from './contexts/SocketContext';
 import { PageStatusProvider } from './contexts/PageStatusContext';
+import { TourProvider } from './shared/components/Tour/TourProvider';
+import { MeteorShower } from './shared/components/EasterEggs/MeteorShower';
+import { useKonami } from './shared/components/EasterEggs/useKonami';
 import styled from 'styled-components';
 
 const STORAGE_KEY = 'takshal_selected_menu';
@@ -26,8 +29,13 @@ const PageWrapper = styled.div<{ $isVisible: boolean }>`
 `;
 
 function App() {
+  const [showMeteor, setShowMeteor] = useState(false);
   const [selectedMenuItem, setSelectedMenuItem] = useState(() => {
     return localStorage.getItem(STORAGE_KEY) || 'operations';
+  });
+
+  useKonami(() => {
+    setShowMeteor(true);
   });
 
   useEffect(() => {
@@ -43,30 +51,33 @@ function App() {
       <StyledThemeProvider theme={theme}>
         <CssBaseline />
         <GlobalStyle />
+        <MeteorShower active={showMeteor} onFinish={() => setShowMeteor(false)} />
         <ToastProvider>
-          <PageStatusProvider>
-            <SocketProvider>
-              <Authorization>
-                <AppLayout>
-                  <MainContent>
-                    <PageWrapper $isVisible={selectedMenuItem === 'dashboard'}>
-                      <DashboardPage />
-                    </PageWrapper>
-                    <PageWrapper $isVisible={selectedMenuItem === 'operations'}>
-                      <OperationOrderPage />
-                    </PageWrapper>
-                    <PageWrapper $isVisible={selectedMenuItem === 'resources'}>
-                      <ResourcesManagement />
-                    </PageWrapper>
-                  </MainContent>
-                  <Sidebar 
-                    selectedItem={selectedMenuItem}
-                    onItemSelect={handleMenuItemSelect}
-                  />
-                </AppLayout>
-              </Authorization>
-            </SocketProvider>
-          </PageStatusProvider>
+          <TourProvider>
+            <PageStatusProvider>
+              <SocketProvider>
+                <Authorization>
+                  <AppLayout>
+                    <MainContent>
+                      <PageWrapper $isVisible={selectedMenuItem === 'dashboard'}>
+                        <DashboardPage />
+                      </PageWrapper>
+                      <PageWrapper $isVisible={selectedMenuItem === 'operations'}>
+                        <OperationOrderPage />
+                      </PageWrapper>
+                      <PageWrapper $isVisible={selectedMenuItem === 'resources'}>
+                        <ResourcesManagement />
+                      </PageWrapper>
+                    </MainContent>
+                    <Sidebar 
+                      selectedItem={selectedMenuItem}
+                      onItemSelect={handleMenuItemSelect}
+                    />
+                  </AppLayout>
+                </Authorization>
+              </SocketProvider>
+            </PageStatusProvider>
+          </TourProvider>
         </ToastProvider>
       </StyledThemeProvider>
     </ThemeProvider>

@@ -532,6 +532,7 @@ export const DashboardPage = () => {
           )}
           <TimeSelectButton 
             onClick={() => setIsEditing(!isEditing)}
+            data-tour="edit-layout"
             style={{ 
               background: isEditing ? '#4CAF50' : '#1c2439',
               border: '1px solid #305088',
@@ -541,7 +542,10 @@ export const DashboardPage = () => {
             {isEditing ? <LockIcon /> : <EditLayoutIcon />}
             {isEditing ? 'שמור פריסה' : 'עריכת פריסה'}
           </TimeSelectButton>
-          <TimeSelectButton onClick={() => setShowTimeSelector(true)}>
+          <TimeSelectButton 
+            onClick={() => setShowTimeSelector(true)}
+            data-tour="time-selector"
+          >
             <TimeJumpIcon />
             בחירת זמן
           </TimeSelectButton>
