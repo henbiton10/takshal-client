@@ -16,8 +16,8 @@ const SearchContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: ${({ theme }) => theme.palette.mode === 'light' ? theme.customColors.background.default : theme.customColors.background.glass};
-  border: 1px solid ${({ theme }) => theme.palette.mode === 'light' ? theme.customColors.border.primary : theme.customColors.border.divider};
+  background: ${({ theme }) => theme.customColors.background.default};
+  border: 1px solid ${({ theme }) => theme.customColors.border.primary};
   border-radius: 21px;
   padding: 0 16px;
   width: 190px;
@@ -28,7 +28,7 @@ const SearchContainer = styled.div`
 
   &:focus-within {
     border-color: ${({ theme }) => theme.customColors.primary.main};
-    background: ${({ theme }) => theme.palette.mode === 'light' ? theme.customColors.background.paper : theme.customColors.background.paper};
+    background: ${({ theme }) => theme.customColors.background.paper};
   }
 `;
 

@@ -26,6 +26,13 @@ const SearchContainer = styled.div`
   width: 190px;
   height: 38px;
   flex-shrink: 0;
+  backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+
+  &:focus-within {
+    border-color: ${({ theme }) => theme.customColors.primary.main};
+    background: ${({ theme }) => theme.customColors.background.paper};
+  }
 `;
 
 const SearchInput = styled.input`

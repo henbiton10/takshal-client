@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
 import { ThemeProvider as StyledThemeProvider } from 'styled-components';
 import { ThemeMode } from './types';
-import { darkColors, midnightColors, lightColors } from './colors';
+import { darkColors, lightColors } from './colors';
 import { createCustomTheme } from './theme';
 
 interface ThemeContextType {
@@ -26,8 +26,6 @@ export const CustomThemeProvider: React.FC<{ children: React.ReactNode }> = ({ c
     switch (mode) {
       case 'light':
         return { colors: lightColors, muiMode: 'light' as const };
-      case 'midnight':
-        return { colors: midnightColors, muiMode: 'dark' as const };
       default:
         return { colors: darkColors, muiMode: 'dark' as const };
     }

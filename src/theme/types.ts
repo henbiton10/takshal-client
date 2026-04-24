@@ -57,4 +57,4 @@ export interface ThemeColors {
   };
 }
 
-export type ThemeMode = 'dark' | 'light' | 'midnight';
+export type ThemeMode = 'dark' | 'light';

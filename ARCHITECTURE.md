@@ -52,7 +52,9 @@ src/
 
 ## Theme System
 
-The application utilizes a sophisticated, multi-mode theme engine supporting **Dark**, **Light**, and **Midnight** themes.
+## Theme System
+
+The application utilizes a sophisticated, multi-mode theme engine supporting **Dark** (Slate) and **Light** themes.
 
 ### Centralized Token Architecture
 The system is built on a "Token-First" principle. Instead of hardcoding colors, components consume values from the `theme.customColors` object. This object is defined in `src/theme/types.ts` and implemented for each mode in `src/theme/colors.ts`.
@@ -60,7 +62,6 @@ The system is built on a "Token-First" principle. Instead of hardcoding colors, 
 ### Theme Modes
 - **Dark (Default)**: High-contrast slate design (`darkColors`).
 - **Light**: Paper-white design with primary blue accents (`lightColors`).
-- **Midnight**: Deep sea-blue design for tactical environments (`midnightColors`).
 
 ### Implementation Strategy
 - **Styled-Components**: All custom styling uses the `styled` wrapper, which provides type-safe access to the MUI theme.

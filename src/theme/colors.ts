@@ -59,19 +59,6 @@ export const darkColors: ThemeColors = {
   }
 };
 
-export const midnightColors: ThemeColors = {
-  ...darkColors,
-  background: {
-    ...darkColors.background,
-    default: '#050510',
-    paper: '#0a0a1a',
-    gradient: 'linear-gradient(181.55deg, #0a0a1a -9.06%, #050510 98.39%)',
-  },
-  primary: {
-    ...darkColors.primary,
-    main: '#4a90e2',
-  }
-};
 
 export const lightColors: ThemeColors = {
   primary: {
