@@ -33,7 +33,7 @@ export const SatelliteCard = ({ satellite, selected, onClick }: SatelliteCardPro
       icon={<SatelliteAltIcon sx={{ fontSize: 20 }} />}
       status={statusMap[satellite.readinessStatus] || 'ready'}
       statusText={statusTextMap[satellite.readinessStatus] || 'כשירות מלאה'}
-      tags={satellite.hasFrequencyConverter ? ['CONV'] : []}
+      tags={satellite.hasFrequencyConverter ? ['CONV'] : (satellite.frequencyBand ? [satellite.frequencyBand.toUpperCase()] : [])}
       selected={selected}
       onClick={onClick}
     />
