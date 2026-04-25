@@ -18,37 +18,38 @@ interface EquipmentCardProps {
   selected?: boolean;
 }
 
-const getStatusColor = (theme: any, status: ReadinessStatus) => {
+const getStatusColor = (status: ReadinessStatus) => {
   switch (status) {
-    case 'ready': return theme.customColors.status.ready; 
-    case 'partial': return theme.customColors.status.partlyReady;
-    case 'faulty': return theme.customColors.status.damaged;
-    default: return theme.customColors.status.ready;
+    case 'ready': return '#05df72'; 
+    case 'partial': return '#ffb300';
+    case 'faulty': return '#ff4d4d';
+    default: return '#05df72';
   }
 };
 
 const CardContainer = styled.div<{ $status: ReadinessStatus; $selected?: boolean }>`
   background: ${({ theme }) => theme.palette.mode === 'light' 
-    ? theme.customColors.background.paper 
-    : theme.customColors.background.glass};
+    ? 'linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(240, 245, 255, 0.9) 100%)' 
+    : 'linear-gradient(180deg, rgba(151, 187, 255, 0.15) 0%, rgba(105, 158, 255, 0.15) 100%)'};
   backdrop-filter: blur(20px);
-  border-right: 4px solid ${props => getStatusColor(props.theme, props.$status)};
-  border-radius: 8px;
-  padding: 16px;
+  border-right: 4px solid ${props => getStatusColor(props.$status)};
+  border-radius: 12px;
+  padding: 16px 18px;
   display: flex;
   flex-direction: column;
   gap: 12px;
   width: 100%;
-  min-height: 134px;
+  min-height: 140px;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   border-top: 1px solid ${({ theme }) => theme.customColors.border.divider};
   border-left: 1px solid ${({ theme }) => theme.customColors.border.divider};
   border-bottom: 1px solid ${({ theme }) => theme.customColors.border.divider};
   box-shadow: ${props => props.$selected ? `0 0 0 2px ${props.theme.customColors.border.accent}` : '0 4px 20px rgba(0, 0, 0, 0.1)'};
+  direction: rtl;
 
   &:hover {
-    background: ${({ theme }) => theme.customColors.action.hover};
+    background: ${({ theme }) => theme.palette.mode === 'light' ? 'rgba(235, 240, 255, 0.95)' : 'rgba(151, 187, 255, 0.25)'};
     transform: translateY(-2px);
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
   }
@@ -67,24 +68,34 @@ const TagGroup = styled.div`
 `;
 
 const Tag = styled.div<{ $type?: 'ka' | 'ku' | 'white' }>`
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 33554400px;
+  font-family: 'Assistant', sans-serif;
+  font-size: 14px;
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
   text-transform: uppercase;
+  letter-spacing: 0.14px;
   
   ${props => {
-    const { status: statusColors, background, text, border } = props.theme.customColors;
-    if (props.$type === 'ka') return `background: ${statusColors.ka}33; color: ${statusColors.ka}; border: 1px solid ${statusColors.ka}33;`;
-    if (props.$type === 'ku') return `
-      background: ${props.theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)'}; 
-      color: ${text.primary}; 
-      border: 1px solid ${border.divider};
+    const isDark = props.theme.palette.mode === 'dark';
+    if (props.$type === 'ka') return `
+      background: rgba(255, 179, 0, 0.2); 
+      color: ${isDark ? '#ff8800' : '#d97706'}; 
+      border: 1px solid rgba(255, 179, 0, 0.2);
     `;
-    return `background: ${background.subtle}; color: ${text.secondary}; border: 1px solid ${border.divider};`;
+    if (props.$type === 'ku') return `
+      background: ${isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.08)'}; 
+      color: ${isDark ? '#ffffff' : props.theme.customColors.text.primary}; 
+      border: 1px solid ${isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'};
+    `;
+    return `
+      background: ${isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.05)'}; 
+      color: ${isDark ? '#e1eaff' : props.theme.customColors.text.secondary}; 
+      border: none;
+    `;
   }}
 `;
 
@@ -101,51 +112,45 @@ const TextContent = styled.div`
 `;
 
 const NameText = styled.div`
-  color: ${({ theme }) => theme.customColors.text.primary};
+  color: ${({ theme }) => theme.palette.mode === 'dark' ? '#ffffff' : theme.customColors.text.primary};
+  font-family: 'Assistant', sans-serif;
   font-size: 16px;
   font-weight: 700;
-  line-height: 1.2;
+  line-height: 24px;
 `;
 
 const SubnameText = styled.div`
-  color: ${({ theme }) => theme.customColors.text.secondary};
+  color: ${({ theme }) => theme.palette.mode === 'dark' ? '#e1eaff' : theme.customColors.text.secondary};
+  font-family: 'Assistant', sans-serif;
   font-size: 12px;
   font-weight: 600;
-  opacity: 0.8;
+  line-height: 14px;
 `;
 
 const IconContainer = styled.div`
   width: 36px;
   height: 36px;
-  background: ${({ theme }) => theme.palette.mode === 'light' 
-    ? theme.customColors.background.paper 
-    : theme.customColors.background.subtle};
-  border: 1px solid ${({ theme }) => theme.customColors.border.divider};
+  background: ${({ theme }) => theme.palette.mode === 'dark' ? 'rgba(225, 234, 255, 0.2)' : 'rgba(61, 98, 178, 0.1)'};
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${({ theme }) => theme.customColors.primary.main};
+  color: ${({ theme }) => theme.palette.mode === 'dark' ? '#ffffff' : theme.customColors.primary.main};
 `;
 
 const ConnectivityTag = styled.div`
-  background: ${({ theme }) => theme.palette.mode === 'light' 
-    ? theme.customColors.background.paper 
-    : theme.customColors.background.light};
-  border-radius: 20px;
-  padding: 4px 12px;
+  background: ${({ theme }) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.05)'};
+  border-radius: 33554400px;
+  padding: 4px 8px;
   display: flex;
   align-items: center;
   gap: 4px;
   align-self: flex-start;
-  border: 1px solid ${({ theme }) => theme.customColors.border.divider};
-  box-shadow: ${({ theme }) => theme.palette.mode === 'light' 
-    ? '0 1px 2px rgba(0,0,0,0.02)' 
-    : 'none'};
+  margin-left: auto;
 `;
 
 const ConnectivityText = styled.span`
-  color: ${({ theme }) => theme.customColors.text.secondary};
+  color: ${({ theme }) => theme.palette.mode === 'dark' ? '#e1eaff' : theme.customColors.text.secondary};
   font-size: 13px;
   font-weight: 600;
 `;
@@ -158,11 +163,13 @@ const StatusRow = styled.div`
 `;
 
 const StatusText = styled.div<{ $status: ReadinessStatus }>`
-  color: ${props => getStatusColor(props.theme, props.$status)};
+  color: ${({ theme }) => theme.palette.mode === 'dark' ? '#e1eaff' : theme.customColors.text.secondary};
+  font-family: 'Assistant', sans-serif;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.14px;
   text-align: right;
+  line-height: 16px;
 `;
 
 export const EquipmentCard = ({

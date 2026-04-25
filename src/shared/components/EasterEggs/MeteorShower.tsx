@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled, { keyframes, createGlobalStyle } from 'styled-components';
 
+import meteorShowerSound from '../../../assets/meteorShower.wav';
+
 const shake = keyframes`
   0% { transform: translate(1px, 1px) rotate(0deg); }
   10% { transform: translate(-1px, -2px) rotate(-1deg); }
@@ -50,13 +52,20 @@ export const MeteorShower: React.FC<{ active: boolean; onFinish: () => void }> =
   useEffect(() => {
     if (!active) return;
 
+    const audio = new Audio(meteorShowerSound);
+    audio.play().catch(e => console.error("Audio playback failed:", e));
+
     setIsShaking(true);
     const timeout = setTimeout(() => {
       setIsShaking(false);
       onFinish();
     }, 5000); // Shower lasts 5 seconds
 
-    return () => clearTimeout(timeout);
+    return () => {
+      clearTimeout(timeout);
+      audio.pause();
+      audio.currentTime = 0;
+    };
   }, [active, onFinish]);
 
   useEffect(() => {

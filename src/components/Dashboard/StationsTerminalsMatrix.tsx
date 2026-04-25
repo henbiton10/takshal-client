@@ -12,7 +12,7 @@ const MatrixContainer = styled.div`
   height: 100%;
   overflow: auto;
   direction: rtl;
-  background: ${props => props.theme.customColors.background.default};
+  background: ${props => props.theme.customColors.matrix.background};
 `;
 
 const Table = styled.table`
@@ -24,12 +24,13 @@ const HeaderCell = styled.th`
   position: sticky;
   top: 0;
   z-index: 10;
-  background: ${props => props.theme.customColors.background.glass};
+  background: ${props => props.theme.customColors.matrix.headerResource};
   backdrop-filter: blur(8px);
   border: 1px solid ${props => props.theme.customColors.border.primary};
   padding: 10px;
   height: 56px;
   color: ${props => props.theme.palette.mode === 'dark' ? props.theme.customColors.text.white : props.theme.customColors.text.primary};
+  font-family: 'Assistant', sans-serif;
   font-size: 18px;
   font-weight: 700;
   text-align: center;
@@ -40,9 +41,10 @@ const StationHeaderCell = styled.th`
   top: 0;
   right: 0;
   z-index: 20;
-  background: ${props => props.theme.customColors.background.default};
+  background: ${props => props.theme.customColors.matrix.background};
   width: 320px;
   min-width: 320px;
+  border-bottom: 1px solid ${props => props.theme.customColors.border.primary};
 `;
 
 const DataRow = styled.tr`
@@ -54,11 +56,11 @@ const DataRow = styled.tr`
   }
 `;
 
-const StationCell = styled.td`
+const StationCell = styled.td<{ $index: number }>`
   position: sticky;
   right: 0;
   z-index: 5;
-  background: ${props => props.theme.customColors.primary.main};
+  background: ${props => props.$index === 0 ? props.theme.customColors.matrix.stationGreen : props.theme.customColors.matrix.stationBlue};
   backdrop-filter: blur(8px);
   border: 1px solid ${props => props.theme.customColors.border.primary};
   padding: 0 16px;
@@ -71,7 +73,8 @@ const StationCell = styled.td`
     align-items: center;
     justify-content: flex-start;
     gap: 12px;
-    color: ${props => props.theme.customColors.text.white};
+    color: ${props => props.theme.palette.mode === 'dark' ? props.theme.customColors.text.white : props.theme.customColors.text.primary};
+    font-family: 'Assistant', sans-serif;
     font-size: 18px;
     font-weight: 700;
   }
@@ -96,14 +99,17 @@ const TerminalCell = styled.button<{ $status: string; $isAllocated: boolean }>`
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s;
-  color: ${props => (props.$status !== 'transparent' || props.$isAllocated) ? props.theme.customColors.text.white : props.theme.customColors.text.primary};
+  color: ${props => (props.$status !== 'ready' || props.$isAllocated) 
+    ? (props.theme.palette.mode === 'dark' ? props.theme.customColors.text.white : props.theme.customColors.text.primary) 
+    : props.theme.customColors.text.primary};
   white-space: nowrap;
   
   background: ${props => {
+    const matrixColors = props.theme.customColors.matrix;
     const statusColors = props.theme.customColors.status;
     if (props.$status === 'damaged') return statusColors.damaged;
     if (props.$status === 'partly_ready') return statusColors.partlyReady;
-    if (props.$isAllocated) return statusColors.allocated;
+    if (props.$isAllocated) return matrixColors.cellAllocated;
     return 'transparent';
   }};
 
@@ -164,7 +170,7 @@ export const StationsTerminalsMatrix = ({ stations, onTerminalClick }: Props) =>
         <tbody>
           {stations.map(station => (
             <DataRow key={station.id}>
-              <StationCell>
+              <StationCell $index={stations.indexOf(station)}>
                 <div className="content">
                   <BattalionBadge>
                     <img src={getAffiliationIcon(station.organizationalAffiliation)} alt={station.organizationalAffiliation} />

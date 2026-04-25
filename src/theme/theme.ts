@@ -149,7 +149,7 @@ export const createCustomTheme = (colors: ThemeColors, mode: 'light' | 'dark' = 
           root: {
             '& .MuiOutlinedInput-root': {
               borderRadius: '8px',
-              backgroundColor: 'rgba(255, 255, 255, 0.04)',
+              backgroundColor: mode === 'light' ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.04)',
               '& fieldset': {
                 borderColor: colors.border.subtle,
               },

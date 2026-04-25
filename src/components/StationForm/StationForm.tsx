@@ -379,20 +379,14 @@ export const StationForm = ({ onSave, onDelete, editingStationId, initialData, o
                       label="גודל (מטרים)"
                       placeholder="2.5"
                       type="number"
+                      inputProps={{ step: 'any' }}
                       error={errors.antennas?.[index]?.size}
                       rules={{
                         required: 'גודל הינו שדה חובה',
-                        min: { value: 0.1, message: 'גודל חייב להיות חיובי' }
+                        min: { value: 0.1, message: 'גודל חייב להיות חיובי' },
+                        validate: (value) => !isNaN(Number(value)) || 'יש להזין מספר תקין'
                       }}
                       required
-                      transformValue={{
-                        toField: (value) => (value === '' || value === null || (typeof value === 'number' && isNaN(value)) || value === 0 ? '' : value.toString()),
-                        toForm: (value) => {
-                          if (value === '') return '';
-                          const num = Number(value);
-                          return isNaN(num) ? value : num;
-                        },
-                      }}
                     />
                   </div>
                   <div style={{ flex: '1' }}>

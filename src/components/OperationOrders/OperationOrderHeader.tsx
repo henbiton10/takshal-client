@@ -154,19 +154,12 @@ export const OperationOrderHeader = ({
   };
 
   useEffect(() => {
-    const isSame =
-      data.name === lastParentDataRef.current.name &&
-      data.startDate === lastParentDataRef.current.startDate &&
-      data.startTime === lastParentDataRef.current.startTime &&
-      data.endDate === lastParentDataRef.current.endDate &&
-      data.endTime === lastParentDataRef.current.endTime &&
-      JSON.stringify((data as any).allocations) === JSON.stringify((lastParentDataRef.current as any).allocations);
-
-    if (!isSame) {
+    // Only reset if the ID changed (we switched to a different operation order)
+    if (data.id !== lastParentDataRef.current.id) {
       lastParentDataRef.current = data;
       reset(data as OperationOrderFormValues);
     }
-  }, [data, reset]);
+  }, [data.id, reset]);
 
   useEffect(() => {
     const subscription = watch((value: any) => {

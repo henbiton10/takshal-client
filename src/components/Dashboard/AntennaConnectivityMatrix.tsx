@@ -15,7 +15,7 @@ const MatrixContainer = styled.div`
   height: 100%;
   overflow: auto;
   direction: rtl;
-  background: ${props => props.theme.customColors.background.default};
+  background: ${props => props.theme.customColors.matrix.background};
 `;
 
 const Table = styled.table`
@@ -29,7 +29,7 @@ const HeaderCell = styled.th`
   position: sticky;
   top: 0;
   z-index: 10;
-  background: ${props => props.theme.customColors.background.glass};
+  background: ${props => props.theme.customColors.matrix.headerResource};
   backdrop-filter: blur(8px);
   border: 1px solid ${props => props.theme.customColors.border.primary};
   padding: 10px;
@@ -37,20 +37,21 @@ const HeaderCell = styled.th`
   width: 140px;
   min-width: 140px;
   color: ${props => props.theme.palette.mode === 'dark' ? props.theme.customColors.text.white : props.theme.customColors.text.primary};
+  font-family: 'Assistant', sans-serif;
   font-size: 18px;
   font-weight: 700;
   text-align: center;
 `;
 
 const LabelHeaderCell = styled.th`
-
   position: sticky;
   right: 0;
   top: 0;
   z-index: 15;
-  background: ${props => props.theme.customColors.background.default};
+  background: ${props => props.theme.customColors.matrix.background};
   width: 320px;
   min-width: 320px;
+  border-bottom: 1px solid ${props => props.theme.customColors.border.primary};
 `;
 
 const DataRow = styled.tr`
@@ -64,14 +65,13 @@ const DataRow = styled.tr`
   }
 `;
 
-const LinkLabelCell = styled.td`
+const LinkLabelCell = styled.td<{ $index: number }>`
   position: sticky;
   right: 0;
   z-index: 5;
-  background: ${props => props.theme.customColors.primary.main};
+  background: ${props => props.$index % 2 === 0 ? props.theme.customColors.matrix.stationGreen : props.theme.customColors.matrix.stationBlue};
   backdrop-filter: blur(4px);
-  border-right: 1px solid ${props => props.theme.customColors.border.primary};
-  border-left: 1px solid ${props => props.theme.customColors.border.primary};
+  border: 1px solid ${props => props.theme.customColors.border.primary};
   padding: 10px;
   text-align: center;
   width: 320px;
@@ -83,7 +83,8 @@ const LinkLabelCell = styled.td`
     align-items: center;
     justify-content: center;
     gap: 8px;
-    color: ${props => props.theme.customColors.text.white};
+    color: ${props => props.theme.palette.mode === 'dark' ? props.theme.customColors.text.white : props.theme.customColors.text.primary};
+    font-family: 'Assistant', sans-serif;
     font-size: 16px;
     font-weight: 700;
     
@@ -106,7 +107,7 @@ const StatusCell = styled.td<{ $ratio: number }>`
 
   font-size: 18px;
   font-weight: 700;
-  color: ${props => props.theme.customColors.text.white};
+  color: ${props => props.$ratio > 0 ? '#fff' : (props.theme.palette.mode === 'dark' ? props.theme.customColors.text.white : props.theme.customColors.text.primary)};
   
   background: ${props => {
     const { ready, partlyReady, damaged } = props.theme.customColors.status;
@@ -178,9 +179,9 @@ export const AntennaConnectivityMatrix = ({ stations }: Props) => {
 
         </thead>
         <tbody>
-          {connectivityLinks.map((link) => (
+          {connectivityLinks.map((link, idx) => (
             <DataRow key={link.id}>
-              <LinkLabelCell>
+              <LinkLabelCell $index={idx}>
                 <div className="content">
                   <span>{link.source}</span>
                   <LinkIcon />

@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { EntityConfig } from '../entityConfig';
 import { useSocket } from '../../../contexts/SocketContext';
 
@@ -21,6 +21,25 @@ export const useEntityManager = (entityConfig: EntityConfig) => {
     selectedData: null,
     viewMode: 'list',
   });
+
+  const [editingData, setEditingData] = useState<any | null>(null);
+  const lastInitializedIdRef = useRef<number | null | 'new'>(null);
+
+  // Sync editingData only when entering edit mode or when the item changes
+  useEffect(() => {
+    if (state.viewMode === 'edit') {
+      const currentId = state.selectedId ?? 'new';
+      
+      // Only initialize if we haven't initialized for this ID yet
+      if (lastInitializedIdRef.current !== currentId) {
+        lastInitializedIdRef.current = currentId;
+        setEditingData(state.selectedData ? entityConfig.mapToFormData(state.selectedData) : null);
+      }
+    } else {
+      lastInitializedIdRef.current = null;
+      setEditingData(null);
+    }
+  }, [state.viewMode, state.selectedData, state.selectedId, entityConfig]);
 
   const fetchItems = useCallback(async (silent = false) => {
     if (!silent) {
@@ -195,11 +214,7 @@ export const useEntityManager = (entityConfig: EntityConfig) => {
     }
   }, [entityConfig, fetchItems]);
 
-  // For backwards compatibility
-  const editingId = state.viewMode === 'edit' ? state.selectedId : null;
-  const editingData = state.viewMode === 'edit' && state.selectedData 
-    ? entityConfig.mapToFormData(state.selectedData) 
-    : null;
+  // editingData is now a state variable managed above
 
   return {
     items: state.items,
@@ -207,7 +222,7 @@ export const useEntityManager = (entityConfig: EntityConfig) => {
     selectedId: state.selectedId,
     selectedData: state.selectedData,
     viewMode: state.viewMode,
-    editingId,
+    editingId: state.viewMode === 'edit' ? state.selectedId : null,
     editingData,
     fetchItems,
     handleCardClick,

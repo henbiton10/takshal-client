@@ -390,7 +390,7 @@ const ChipIcon = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${({ theme }) => theme.customColors.primary.main};
+  color: ${({ theme }) => theme.palette.mode === 'dark' ? '#ffffff' : theme.customColors.primary.main};
   opacity: 0.9;
 `;
 

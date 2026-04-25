@@ -14,7 +14,7 @@ const MatrixContainer = styled.div`
   height: 100%;
   overflow: auto;
   direction: rtl;
-  background: ${({ theme }) => theme.customColors.background.default};
+  background: ${({ theme }) => theme.customColors.matrix.background};
 `;
 
 const Table = styled.table`
@@ -32,14 +32,15 @@ const LabelCell = styled.td`
   position: sticky;
   right: 0;
   z-index: 5;
-  background: ${({ theme }) => theme.customColors.background.medium};
+  background: ${({ theme }) => theme.customColors.matrix.headerLocal};
   backdrop-filter: blur(8px);
   border: 1px solid ${({ theme }) => theme.customColors.border.primary};
   padding: 8px;
   text-align: center;
   width: 140px;
   min-width: 140px;
-  color: ${({ theme }) => theme.customColors.text.primary};
+  color: ${({ theme }) => theme.palette.mode === 'dark' ? theme.customColors.text.white : theme.customColors.text.primary};
+  font-family: 'Assistant', sans-serif;
   font-size: 16px;
   font-weight: 700;
 
@@ -58,7 +59,7 @@ const NetworkCardCell = styled.td`
   min-width: 120px;
   height: 36px;
   border: 1px solid ${({ theme }) => theme.customColors.border.primary};
-  background: ${props => props.theme.customColors.status.ready};
+  background: ${props => props.theme.customColors.matrix.cellAllocated};
   transition: opacity 0.2s;
 
   &:hover {
@@ -72,7 +73,8 @@ const NetworkCardCell = styled.td`
     justify-content: center;
     width: 100%;
     height: 100%;
-    color: ${({ theme }) => theme.customColors.text.white};
+    color: ${({ theme }) => theme.palette.mode === 'dark' ? theme.customColors.text.white : theme.customColors.text.primary};
+    font-family: 'Assistant', sans-serif;
     font-size: 15px;
     font-weight: 700;
     text-align: center;

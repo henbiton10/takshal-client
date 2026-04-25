@@ -167,8 +167,8 @@ export const EntityNameRow = styled.div`
 export const IconCircle = styled.div`
   width: 42px;
   height: 42px;
-  border-radius: 10.5px;
-  background: ${({ theme }) => theme.customColors.primary.main}33;
+  border-radius: 12px;
+  background: ${({ theme }) => theme.palette.mode === 'light' ? theme.customColors.primary.main + '33' : 'rgba(21, 93, 252, 0.3)'};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -185,13 +185,15 @@ export const EntityNameText = styled.span`
 
 export const EditButton = styled(Button)`
   && {
-    background: ${({ theme }) => theme.customColors.background.subtle};
-    color: ${({ theme }) => theme.customColors.text.primary};
-    border: 1px solid ${({ theme }) => theme.customColors.border.divider};
+    background: ${({ theme }) => theme.palette.mode === 'light' 
+      ? theme.customColors.background.subtle 
+      : '#2e3c5a'};
+    color: ${({ theme }) => theme.palette.mode === 'dark' ? theme.customColors.text.white : theme.customColors.text.primary};
+    border: 1px solid ${({ theme }) => theme.customColors.border.primary};
     border-radius: 12px;
     padding: 10px 20px;
     text-transform: none;
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-family: 'Assistant', sans-serif;
     font-size: 16px;
     font-weight: 700;
     gap: 8px;
@@ -204,7 +206,7 @@ export const EditButton = styled(Button)`
 `;
 
 export const SectionBox = styled.div`
-  background: ${({ theme }) => theme.customColors.background.subtle};
+  background: ${({ theme }) => theme.palette.mode === 'dark' ? theme.customColors.background.subtle : 'rgba(0, 0, 0, 0.02)'};
   border: 1px solid ${({ theme }) => theme.customColors.border.divider};
   border-radius: 16px;
   padding: 18px 24px;
@@ -262,7 +264,7 @@ export const FieldLabelText = styled.span`
 export const FieldValuePill = styled.div<{ $statusColor?: any }>`
   background: ${({ theme }) => theme.palette.mode === 'light' 
     ? theme.customColors.background.paper 
-    : 'rgba(255, 255, 255, 0.03)'};
+    : theme.customColors.background.bannerInner};
   border: 1px solid ${({ theme }) => theme.customColors.border.divider};
   border-radius: 12px;
   padding: 8px 16px;
@@ -277,9 +279,9 @@ export const FieldValuePill = styled.div<{ $statusColor?: any }>`
     : 'none'};
   
   span {
-    color: ${({ theme }) => theme.customColors.text.primary};
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    font-size: 17px;
+    color: ${({ theme }) => theme.palette.mode === 'dark' ? theme.customColors.text.white : theme.customColors.text.primary};
+    font-family: 'Assistant', sans-serif;
+    font-size: 18px;
     font-weight: 600;
     letter-spacing: 0.18px;
   }
@@ -302,7 +304,7 @@ export const TagsContainer = styled.div`
 export const DataTag = styled.div`
   background: ${({ theme }) => theme.palette.mode === 'light' 
     ? theme.customColors.background.paper 
-    : 'rgba(255, 255, 255, 0.03)'};
+    : theme.customColors.background.bannerInner};
   border: 1px solid ${({ theme }) => theme.customColors.border.divider};
   border-radius: 12px;
   height: 42px;
@@ -316,9 +318,9 @@ export const DataTag = styled.div`
     : 'none'};
   
   .tag-label {
-    color: ${({ theme }) => theme.customColors.text.primary};
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    font-size: 17px;
+    color: ${({ theme }) => theme.palette.mode === 'dark' ? theme.customColors.text.white : theme.customColors.text.primary};
+    font-family: 'Assistant', sans-serif;
+    font-size: 18px;
     font-weight: 600;
     letter-spacing: 0.18px;
   }
@@ -339,7 +341,7 @@ export const InlineMetadataContainer = styled.div`
 export const InlinePill = styled.div`
   background: ${({ theme }) => theme.palette.mode === 'light' 
     ? theme.customColors.background.paper 
-    : 'rgba(255, 255, 255, 0.05)'};
+    : theme.customColors.background.bannerInner};
   border: 1px solid ${({ theme }) => theme.customColors.border.divider};
   border-radius: 12px;
   padding: 2px 12px;
@@ -348,9 +350,9 @@ export const InlinePill = styled.div`
   height: 24px;
   
   span {
-    color: ${({ theme }) => theme.customColors.text.secondary};
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    font-size: 13px;
+    color: ${({ theme }) => theme.palette.mode === 'dark' ? theme.customColors.text.white : theme.customColors.text.primary};
+    font-family: 'Assistant', sans-serif;
+    font-size: 16px;
     font-weight: 600;
     letter-spacing: 0.16px;
     white-space: nowrap;

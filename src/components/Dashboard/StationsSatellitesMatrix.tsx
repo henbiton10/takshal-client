@@ -28,7 +28,7 @@ const MatrixContainer = styled.div`
   height: 100%;
   overflow: auto;
   direction: rtl;
-  background: ${props => props.theme.customColors.background.default};
+  background: ${props => props.theme.customColors.matrix.background};
 `;
 
 const Table = styled.table`
@@ -45,7 +45,7 @@ const CategoryHeader = styled.th<{ $type: 'local' | 'global' }>`
   position: sticky;
   top: 0;
   z-index: 10;
-  background: ${props => props.$type === 'local' ? props.theme.customColors.primary.main : props.theme.customColors.background.subtle};
+  background: ${props => props.$type === 'local' ? props.theme.customColors.matrix.headerLocal : props.theme.customColors.matrix.headerGlobal};
   backdrop-filter: blur(8px);
   border: 1px solid ${props => props.theme.customColors.border.primary};
   padding: 10px;
@@ -56,9 +56,9 @@ const CategoryHeader = styled.th<{ $type: 'local' | 'global' }>`
     align-items: center;
     justify-content: center;
     gap: 12px;
-    color: ${props => props.$type === 'local' 
+    color: ${props => props.theme.palette.mode === 'dark' 
       ? props.theme.customColors.text.white 
-      : (props.theme.palette.mode === 'dark' ? props.theme.customColors.text.white : props.theme.customColors.text.primary)};
+      : props.theme.customColors.text.primary};
     font-size: 18px;
     font-weight: 700;
 
@@ -74,7 +74,7 @@ const SatelliteHeaderCell = styled.th`
   position: sticky;
   top: 56px;
   z-index: 10;
-  background: ${props => props.theme.customColors.background.glass};
+  background: ${props => props.theme.customColors.matrix.headerResource};
   backdrop-filter: blur(8px);
   border: 1px solid ${props => props.theme.customColors.border.primary};
   padding: 8px;
@@ -101,7 +101,7 @@ const CornerCell = styled.th<{ $top?: string }>`
   right: 0;
   top: ${props => props.$top || '0'};
   z-index: 20;
-  background: ${props => props.theme.customColors.background.default};
+  background: ${props => props.theme.customColors.matrix.background};
   width: 320px;
   min-width: 320px;
 `;
@@ -115,15 +115,16 @@ const DataRow = styled.tr`
   }
 `;
 
-const StationCell = styled.td`
+const StationCell = styled.td<{ $index: number }>`
   position: sticky;
   right: 0;
   z-index: 5;
-  background: ${props => props.theme.customColors.primary.main};
+  background: ${props => props.$index === 0 ? props.theme.customColors.matrix.stationGreen : props.theme.customColors.matrix.stationBlue};
   backdrop-filter: blur(8px);
   border: 1px solid ${props => props.theme.customColors.border.primary};
   padding: 0 16px;
-  color: ${props => props.theme.customColors.text.white};
+  color: ${props => props.theme.palette.mode === 'dark' ? props.theme.customColors.text.white : props.theme.customColors.text.primary};
+  font-family: 'Assistant', sans-serif;
   font-size: 18px;
   font-weight: 700;
 
@@ -153,7 +154,7 @@ const AllocationCell = styled.td<{ $hasAllocation: boolean }>`
   border: 1px solid ${props => props.theme.customColors.border.primary};
   padding: 10px;
   text-align: center;
-  background: ${props => props.$hasAllocation ? `linear-gradient(180deg, ${props.theme.customColors.status.ready} 0%, ${props.theme.customColors.status.ready} 100%)` : 'transparent'};
+  background: ${props => props.$hasAllocation ? props.theme.customColors.matrix.cellAllocated : 'transparent'};
   width: 140px;
   min-width: 140px;
 `;
@@ -183,7 +184,9 @@ const AllocationBadge = styled.div<{ $band: string }>`
       default: return ku;
     }
   }};
-  color: ${props => props.$band.toUpperCase() === 'KU' ? (props.theme.palette.mode === 'dark' ? '#000' : '#fff') : '#fff'};
+  color: ${props => props.$band.toUpperCase() === 'KU' 
+    ? (props.theme.palette.mode === 'dark' ? '#000' : '#fff') 
+    : '#fff'};
   font-size: 16px;
   font-weight: 700;
 
@@ -296,7 +299,7 @@ export const StationsSatellitesMatrix = ({ stations, satellites }: Props) => {
         <tbody>
           {stations.map(station => (
             <DataRow key={station.id}>
-              <StationCell>
+              <StationCell $index={stations.indexOf(station)}>
                 <div className="content">
                   <BattalionBadge>
                     <img src={getAffiliationIcon(station.organizationalAffiliation)} alt={station.organizationalAffiliation} />

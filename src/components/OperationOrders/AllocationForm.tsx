@@ -38,9 +38,10 @@ const FormContainer = styled.div`
   flex-direction: column;
   gap: 20px;
   padding: 20px;
-  background: rgba(6, 15, 35, 0.9);
-  border: 1px solid rgba(59, 130, 246, 0.2);
-  border-radius: 8px;
+  background: ${({ theme }) => theme.customColors.background.glass};
+  backdrop-filter: blur(40px);
+  border: 1px solid ${({ theme }) => theme.customColors.border.divider};
+  border-radius: 12px;
   direction: rtl;
 `;
 
@@ -52,30 +53,31 @@ const FormHeader = styled.div`
 `;
 
 const FormTitle = styled.h3`
-  color: rgba(225, 234, 255, 0.9);
+  color: ${({ theme }) => theme.customColors.text.primary};
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 700;
   margin: 0;
 `;
 
 const AllocationTypeChip = styled(Chip) <{ $isMain?: boolean }>`
   background: ${(props) =>
-    props.$isMain ? 'rgba(34, 197, 94, 0.15)' : 'rgba(59, 130, 246, 0.15)'};
-  color: ${(props) => (props.$isMain ? '#22c55e' : '#3b82f6')};
+    props.$isMain ? props.theme.customColors.status.ready + '33' : props.theme.customColors.primary.main + '33'};
+  color: ${(props) => (props.$isMain ? props.theme.customColors.status.ready : props.theme.customColors.primary.main)};
   border: 1px solid
     ${(props) =>
-    props.$isMain ? 'rgba(34, 197, 94, 0.3)' : 'rgba(59, 130, 246, 0.3)'};
+    props.$isMain ? props.theme.customColors.status.ready + '4D' : props.theme.customColors.primary.main + '4D'};
   font-size: 12px;
   height: 26px;
+  font-weight: 700;
 `;
 
 const SectionTitle = styled.h4`
-  color: rgba(225, 234, 255, 0.8);
+  color: ${({ theme }) => theme.customColors.text.primary};
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 700;
   margin: 0;
   padding-bottom: 8px;
-  border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+  border-bottom: 1px solid ${({ theme }) => theme.customColors.border.divider};
 `;
 
 const FieldsRow = styled.div`
@@ -93,37 +95,37 @@ const FieldWrapper = styled.div<{ $flex?: number }>`
 `;
 
 const FieldLabel = styled.label`
-  color: rgba(225, 234, 255, 0.7);
+  color: ${({ theme }) => theme.customColors.text.secondary};
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
 
   .required {
-    color: #ef4444;
+    color: ${({ theme }) => theme.customColors.error.main};
     margin-right: 4px;
   }
 `;
 
 const StyledTextField = styled(TextField)`
   .MuiOutlinedInput-root {
-    background: rgba(16, 33, 62, 0.6);
-    border-radius: 6px;
-    color: rgba(225, 234, 255, 0.9);
+    background: ${({ theme }) => theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.04)'};
+    border-radius: 8px;
+    color: ${({ theme }) => theme.customColors.text.primary};
 
     fieldset {
-      border-color: rgba(59, 130, 246, 0.3);
+      border-color: ${({ theme }) => theme.customColors.border.divider};
     }
 
     &:hover fieldset {
-      border-color: rgba(59, 130, 246, 0.5);
+      border-color: ${({ theme }) => theme.customColors.border.accent};
     }
 
     &.Mui-focused fieldset {
-      border-color: #3b82f6;
+      border-color: ${({ theme }) => theme.customColors.primary.main};
     }
   }
 
   .MuiInputBase-input {
-    color: rgba(225, 234, 255, 0.9);
+    color: ${({ theme }) => theme.customColors.text.primary};
     padding: 10px 12px;
     font-size: 14px;
     direction: rtl;
@@ -132,20 +134,20 @@ const StyledTextField = styled(TextField)`
 `;
 
 const StyledSelect = styled(Select)`
-  background: rgba(16, 33, 62, 0.6);
-  border-radius: 6px;
-  color: rgba(225, 234, 255, 0.9);
+  background: ${({ theme }) => theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.04)'};
+  border-radius: 8px;
+  color: ${({ theme }) => theme.customColors.text.primary};
 
   .MuiOutlinedInput-notchedOutline {
-    border-color: rgba(59, 130, 246, 0.3);
+    border-color: ${({ theme }) => theme.customColors.border.divider};
   }
 
   &:hover .MuiOutlinedInput-notchedOutline {
-    border-color: rgba(59, 130, 246, 0.5);
+    border-color: ${({ theme }) => theme.customColors.border.accent};
   }
 
   &.Mui-focused .MuiOutlinedInput-notchedOutline {
-    border-color: #3b82f6;
+    border-color: ${({ theme }) => theme.customColors.primary.main};
   }
 
   .MuiSelect-select {
@@ -158,7 +160,7 @@ const StyledSelect = styled(Select)`
   .MuiSelect-icon {
     left: 7px;
     right: auto;
-    color: rgba(225, 234, 255, 0.7);
+    color: ${({ theme }) => theme.customColors.text.secondary};
   }
 `;
 
@@ -167,8 +169,9 @@ const Section = styled.div`
   flex-direction: column;
   gap: 12px;
   padding: 16px;
-  background: rgba(16, 33, 62, 0.4);
-  border-radius: 6px;
+  background: ${({ theme }) => theme.customColors.background.subtle};
+  border: 1px solid ${({ theme }) => theme.customColors.border.divider};
+  border-radius: 12px;
 `;
 
 const ButtonsRow = styled.div`
@@ -264,9 +267,9 @@ const SubAllocationsHeader = styled.div`
 `;
 
 const SubAllocationsTitle = styled.h4`
-  color: rgba(255, 255, 255, 0.85);
+  color: ${({ theme }) => theme.customColors.text.primary};
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 700;
   margin: 0;
   display: flex;
   align-items: center;
@@ -274,9 +277,9 @@ const SubAllocationsTitle = styled.h4`
 `;
 
 const SubAllocationCard = styled.div`
-  background: rgba(16, 33, 62, 0.4);
-  border: 1px solid rgba(59, 130, 246, 0.2);
-  border-radius: 8px;
+  background: ${({ theme }) => theme.customColors.background.subtle};
+  border: 1px solid ${({ theme }) => theme.customColors.border.divider};
+  border-radius: 12px;
   padding: 16px;
   margin-bottom: 12px;
   position: relative;
@@ -290,9 +293,9 @@ const SubAllocationCardHeader = styled.div`
 `;
 
 const SubAllocationNumber = styled.span`
-  color: rgba(255, 255, 255, 0.7);
+  color: ${({ theme }) => theme.customColors.text.secondary};
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
 `;
 
 const DeleteSubButton = styled(IconButton)`

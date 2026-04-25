@@ -55,6 +55,15 @@ export interface ThemeColors {
     hover: string;
     selected: string;
   };
+  matrix: {
+    background: string;
+    headerGlobal: string;
+    headerLocal: string;
+    headerResource: string;
+    stationGreen: string;
+    stationBlue: string;
+    cellAllocated: string;
+  };
 }
 
 export type ThemeMode = 'dark' | 'light';

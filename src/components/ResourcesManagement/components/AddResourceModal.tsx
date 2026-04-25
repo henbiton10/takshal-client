@@ -52,7 +52,7 @@ const Titles = styled.div`
 `;
 
 const Title = styled.h2`
-  color: ${({ theme }) => theme.customColors.text.white};
+  color: ${({ theme }) => theme.customColors.text.primary};
   font-size: 24px;
   font-weight: 700;
   margin: 0;
@@ -77,7 +77,7 @@ const CloseButton = styled.button`
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: ${({ theme }) => theme.customColors.text.white};
+  color: ${({ theme }) => theme.customColors.text.primary};
   flex-shrink: 0;
 `;
 
@@ -105,7 +105,7 @@ const OptionButton = styled.button`
 `;
 
 const OptionName = styled.span`
-  color: ${({ theme }) => theme.customColors.text.white};
+  color: ${({ theme }) => theme.customColors.text.primary};
   font-size: 24px;
   font-weight: 700;
   line-height: 1.1;
@@ -119,7 +119,7 @@ const IconBox = styled.div<{ $color: string }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${({ theme }) => theme.customColors.text.white};
+  color: ${({ theme }) => theme.customColors.text.white}; /* Icons usually look better in white against colored boxes */
 `;
 
 export const AddResourceModal = ({ onClose, onSelect }: AddResourceModalProps) => (
