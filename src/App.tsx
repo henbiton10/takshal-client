@@ -13,6 +13,8 @@ import { PageStatusProvider } from './contexts/PageStatusContext';
 import { TourProvider } from './shared/components/Tour/TourProvider';
 import { MeteorShower } from './shared/components/EasterEggs/MeteorShower';
 import { useKonami } from './shared/components/EasterEggs/useKonami';
+import { MeteorCursor } from './shared/components/EasterEggs/MeteorCursor';
+import { useSecretCode } from './shared/components/EasterEggs/useSecretCode';
 import styled from 'styled-components';
 
 const STORAGE_KEY = 'takshal_selected_menu';
@@ -29,12 +31,17 @@ import { CustomThemeProvider } from './theme/ThemeContext';
 
 function App() {
   const [showMeteor, setShowMeteor] = useState(false);
+  const [showMeteorCursor, setShowMeteorCursor] = useState(false);
   const [selectedMenuItem, setSelectedMenuItem] = useState(() => {
     return localStorage.getItem(STORAGE_KEY) || 'operations';
   });
 
   useKonami(() => {
     setShowMeteor(true);
+  });
+
+  useSecretCode('meteor', () => {
+    setShowMeteorCursor(prev => !prev);
   });
 
   useEffect(() => {
@@ -50,6 +57,7 @@ function App() {
       <CssBaseline />
       <GlobalStyle />
       <MeteorShower active={showMeteor} onFinish={() => setShowMeteor(false)} />
+      <MeteorCursor active={showMeteorCursor} />
       <ToastProvider>
         <TourProvider>
           <PageStatusProvider>
@@ -70,6 +78,7 @@ function App() {
                   <Sidebar 
                     selectedItem={selectedMenuItem}
                     onItemSelect={handleMenuItemSelect}
+                    onEasterEgg={() => setShowMeteorCursor(prev => !prev)}
                   />
                 </AppLayout>
               </Authorization>

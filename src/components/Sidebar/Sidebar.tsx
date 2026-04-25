@@ -47,7 +47,7 @@ const MenuContainer = styled(Box)({
   marginTop: '12px',
 });
 
-export default function Sidebar({ selectedItem = 'operations', onItemSelect }: SidebarProps) {
+export default function Sidebar({ selectedItem = 'operations', onItemSelect, onEasterEgg }: SidebarProps) {
   const { isExpanded, isPinned, togglePin } = useSidebarHover();
   const { statuses } = usePageStatus();
 
@@ -60,7 +60,7 @@ export default function Sidebar({ selectedItem = 'operations', onItemSelect }: S
       isExpanded={isExpanded}
       className="sidebar-container"
     >
-      <SidebarHeader isExpanded={isExpanded} />
+      <SidebarHeader isExpanded={isExpanded} onEasterEgg={onEasterEgg} />
 
       <MenuSeparator />
 

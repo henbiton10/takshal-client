@@ -7,4 +7,5 @@ export interface MenuItem {
 export interface SidebarProps {
   selectedItem?: string;
   onItemSelect?: (itemId: string) => void;
+  onEasterEgg?: () => void;
 }
