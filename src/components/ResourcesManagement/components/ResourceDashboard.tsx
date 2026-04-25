@@ -5,7 +5,7 @@ import { EntityConfig } from '../entityConfig';
 const DashboardContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 36px;
+  gap: 24px;
   direction: rtl;
   padding: 0 8px;
 `;
@@ -21,14 +21,14 @@ const CategoryHeader = styled.div`
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid ${({ theme }) => theme.customColors.border.divider};
-  padding-bottom: 12px;
-  margin-bottom: 4px;
+  padding-bottom: 8px;
+  margin-bottom: 0px;
 `;
 
 const CategoryTitle = styled.h2`
   color: ${({ theme }) => theme.customColors.text.primary};
   font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 700;
   margin: 0;
   line-height: 1.1;
@@ -38,7 +38,7 @@ const ShowAllButton = styled(Button)`
   && {
     color: ${({ theme }) => theme.customColors.text.secondary};
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 600;
     text-transform: none;
     letter-spacing: 0.16px;
@@ -54,8 +54,8 @@ const ShowAllButton = styled(Button)`
 
 const ItemsGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, 350px);
-  gap: 16px;
+  grid-template-columns: repeat(4, minmax(200px, 1fr));
+  gap: 12px;
   width: 100%;
 `;
 
