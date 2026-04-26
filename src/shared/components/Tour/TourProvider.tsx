@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Joyride, STATUS } from 'react-joyride';
+import Joyride, { STATUS } from 'react-joyride';
 import { useTheme } from 'styled-components';
 import { TOUR_STEPS } from './steps';
 import { TourTooltip } from './TourTooltip';

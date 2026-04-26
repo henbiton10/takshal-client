@@ -45,7 +45,7 @@ import { AntennaConnectivityMatrix } from './AntennaConnectivityMatrix';
 import { NetworksMatrix } from './NetworksMatrix';
 import { TerminalPopup } from './TerminalPopup';
 import { TimeSelector } from './TimeSelector';
-import { Responsive, WidthProvider, Layout } from 'react-grid-layout/legacy';
+import { Responsive, WidthProvider, Layout } from 'react-grid-layout';
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
