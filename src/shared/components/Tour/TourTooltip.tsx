@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { TooltipRenderProps } from 'react-joyride';
 
 const TooltipContainer = styled.div`
-  background: ${({ theme }) => theme.customColors.background.glass};
+  background: ${({ theme }) => theme.customColors.background.paper};
   backdrop-filter: blur(40px);
   border: 1px solid ${({ theme }) => theme.customColors.border.divider};
   border-radius: 16px;
@@ -106,10 +106,10 @@ export const TourTooltip = ({
     <TooltipContainer {...tooltipProps}>
       {step.title && <TooltipTitle>{step.title}</TooltipTitle>}
       <TooltipContent>{step.content}</TooltipContent>
-      
+
       <ButtonContainer>
         {!isLastStep && (
-          <SkipButton 
+          <SkipButton
             {...skipProps}
             onClick={(e) => {
               localStorage.setItem('takshal_tour_completed', 'true');
@@ -119,14 +119,14 @@ export const TourTooltip = ({
             דלג על הסיור
           </SkipButton>
         )}
-        
+
         <div style={{ display: 'flex', gap: '8px' }}>
           {index > 0 && (
             <SecondaryButton {...backProps}>
               הקודם
             </SecondaryButton>
           )}
-          <PrimaryButton 
+          <PrimaryButton
             {...primaryProps}
             onClick={(e) => {
               if (isLastStep) {

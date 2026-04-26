@@ -1,4 +1,3 @@
-import React from 'react';
 import { Box, IconButton } from '@mui/material';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import CloseIcon from '@mui/icons-material/Close';

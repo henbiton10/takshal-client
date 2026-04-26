@@ -431,6 +431,7 @@ const getHebrewCommunicationType = (type: string): string => {
 interface AllocationsGridProps {
   allocations: AllocationData[];
   onDelete: (allocationId: number) => void;
+  onEdit: (allocation: AllocationData) => void;
   onAddSubAllocation: (parentAllocation: AllocationData) => void;
   onReorder: () => Promise<void>;
 }
@@ -438,6 +439,8 @@ interface AllocationsGridProps {
 export const AllocationsGrid = ({
   allocations,
   onDelete,
+  onEdit,
+  onAddSubAllocation: _onAddSubAllocation, // Destructure to avoid unused warning if not used yet
   onReorder,
 }: AllocationsGridProps) => {
   const theme = useTheme() as any;
@@ -975,6 +978,11 @@ export const AllocationsGrid = ({
         suppressCellFocus={true}
         rowDragManaged={false}
         onRowDragEnd={handleRowDragEnd}
+        onRowClicked={(event) => {
+          if (onEdit && event.data) {
+            onEdit(event.data);
+          }
+        }}
         autoSizeStrategy={{
           type: 'fitCellContents'
         }}

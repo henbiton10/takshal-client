@@ -45,7 +45,7 @@ import { AntennaConnectivityMatrix } from './AntennaConnectivityMatrix';
 import { NetworksMatrix } from './NetworksMatrix';
 import { TerminalPopup } from './TerminalPopup';
 import { TimeSelector } from './TimeSelector';
-import { Responsive, WidthProvider, Layout } from 'react-grid-layout';
+import { Responsive, WidthProvider, Layout, Layouts } from 'react-grid-layout';
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -298,7 +298,7 @@ const MIN_DIMENSIONS: Record<string, { minW: number; minH: number }> = {
   'networks': { minW: 4, minH: 3 },
 };
 
-const DEFAULT_LAYOUTS: { [key: string]: Layout } = {
+const DEFAULT_LAYOUTS: Record<string, Layout[]> = {
   lg: [
     { i: 'stations-satellites', x: 0, y: 0, w: 12, h: 8, ...MIN_DIMENSIONS['stations-satellites'] },
     { i: 'stations-terminals', x: 6, y: 8, w: 6, h: 12, ...MIN_DIMENSIONS['stations-terminals'] },
@@ -307,16 +307,16 @@ const DEFAULT_LAYOUTS: { [key: string]: Layout } = {
   ]
 };
 
-const normalizeLayout = (layout: Partial<Record<string, Layout>>) => {
-  const normalized: any = {};
+const normalizeLayout = (layout: Layouts) => {
+  const normalized: Record<string, any> = {};
   Object.keys(layout).forEach(key => {
-    normalized[key] = (layout[key] || []).map(item => ({
+    normalized[key] = (layout[key] || []).map((item: Layout) => ({
       i: item.i,
       x: item.x,
       y: item.y,
       w: item.w,
       h: item.h
-    })).sort((a, b) => a.i.localeCompare(b.i));
+    })).sort((a: any, b: any) => a.i.localeCompare(b.i));
   });
   return JSON.stringify(normalized);
 };
@@ -326,11 +326,11 @@ const loadLayoutFromStorage = () => {
     const stored = localStorage.getItem(LAYOUT_STORAGE_KEY);
     if (!stored) return DEFAULT_LAYOUTS;
     
-    const parsed: { [key: string]: Layout } = JSON.parse(stored);
+    const parsed: Record<string, Layout[]> = JSON.parse(stored);
     
     // Always inject min dimensions to ensure they apply even to old stored layouts
-    Object.keys(parsed).forEach(breakpoint => {
-      parsed[breakpoint] = parsed[breakpoint].map(item => ({
+    Object.keys(parsed).forEach((breakpoint: string) => {
+      parsed[breakpoint] = parsed[breakpoint].map((item: Layout) => ({
         ...item,
         ...(MIN_DIMENSIONS[item.i] || {})
       }));
@@ -388,7 +388,7 @@ export const DashboardPage = () => {
   const [timeRange, setTimeRange] = useState<TimeRange | null>(() => loadTimeRangeFromStorage());
   const [lastUpdated, setLastUpdated] = useState<string>(new Date().toLocaleString('he-IL'));
   const [fullscreenSection, setFullscreenSection] = useState<DashboardSection | null>(null);
-  const [layouts, setLayouts] = useState<Partial<Record<string, Layout>>>(() => loadLayoutFromStorage());
+  const [layouts, setLayouts] = useState<Layouts>(() => loadLayoutFromStorage());
   const [isEditing, setIsEditing] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const { setAppReady } = useInitialization();
@@ -447,7 +447,7 @@ export const DashboardPage = () => {
     );
   }, []);
 
-  const handleLayoutChange = (_: Layout, allLayouts: Partial<Record<string, Layout>>) => {
+  const handleLayoutChange = (_currentLayout: Layout[], allLayouts: Layouts) => {
     setLayouts(allLayouts);
     localStorage.setItem(LAYOUT_STORAGE_KEY, JSON.stringify(allLayouts));
   };
