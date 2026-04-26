@@ -4,10 +4,10 @@ import styled from 'styled-components';
 import { DashboardStation, DashboardSatellite } from './types';
 
 // Asset imports
-const ISRAEL_ICON = '/src/assets/israel.png';
-const EARTH_ICON = '/src/assets/earth.png';
-const IAF_ICON = '/src/assets/IAF.png';
-const C4I_ICON = '/src/assets/C4I.svg';
+import ISRAEL_ICON from '../../assets/israel.png';
+import EARTH_ICON from '../../assets/earth.png';
+import IAF_ICON from '../../assets/IAF.png';
+import C4I_ICON from '../../assets/C4I.svg';
 
 const SatelliteCustomIcon = () => (
   <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">

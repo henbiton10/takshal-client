@@ -4,8 +4,8 @@ import { DashboardStation, DashboardTerminal } from './types';
 
 
 // Asset imports
-const IAF_ICON = '/src/assets/IAF.png';
-const C4I_ICON = '/src/assets/C4I.svg';
+import IAF_ICON from '../../assets/IAF.png';
+import C4I_ICON from '../../assets/C4I.svg';
 
 const MatrixContainer = styled.div`
   width: 100%;
